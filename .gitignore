@@ -1,0 +1,13 @@
+venv
+.venv
+__pycache__/
+*.pyc
+*.csv
+.env
+dist/
+build/
+datasets/
+docs/superpowers
+**.egg-info
+.pytest_cache
+.claude/settings.local.json
