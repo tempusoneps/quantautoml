@@ -9,10 +9,10 @@
 ## Execution Order Overview
 
 - [x] **Task 1:** Setup dự án, exceptions, types, report dataclasses, `PipelineConfig` + loader TOML.
-- [ ] **Task 2:** `DataIngestion` (UTC, join, float32, xử lý nhãn, `IngestionReport`).
-- [ ] **Task 3:** `infer_task_type`.
-- [ ] **Task 4:** `AdaptiveTimeSeriesSplitter` (5-way / OOF, Purging, `oof_folds`, `SplitReport`, `DataLeakageError`).
-- [ ] **Task 5:** Integration test Zero Look-Ahead Leakage.
+- [x] **Task 2:** `DataIngestion` (UTC, join, float32, xử lý nhãn, `IngestionReport`).
+- [x] **Task 3:** `infer_task_type`.
+- [x] **Task 4:** `AdaptiveTimeSeriesSplitter` (5-way / OOF, Purging, `oof_folds`, `SplitReport`, `DataLeakageError`).
+- [x] **Task 5:** Integration test Zero Look-Ahead Leakage.
 
 ---
 
@@ -39,29 +39,29 @@
 
 ---
 
-### [ ] Task 2: Data Ingestion
+### [x] Task 2: Data Ingestion
 - **Mục tiêu:** Theo DESIGN.md §2.1.
 - **Files to Touch:** Create `src/quantautoml/data/__init__.py`, `ingestion.py`, `tests/unit/test_ingestion.py`
 - **Action Steps (test trước):**
   1. Test: đọc parquet và csv; tz khác nhau → UTC; naive → UTC + cờ trong report; timestamp trùng / không đơn điệu → `TimestampAlignmentError`; inner join bỏ dòng lệch; khớp < `min_match_ratio` → lỗi; feature không phải số → `InvalidDataError`; tràn float32 → lỗi; NaN/Inf feature giữ nguyên; `selected` không tồn tại → lỗi (liệt kê cột); nhãn chọn NaN cuối bị drop và có trong report; NaN giữa → lỗi; nhãn phụ giữ NaN; NaN cuối lớn nhất > `horizon_h` → lỗi; `labels_path=None` → `y=None`; report đủ trường.
-  2. Implement `DataIngestion.load(config) -> Dataset`.
+  2. Implement `DataIngestion(config).load() -> Dataset` (gọi `infer_task_type` nên Task 3 được làm trước khi nối vào ingestion).
 - **Verification Command:** `pytest tests/unit/test_ingestion.py -v`
 - **Commit Message:** `feat(data): implement DataIngestion with UTC sync, label handling and report`
 
 ---
 
-### [ ] Task 3: Task Inference
+### [x] Task 3: Task Inference
 - **Mục tiêu:** Theo bảng DESIGN.md §2.2.
 - **Files to Touch:** Create `src/quantautoml/data/task_inference.py`, `tests/unit/test_task_inference.py`
 - **Action Steps:**
   1. Test: `None` → UNSUPERVISED; 2 giá trị `{0,1}` và `{-1,1}` → BINARY (remap, `classes_`); 3–10 nguyên → MULTICLASS; 1 giá trị, >10 giá trị, nhãn không nguyên → `InvalidDataError`.
-  2. Implement `infer_task_type(y) -> tuple[TaskType, classes]` (hoặc tương đương) và tích hợp remap vào luồng ingestion.
+  2. Implement `infer_task_type(y) -> TaskInference(task_type, classes, y)` và tích hợp remap vào luồng ingestion.
 - **Verification Command:** `pytest tests/unit/test_task_inference.py -v`
 - **Commit Message:** `feat(data): implement task inference engine`
 
 ---
 
-### [ ] Task 4: Adaptive Temporal Splitter
+### [x] Task 4: Adaptive Temporal Splitter
 - **Mục tiêu:** Theo DESIGN.md §2.3.
 - **Files to Touch:** Create `src/quantautoml/data/splitter.py`, `tests/unit/test_splitter.py`
 - **Action Steps:**
@@ -72,7 +72,7 @@
 
 ---
 
-### [ ] Task 5: Zero Look-Ahead Leakage Integration Verification
+### [x] Task 5: Zero Look-Ahead Leakage Integration Verification
 - **Mục tiêu:** End-to-end từ file TOML + file dữ liệu đến `SplitResult`, chứng minh không rò rỉ.
 - **Files to Touch:** Create `tests/integration/test_zero_leakage.py`
 - **Action Steps:**
@@ -86,8 +86,8 @@
 ---
 
 ## Final Verification Checklist
-- [ ] `pytest tests/` đạt 100% PASS.
-- [ ] Module đặt đúng theo [`STRUCTURE.md`](STRUCTURE.md); `common` không import tầng trên.
-- [ ] Report của ingestion và split chứa đủ các trường trong DESIGN.md.
-- [ ] Tuân thủ Zero Look-ahead Leakage ([`SCOPE.md`](SCOPE.md), [`TRADE-OFF.md`](TRADE-OFF.md)).
-- [ ] Sẵn sàng tích hợp Phase 2.
+- [x] `pytest tests/` đạt 100% PASS.
+- [x] Module đặt đúng theo [`STRUCTURE.md`](STRUCTURE.md); `common` không import tầng trên.
+- [x] Report của ingestion và split chứa đủ các trường trong DESIGN.md.
+- [x] Tuân thủ Zero Look-ahead Leakage ([`SCOPE.md`](SCOPE.md), [`TRADE-OFF.md`](TRADE-OFF.md)).
+- [x] Sẵn sàng tích hợp Phase 2.

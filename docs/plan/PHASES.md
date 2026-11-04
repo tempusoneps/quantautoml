@@ -34,7 +34,7 @@ flowchart LR
 
 ### Phase 1: Data Ingestion, Task Inference & Adaptive Temporal Splitter *(Active / Foundation)*
 - **Chi tiết:** [`01-ingestion-split/PHASE.md`](01-ingestion-split/PHASE.md)
-- **Trạng thái:** In Progress
+- **Trạng thái:** Done
 
 ### Phase 2: Leakage-Free Feature Funnel (Fast dCor & FDR Control)
 - **Chi tiết:** [`02-feature-selection/PHASE.md`](02-feature-selection/PHASE.md)
