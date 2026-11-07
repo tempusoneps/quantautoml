@@ -15,6 +15,9 @@ dependencies = [
     "pydantic>=2.0.0",
 ]
 
+[project.scripts]
+quantautoml = "quantautoml.cli:main"
+
 [dependency-groups]
 dev = ["pytest>=8.0.0"]
 
