@@ -1,7 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "quantautoml"
 version = "1.0"
 description = "Quantitative AutoML Trading"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "numpy>=1.26.0",
+    "polars>=1.0.0",
+    "pyarrow>=15.0.0",
+    "pydantic>=2.0.0",
+]
+
+[project.scripts]
+quantautoml = "quantautoml.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8.0.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/quantautoml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
