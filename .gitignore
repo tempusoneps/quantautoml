@@ -11,3 +11,9 @@ docs/superpowers
 **.egg-info
 .pytest_cache
 .claude/settings.local.json
+
+# Configuration
+config.toml
+config.*.toml
+configs/
+
