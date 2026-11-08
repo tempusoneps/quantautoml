@@ -1,0 +1,27 @@
+# Quant AutoML Pipeline Configuration
+# Generated automatically by scripts/generate_config.py
+# Reference: docs/CONFIGURATION.md
+
+[data]
+# Path to feature matrix file (.parquet or .csv)
+features_path = "datasets/feature.parquet"
+
+# Path to labels file (.parquet or .csv). Leave empty ("") for UNSUPERVISED mode.
+labels_path = "datasets/label.csv"
+
+# Name of timestamp column in both features and labels files
+timestamp_col = "Date"
+
+# Minimum required ratio of matched timestamps during inner join (0.0 to 1.0)
+min_match_ratio = 0.95
+
+[labels]
+# Target label column name used for task inference and training
+# Other label columns in labels_path will be stored in labels_aux
+selected = "is_peak_10"
+
+[split]
+# Maximum forward-looking horizon (number of bars/candles) across all labels
+# Used for Purging & Embargo between Train, Cal-A, Cal-B, Val, and OOS segments.
+# Must be >= 1 and >= max tail NaN count of any label column.
+horizon_h = 10
