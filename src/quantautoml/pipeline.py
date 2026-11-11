@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -12,7 +12,6 @@ from quantautoml.common.config import PipelineConfig, load_config
 from quantautoml.common.types import Dataset, Segment, SplitResult
 from quantautoml.data.ingestion import DataIngestion
 from quantautoml.data.splitter import AdaptiveTimeSeriesSplitter
-from quantautoml.data.task_inference import infer_task_type
 
 
 @dataclass(frozen=True)
@@ -27,8 +26,6 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
     out.mkdir(parents=True, exist_ok=True)
 
     dataset = DataIngestion(cfg).load()
-    task = infer_task_type(dataset.y)
-    dataset = replace(dataset, y=task.y, task_type=task.task_type, classes_=task.classes)
     split = AdaptiveTimeSeriesSplitter().split(dataset, cfg.split.horizon_h)
 
     _dump_json(out / "ingestion_report.json", dataset.report.to_dict())
@@ -36,8 +33,8 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
     _dump_json(
         out / "task.json",
         {
-            "task_type": task.task_type.value,
-            "classes": None if task.classes is None else task.classes.tolist(),
+            "task_type": dataset.task_type.value,
+            "classes": None if dataset.classes_ is None else dataset.classes_.tolist(),
             "feature_names": list(dataset.feature_names),
         },
     )

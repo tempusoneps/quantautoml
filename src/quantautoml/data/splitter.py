@@ -167,7 +167,7 @@ def _build_report(
     for i, (name, seg) in enumerate(segments.items()):
         counts: dict[str, int] | None = None
         if seg.y is not None and ds.classes_ is not None:
-            raw = np.bincount(seg.y, minlength=len(ds.classes_))
+            raw = np.bincount(seg.y[seg.y >= 0], minlength=len(ds.classes_))
             counts = {_fmt(c): int(raw[j]) for j, c in enumerate(ds.classes_)}
             warnings.extend(f"class {c} missing in {name}" for c, v in counts.items() if v == 0)
         summaries.append(

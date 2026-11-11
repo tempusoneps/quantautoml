@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from enum import Enum
 from typing import Any
 
@@ -29,7 +29,7 @@ class IngestionReport:
     n_unmatched_dropped: int
     n_trailing_label_nan_dropped: int
     source_timezone: str
-    naive_assumed_utc: bool
+    naive_utc_assumed: bool
     n_features: int
     n_nan: int
     n_inf: int
@@ -38,6 +38,11 @@ class IngestionReport:
     label_nan_counts: dict[str, int]
     max_trailing_nan: int
     horizon_h: int
+    timestamp_precision_normalized: bool = False
+    timestamp_original_time_unit: str = "us"
+    bool_columns_cast: list[str] = field(default_factory=list)
+    string_columns_encoded: dict[str, dict[str, int]] = field(default_factory=dict)
+    mid_nan_count: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

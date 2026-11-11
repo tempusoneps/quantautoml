@@ -20,17 +20,31 @@ class TaskInference:
     y: NDArray[np.int32] | None  # labels encoded as contiguous class codes 0..K-1
 
 
+UNLABELED = -1  # code assigned to rows whose label is missing mid-series
+
+
 def infer_task_type(y: NDArray[np.generic] | None) -> TaskInference:
+    """Infer the task. Missing labels (NaN / None) are unlabeled rows: they are
+    ignored when counting classes and encoded as ``UNLABELED`` (-1) in ``y``."""
     if y is None:
         return TaskInference(TaskType.UNSUPERVISED, None, None)
 
     values = np.asarray(y)
     if values.size == 0:
         raise InvalidDataError("label vector is empty")
-    if not np.all(np.isfinite(values.astype(np.float64))):
-        raise InvalidDataError("labels contain NaN or Inf")
 
-    classes = np.unique(values)
+    is_text = values.dtype.kind in "USO"
+    if is_text:
+        missing = np.array([v is None for v in values.tolist()], dtype=bool)
+        present = values[~missing].astype(str)
+    else:
+        as_float = values.astype(np.float64)
+        missing = np.isnan(as_float)
+        present = values[~missing]
+        if np.isinf(present.astype(np.float64)).any():
+            raise InvalidDataError("labels contain Inf")
+
+    classes = np.unique(present)
     n_classes = classes.size
     if n_classes < 2:
         raise InvalidDataError("labels contain a single class; cannot infer a task")
@@ -38,10 +52,11 @@ def infer_task_type(y: NDArray[np.generic] | None) -> TaskInference:
         raise InvalidDataError(
             f"{n_classes} unique labels (> {MAX_CLASSES}): regression labels are not supported"
         )
-    if n_classes > 2 and not np.all(classes == np.round(classes)):
+    if not is_text and n_classes > 2 and not np.all(classes == np.round(classes)):
         raise InvalidDataError("multiclass labels must be integer valued")
 
-    codes = np.searchsorted(classes, values).astype(np.int32)
+    codes = np.full(values.shape, UNLABELED, dtype=np.int32)
+    codes[~missing] = np.searchsorted(classes, present).astype(np.int32)
     task = (
         TaskType.BINARY_CLASSIFICATION if n_classes == 2 else TaskType.MULTICLASS_CLASSIFICATION
     )

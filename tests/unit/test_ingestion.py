@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, timedelta
 
 import numpy as np
 import polars as pl
@@ -19,7 +19,7 @@ def test_loads_parquet_and_csv(make_frames, build_config, fmt: str) -> None:
     ds = _load(build_config(f, l, fmt=fmt))
     assert ds.X.dtype == np.float32
     assert ds.feature_names == ("f0", "f1", "f2")
-    assert ds.timestamps.dtype == np.dtype("datetime64[ns]")
+    assert ds.timestamps.dtype == np.dtype("datetime64[us]")
     assert ds.y is not None and ds.y.dtype == np.int32
     assert ds.task_type is TaskType.BINARY_CLASSIFICATION
     assert ds.selected_label == "y_dir"
@@ -34,19 +34,19 @@ def test_timezone_aware_timestamps_are_converted_to_utc(make_frames, build_confi
     )
     ds = _load(build_config(local(f), local(l)))
     expected = (
-        f["timestamp"].dt.replace_time_zone(None).to_numpy().astype("datetime64[ns]")
+        f["timestamp"].dt.replace_time_zone(None).to_numpy().astype("datetime64[us]")
     )
     np.testing.assert_array_equal(ds.timestamps[:100 - 5], expected[: 100 - 5])
     assert "Asia/Bangkok" in ds.report.source_timezone
-    assert ds.report.naive_assumed_utc is False
+    assert ds.report.naive_utc_assumed is False
 
 
 def test_naive_timestamps_are_assumed_utc_and_flagged(make_frames, build_config) -> None:
     f, l = make_frames(n=100)
     naive = lambda df: df.with_columns(pl.col("timestamp").dt.replace_time_zone(None))
     ds = _load(build_config(naive(f), naive(l)))
-    assert ds.report.naive_assumed_utc is True
-    assert ds.timestamps[0] == np.datetime64("2024-01-01T00:00:00", "ns")
+    assert ds.report.naive_utc_assumed is True
+    assert ds.timestamps[0] == np.datetime64("2024-01-01T00:00:00", "us")
 
 
 def test_duplicate_timestamps_are_rejected(make_frames, build_config) -> None:
@@ -82,7 +82,7 @@ def test_low_match_ratio_is_rejected(make_frames, build_config) -> None:
 
 def test_non_numeric_feature_is_rejected(make_frames, build_config) -> None:
     f, l = make_frames(n=100)
-    f = f.with_columns(pl.lit("x").alias("bad"))
+    f = f.with_columns(pl.lit(date(2024, 1, 1)).alias("bad"))
     with pytest.raises(InvalidDataError, match="bad"):
         _load(build_config(f, l))
 
@@ -136,16 +136,78 @@ def test_trailing_nan_of_selected_label_is_dropped_and_reported(make_frames, bui
     assert ds.report.n_trailing_label_nan_dropped == 5
     assert ds.report.n_joined_rows == 100
     assert all(v.shape[0] == 95 for v in ds.labels_aux.values())
-    assert ds.timestamps[-1] == np.datetime64("2024-01-01T00:00:00", "ns") + np.timedelta64(94, "h")
+    assert ds.timestamps[-1] == np.datetime64("2024-01-01T00:00:00", "us") + np.timedelta64(94, "h")
 
 
-def test_nan_in_middle_of_selected_label_is_rejected(make_frames, build_config) -> None:
+def test_nan_in_middle_of_selected_label_becomes_minus_one(make_frames, build_config) -> None:
     f, l = make_frames(n=100)
     l = l.with_columns(
-        pl.when(pl.int_range(pl.len()) == 20).then(None).otherwise(pl.col("y_dir")).alias("y_dir")
+        pl.when(pl.int_range(pl.len()).is_in([20, 21])).then(None).otherwise(pl.col("y_dir")).alias("y_dir")
     )
-    with pytest.raises(InvalidDataError):
-        _load(build_config(f, l))
+    ds = _load(build_config(f, l))
+    assert ds.X.shape[0] == 95  # rows kept: series stays contiguous
+    assert ds.y is not None and ds.y[20] == -1 and ds.y[21] == -1
+    assert ds.report.mid_nan_count == 2
+    assert ds.classes_ is not None and ds.classes_.tolist() == [0.0, 1.0]
+    assert ds.task_type is TaskType.BINARY_CLASSIFICATION
+
+
+def test_timestamp_precision_is_normalized_to_microseconds(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)  # features: ns ; labels: us
+    l = l.with_columns(pl.col("timestamp").dt.cast_time_unit("us"))
+    ds = _load(build_config(f, l))
+    assert ds.timestamps.dtype == np.dtype("datetime64[us]")
+    assert ds.report.timestamp_precision_normalized is True
+    assert "ns" in ds.report.timestamp_original_time_unit
+
+
+def test_matching_us_timestamps_are_not_flagged(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    us = lambda df: df.with_columns(pl.col("timestamp").dt.cast_time_unit("us"))
+    ds = _load(build_config(us(f), us(l)))
+    assert ds.report.timestamp_precision_normalized is False
+    assert ds.report.timestamp_original_time_unit == "us"
+
+
+def test_boolean_features_are_cast_to_float32(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    f = f.with_columns((pl.int_range(pl.len()) % 2 == 0).alias("is_even"))
+    ds = _load(build_config(f, l))
+    j = ds.feature_names.index("is_even")
+    assert ds.X.dtype == np.float32
+    assert ds.X[:4, j].tolist() == [1.0, 0.0, 1.0, 0.0]
+    assert ds.report.bool_columns_cast == ["is_even"]
+
+
+def test_string_features_are_ordinal_encoded_alphabetically(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    cycle = pl.Series("trend", ["up", "down", "flat", None] * 25)
+    f = f.with_columns(cycle)
+    ds = _load(build_config(f, l))
+    j = ds.feature_names.index("trend")
+    assert ds.report.string_columns_encoded == {"trend": {"down": 0, "flat": 1, "up": 2}}
+    assert ds.X[0, j] == 2.0 and ds.X[1, j] == 0.0 and ds.X[2, j] == 1.0
+    assert np.isnan(ds.X[3, j])
+
+
+def test_string_multiclass_selected_label(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    cycle = pl.Series("direction", ["None", "Short", "Long"] * 33 + ["None"])
+    l = l.with_columns(cycle)
+    ds = _load(build_config(f, l, selected="direction"))
+    assert ds.task_type is TaskType.MULTICLASS_CLASSIFICATION
+    assert ds.classes_ is not None and ds.classes_.tolist() == ["Long", "None", "Short"]
+    assert ds.y is not None and ds.y[:3].tolist() == [1, 2, 0]
+
+
+def test_string_selected_label_with_mid_nulls(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    vals = ["a", "b", "c"] * 33 + ["a"]
+    vals[10] = None
+    l = l.with_columns(pl.Series("direction", vals))
+    ds = _load(build_config(f, l, selected="direction"))
+    assert ds.y is not None and ds.y[10] == -1
+    assert ds.report.mid_nan_count == 1
 
 
 def test_auxiliary_labels_keep_their_nan(make_frames, build_config) -> None:

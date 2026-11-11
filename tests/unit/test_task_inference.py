@@ -58,10 +58,34 @@ def test_non_integer_multiclass_values_are_rejected() -> None:
         infer_task_type(np.array([0.1, 0.2, 0.3, 0.4]))
 
 
-@pytest.mark.parametrize("bad", [np.nan, np.inf])
-def test_non_finite_labels_are_rejected(bad: float) -> None:
+def test_inf_labels_are_rejected() -> None:
     with pytest.raises(InvalidDataError):
-        infer_task_type(np.array([0.0, 1.0, bad]))
+        infer_task_type(np.array([0.0, 1.0, np.inf]))
+
+
+def test_nan_labels_are_unlabeled_and_encoded_as_minus_one() -> None:
+    res = infer_task_type(np.array([0.0, np.nan, 1.0, 0.0]))
+    assert res.task_type is TaskType.BINARY_CLASSIFICATION
+    assert res.y is not None and res.y.tolist() == [0, -1, 1, 0]
+    assert res.classes is not None and res.classes.tolist() == [0.0, 1.0]
+
+
+def test_unlabeled_rows_do_not_count_as_a_class() -> None:
+    with pytest.raises(InvalidDataError):
+        infer_task_type(np.array([1.0, np.nan, np.nan]))
+
+
+def test_string_labels_are_sorted_alphabetically() -> None:
+    res = infer_task_type(np.array(["None", "Short", "Long", None, "None"], dtype=object))
+    assert res.task_type is TaskType.MULTICLASS_CLASSIFICATION
+    assert res.classes is not None and res.classes.tolist() == ["Long", "None", "Short"]
+    assert res.y is not None and res.y.tolist() == [1, 2, 0, -1, 1]
+
+
+def test_binary_string_labels() -> None:
+    res = infer_task_type(np.array(["b", "a", "b"], dtype=object))
+    assert res.task_type is TaskType.BINARY_CLASSIFICATION
+    assert res.y is not None and res.y.tolist() == [1, 0, 1]
 
 
 def test_empty_labels_are_rejected() -> None:

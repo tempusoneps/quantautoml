@@ -61,7 +61,7 @@ def test_ingestion_report_to_dict_is_json_serialisable() -> None:
         n_unmatched_dropped=2,
         n_trailing_label_nan_dropped=5,
         source_timezone="UTC",
-        naive_assumed_utc=False,
+        naive_utc_assumed=False,
         n_features=4,
         n_nan=3,
         n_inf=1,
@@ -106,7 +106,7 @@ def test_split_report_to_dict_converts_enum_and_nests_segments() -> None:
 def test_dataset_defaults_task_type_and_classes_to_none() -> None:
     report = IngestionReport(
         n_feature_rows=1, n_label_rows=1, n_joined_rows=1, n_unmatched_dropped=0,
-        n_trailing_label_nan_dropped=0, source_timezone="UTC", naive_assumed_utc=False,
+        n_trailing_label_nan_dropped=0, source_timezone="UTC", naive_utc_assumed=False,
         n_features=1, n_nan=0, n_inf=0, t_min="a", t_max="b",
         label_nan_counts={}, max_trailing_nan=0, horizon_h=1,
     )
