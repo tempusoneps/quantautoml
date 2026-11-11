@@ -13,7 +13,7 @@ def make_dataset(n: int, with_labels: bool = True, y: np.ndarray | None = None) 
     idx = np.arange(n)
     report = IngestionReport(
         n_feature_rows=n, n_label_rows=n, n_joined_rows=n, n_unmatched_dropped=0,
-        n_trailing_label_nan_dropped=0, source_timezone="UTC", naive_assumed_utc=False,
+        n_trailing_label_nan_dropped=0, source_timezone="UTC", naive_utc_assumed=False,
         n_features=2, n_nan=0, n_inf=0, t_min="", t_max="", label_nan_counts={},
         max_trailing_nan=0, horizon_h=1,
     )
@@ -183,3 +183,20 @@ def test_verify_split_rejects_oof_fold_leaking_beyond_train() -> None:
     bad = [(tr, np.arange(va[0], res.val.index[-1] + 1))] + res.oof_folds[1:]
     with pytest.raises(DataLeakageError):
         verify_split(dataclasses.replace(res, oof_folds=bad), horizon_h=5)
+
+
+def test_oof_fold_indices_are_relative_to_train_segment() -> None:
+    res = SPLITTER.split(make_dataset(1_000), horizon_h=5)
+    n_train = res.train.X.shape[0]
+    assert res.oof_folds is not None
+    for tr, va in res.oof_folds:
+        assert tr.min() == 0 and va.max() < n_train
+        assert res.train.X[va].shape[0] == va.size  # directly indexable
+
+
+def test_unlabeled_minus_one_rows_are_excluded_from_class_counts() -> None:
+    y = (np.arange(1_000) % 2).astype(np.int32)
+    y[:10] = -1
+    res = SPLITTER.split(make_dataset(1_000, y=y), horizon_h=5)
+    counts = res.report.segments[0].class_counts
+    assert counts is not None and sum(counts.values()) == 800 - 10

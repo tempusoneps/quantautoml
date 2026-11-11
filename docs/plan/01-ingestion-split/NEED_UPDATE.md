@@ -125,6 +125,6 @@ class IngestionReport:
 
 ## Checklist Cập Nhật Tài Liệu Cần Thực Hiện
 
-- [ ] Cập nhật [`docs/plan/01-ingestion-split/DESIGN.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/01-ingestion-split/DESIGN.md) theo các mục UD-01 đến UD-07.
-- [ ] Cập nhật [`docs/plan/01-ingestion-split/SCOPE.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/01-ingestion-split/SCOPE.md) làm rõ xử lý Boolean/String và nhãn mid-NaN `-1`.
-- [ ] Cập nhật [`docs/plan/PLAN.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/PLAN.md) theo mục UD-08 (`DataLeakageError`, ngưỡng 10,000, bổ sung `config.py`).
+- [x] Cập nhật [`docs/plan/01-ingestion-split/DESIGN.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/01-ingestion-split/DESIGN.md) theo các mục UD-01 đến UD-07.
+- [x] Cập nhật [`docs/plan/01-ingestion-split/SCOPE.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/01-ingestion-split/SCOPE.md) làm rõ xử lý Boolean/String và nhãn mid-NaN `-1`.
+- [x] Cập nhật [`docs/plan/PLAN.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/PLAN.md) theo mục UD-08 (`DataLeakageError`, ngưỡng 10,000, bổ sung `config.py`).
