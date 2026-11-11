@@ -8,17 +8,17 @@
 
 ## Execution Order Overview
 
-- [ ] **Task 1:** Thiết lập môi trường, dependencies và module types/exceptions dùng chung.
-- [ ] **Task 2:** Xây dựng module Ingestion & Đồng bộ hóa thời gian UTC ISO-8601 (`ingestion.py`).
-- [ ] **Task 3:** Xây dựng Engine tự động suy luận bài toán (`task_inference.py`).
-- [ ] **Task 4:** Xây dựng Adaptive Temporal Splitter (5-way vs. OOF-assisted) kèm Purging & Embargo $h$ nến (`splitter.py`).
-- [ ] **Task 5:** Viết bộ kiểm thử tích hợp chuyên sâu chống rò rỉ dữ liệu tương lai (`test_zero_leakage.py`).
+- [x] **Task 1:** Thiết lập môi trường, dependencies và module types/exceptions dùng chung.
+- [x] **Task 2:** Xây dựng module Ingestion & Đồng bộ hóa thời gian UTC ISO-8601 (`ingestion.py`).
+- [x] **Task 3:** Xây dựng Engine tự động suy luận bài toán (`task_inference.py`).
+- [x] **Task 4:** Xây dựng Adaptive Temporal Splitter (5-way vs. OOF-assisted) kèm Purging & Embargo $h$ nến (`splitter.py`).
+- [x] **Task 5:** Viết bộ kiểm thử tích hợp chuyên sâu chống rò rỉ dữ liệu tương lai (`test_zero_leakage.py`).
 
 ---
 
 ## Detailed Task Breakdown
 
-### [ ] Task 1: Setup Dependencies, Common Types, Config & Exceptions
+### [x] Task 1: Setup Dependencies, Common Types, Config & Exceptions
 - **Mục tiêu:** Cập nhật `pyproject.toml` với các thư viện cần thiết cho Phase 1, định nghĩa enum `TaskType`, `SplitMode`, dataclass `Segment`, `Dataset`, `SplitResult`, `IngestionReport`, `SplitReport`, cấu hình `PipelineConfig` (Pydantic v2 + TOML loader), và các ngoại lệ tùy chỉnh.
 - **Files to Touch:**
   - Modify: `pyproject.toml`
@@ -44,7 +44,7 @@
 
 ---
 
-### [ ] Task 2: Data Ingestion & Strict UTC Timestamp Synchronization
+### [x] Task 2: Data Ingestion & Strict UTC Timestamp Synchronization
 - **Mục tiêu:** Đọc file parquet/csv của features và labels, chuẩn hóa timestamp về UTC ISO-8601 (`datetime64[us]`), inner join theo timestamp, ép kiểu dữ liệu `np.float32` (auto-cast Boolean, Ordinal Encode String), xử lý NaN đuôi và gán `-1` cho NaN giữa của nhãn chọn.
 - **Files to Touch:**
   - Create: `src/quantautoml/data/__init__.py`
@@ -69,7 +69,7 @@
 
 ---
 
-### [ ] Task 3: Task Inference Engine
+### [x] Task 3: Task Inference Engine
 - **Mục tiêu:** Phân tích vector nhãn $Y$ (bỏ qua giá trị đặc biệt `-1`) để tự động xác định bản chất bài toán máy học: Binary ($Y \in \{0, 1\}$), Multiclass (3–10 classes, hỗ trợ cả int và String remap), hoặc Unsupervised.
 - **Files to Touch:**
   - Create: `src/quantautoml/data/task_inference.py`
@@ -91,7 +91,7 @@
 
 ---
 
-### [ ] Task 4: Adaptive Temporal Splitter (with Purging & Embargo)
+### [x] Task 4: Adaptive Temporal Splitter (with Purging & Embargo)
 - **Mục tiêu:** Xây dựng bộ chia chuỗi thời gian thích ứng:
   - Nếu $N \ge 10,000$: Phân chia tĩnh 5 vùng: Train (60%), Cal-A (10%), Cal-B (10%), Val (10%), OOS (10%).
   - Nếu $500 \le N < 10,000$: Phân chia Train (80%), Val (10%), OOS (10%), hỗ trợ trích xuất `oof_folds` (5-fold walk-forward với index tương đối theo tập Train).
@@ -117,7 +117,7 @@
 
 ---
 
-### [ ] Task 5: Zero Look-Ahead Leakage Integration Verification
+### [x] Task 5: Zero Look-Ahead Leakage Integration Verification
 - **Mục tiêu:** Tạo bộ kiểm thử tích hợp mô phỏng toàn bộ luồng Phase 1 với dữ liệu chuỗi thời gian sinh ngẫu nhiên có chèn cố tình các bẫy rò rỉ dữ liệu để đảm bảo hệ thống chặn đứng mọi nguy cơ.
 - **Files to Touch:**
   - Create: `tests/integration/test_zero_leakage.py`
@@ -137,7 +137,7 @@
 ---
 
 ## Final Verification Checklist
-- [ ] Cài đặt thành công dependencies và chạy `pytest tests/` đạt 100% PASS.
-- [ ] Mọi module tuân thủ cấu trúc định nghĩa tại [`docs/plan/STRUCTURE.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/STRUCTURE.md).
-- [ ] Dữ liệu nạp và phân vùng tuân thủ nguyên tắc Zero Look-ahead Leakage của [`docs/plan/SCOPE.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/SCOPE.md) và các trade-offs trong [`docs/plan/TRADE-OFF.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/TRADE-OFF.md).
-- [ ] Sẵn sàng tích hợp sang Phase 2 (Leakage-Free Feature Funnel).
+- [x] Cài đặt thành công dependencies và chạy `pytest tests/` đạt 100% PASS.
+- [x] Mọi module tuân thủ cấu trúc định nghĩa tại [`docs/plan/STRUCTURE.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/STRUCTURE.md).
+- [x] Dữ liệu nạp và phân vùng tuân thủ nguyên tắc Zero Look-ahead Leakage của [`docs/plan/SCOPE.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/SCOPE.md) và các trade-offs trong [`docs/plan/TRADE-OFF.md`](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/plan/TRADE-OFF.md).
+- [x] Sẵn sàng tích hợp sang Phase 2 (Leakage-Free Feature Funnel).

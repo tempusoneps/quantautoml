@@ -20,7 +20,7 @@ flowchart LR
 
 ## Phase Breakdown
 
-### Phase 1: Data Ingestion, Task Inference & Adaptive Temporal Splitter *(Active / Foundation)*
+### Phase 1: Data Ingestion, Task Inference & Adaptive Temporal Splitter *(Foundation)*
 - **Mục tiêu:** Xây dựng nền tảng nạp dữ liệu, đồng bộ hóa chuỗi thời gian, tự động suy luận loại bài toán và phân chia dữ liệu thích ứng (Adaptive Temporal Split) kèm Purging & Embargo.
 - **Sub-systems & Deliverables:**
   1. `DataIngestion`: Đọc `features` và `labels` (`.parquet`/`.csv`), chuẩn hóa UTC ISO-8601, inner join theo timestamp, sắp xếp tăng dần đơn điệu ($shuffle = False$), ép kiểu `float32`.
@@ -33,7 +33,7 @@ flowchart LR
   - Unit tests xác nhận không có bất kỳ dòng nào của tập tương lai bị lẫn vào tập quá khứ.
   - Kiểm tra khoảng cách giữa các split ranh giới đúng bằng $h$ nến embargo.
   - Tự động nhận diện chính xác bài toán từ vector $Y$ và tự động chuyển đổi chế độ split theo số dòng $N$.
-- **Trạng thái:** In Progress
+- **Trạng thái:** Done
 
 ---
 
@@ -50,7 +50,7 @@ flowchart LR
 - **Tiêu chí kiểm thử độc lập (Independent Verification):**
   - Kiểm thử xác nhận không có ngoại lệ hoặc data leakage (`fit` chỉ trên Train).
   - Thuật toán dCor chạy nhanh với $N > 10,000$ mà không bị tràn bộ nhớ RAM.
-- **Trạng thái:** Planned.
+- **Trạng thái:** In Progress
 
 ---
 
