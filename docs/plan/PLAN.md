@@ -25,7 +25,13 @@
 Spec không chốt các điểm dưới đây; plan chọn mặc định hợp lý, đều chỉnh được qua `[features]` trong config:
 
 1. **Ánh xạ horizon → cột nhãn:** `y` là nhãn phân loại, nên IC đa kỳ hạn lấy từ `labels_aux` (cột forward-return). Config khai báo `features.ic_horizons = {1 = "fwd_ret_1", 5 = "fwd_ret_5", ...}` và `features.target_horizon`.
-2. **F1 MCAR/MAR/MNAR:** quy ước vận hành (không phải kiểm định thống kê chính thức): `MNAR` nếu MI(indicator NaN, y) > `indicator_mi_min`; `MAR` nếu |Spearman(indicator, feature khác)| lớn nhất > 0.3; còn lại `MCAR`. Chỉ `MNAR`/`MAR` sinh cột `is_nan_<tên>`. Hard Gate: cột toàn NaN hoặc NaN ratio > `max_nan_ratio` (0.6) bị loại.
+2. **F1 MCAR/MAR/MNAR & Discrete Features (Bool/Categorical):** 
+   - Quy ước vận hành: `MNAR` nếu MI(indicator NaN, y) > `indicator_mi_min`; `MAR` nếu |Spearman(indicator, feature khác)| lớn nhất > 0.3; còn lại `MCAR`. Chỉ `MNAR`/`MAR` sinh cột `is_nan_<tên>`. 
+   - Hard Gate: cột toàn NaN hoặc NaN ratio > `max_nan_ratio` (0.6) bị loại (áp dụng cho cả continuous, bool và categorical).
+   - **Xử lý đặc thù Bool & Categorical:**
+     - Không bỏ qua (skip) bool/cat ở F1; vẫn phải qua Hard Gate dọn rác.
+     - Tận dụng `discrete_features` (từ `IngestionReport.bool_cols` và `string_maps.keys()`) để truyền mask vào `mutual_info_classif`, tính MI theo phân phối xác suất rời rạc chuẩn xác và nhanh hơn $k$-NN liên tục.
+     - Với cột `bool`, nếu chỉ chứa một giá trị thực sự kèm NaN (ví dụ chỉ có `{1.0, NaN}` hoặc `{0.0, NaN}`), không sinh thêm cột `is_nan_<tên>` (tránh tạo bản sao đối ngẫu thừa thãi), mà impute giá trị bù đối ứng (0.0 hoặc 1.0).
 3. **F2 ngưỡng:** `min_unique_ratio=0.01`, `min_cv=1e-6`, `max_peak_var_ratio=50` (phân vị 90 của rolling variance w=63 chia phương sai toàn Train). Đây là giá trị khởi điểm, cần hiệu chỉnh trên dữ liệu thật.
 4. **F6 regime:** Bull/Bear/Sideways suy ra *nhân quả* từ nhãn h=1 đã realized (dịch 1 nến), tổng 63 nến, ngưỡng ±0.5σ của Train. Thiếu cột h=1 → F6 bỏ qua kèm cảnh báo trong báo cáo.
 5. **F8:** `max_features=30` (mặc định); MI rời rạc hóa bằng 10 quantile bin.
@@ -131,7 +137,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 **Interfaces:**
 - Produces:
   - `@dataclass(frozen=True) FilterReport(stage: str, n_in: int, n_out: int, dropped: dict[str, str], notes: tuple[str, ...] = ())` — `dropped` ánh xạ tên feature → lý do.
-  - `@dataclass(frozen=True) FitContext(feature_names: tuple[str, ...], labels_aux: dict[str, NDArray[np.float32]], task_type: TaskType)`.
+  - `@dataclass(frozen=True) FitContext(feature_names: tuple[str, ...], labels_aux: dict[str, NDArray[np.float32]], task_type: TaskType, discrete_features: tuple[str, ...] = ())`.
   - `class BaseFeatureFilter(ABC)`: `name: ClassVar[str]`; `fit(self, X: NDArray[np.float32], y: NDArray[np.int32], ctx: FitContext) -> Self` (đặt `is_fitted_`, `output_names_`, `report_`); `transform(self, X: NDArray[np.float32]) -> NDArray[np.float32]` (ném `FeatureSelectionError` nếu chưa fit hoặc số cột ≠ lúc fit; không bao giờ cập nhật trạng thái đã fit); abstract `_fit(...)` và `_transform(...)`.
   - `y` có thể `None`/`UNSUPERVISED` → `fit` ném `InvalidDataError` (phễu cần nhãn).
 
@@ -152,11 +158,11 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 **Interfaces:**
 - Consumes: `BaseFeatureFilter`, `FitContext`, `FeaturesConfig`.
-- Produces: `class NaNInfTriage(BaseFeatureFilter)` với `__init__(self, cfg: FeaturesConfig)`; sau `fit`: `scores_: dict[str, float]` = `MI(X, y) × (1 − nan_ratio)`, `missing_kind_: dict[str, Literal["none", "MCAR", "MAR", "MNAR"]]`. `transform` thay `±Inf` bằng `NaN`, loại cột đã bị Hard Gate, **thêm cột `is_nan_<tên>`** (float32, 0/1) cho cột `MAR`/`MNAR`.
+- Produces: `class NaNInfTriage(BaseFeatureFilter)` với `__init__(self, cfg: FeaturesConfig)`; sau `fit`: `scores_: dict[str, float]` = `MI(X, y) × (1 − nan_ratio)`, `missing_kind_: dict[str, Literal["none", "MCAR", "MAR", "MNAR"]]`. `transform` thay `±Inf` bằng `NaN`, loại cột đã bị Hard Gate, **thêm cột `is_nan_<tên>`** (float32, 0/1) cho cột `MAR`/`MNAR` (ngoại trừ cột bool dạng đơn giá trị + NaN để tránh sinh cột đối ngẫu dư thừa).
 
 **Action Steps:**
-1. Test thất bại: cột toàn NaN và cột NaN ratio 0.7 bị loại với lý do rõ; `±Inf` → `NaN`; cột không NaN → `"none"` và không sinh indicator; NaN rải ngẫu nhiên độc lập với `y` → `"MCAR"`; NaN chỉ xuất hiện khi `y == 1` → `"MNAR"` và có cột `is_nan_*` (MI > 0); `score` giảm khi NaN ratio tăng với cùng MI; `y = -1` bị mask trước khi tính MI; cột hằng → score `0.0`, không crash; `fit` hai lần với Val bị trộn vào thì `missing_kind_` không đổi khi chỉ `transform` Val (không fit lại).
-2. Hiện thực: impute trung vị (Train) chỉ để tính MI, dùng `sklearn.feature_selection.mutual_info_classif` với `random_state=0`; phân loại theo quy ước ở mục "Quyết định thiết kế" #2.
+1. Test thất bại: cột toàn NaN và cột NaN ratio 0.7 bị loại với lý do rõ (cho cả float, bool và categorical); `±Inf` → `NaN`; cột không NaN → `"none"` và không sinh indicator; NaN rải ngẫu nhiên độc lập với `y` → `"MCAR"`; NaN chỉ xuất hiện khi `y == 1` → `"MNAR"` và có cột `is_nan_*` (MI > 0); cột bool `{1, NaN}` không sinh cột `is_nan_*` mà được impute 0.0; `score` giảm khi NaN ratio tăng với cùng MI; `y = -1` bị mask trước khi tính MI; cột hằng → score `0.0`, không crash; `discrete_features` được truyền dưới dạng boolean mask vào `mutual_info_classif(..., discrete_features=...)`; `fit` hai lần với Val bị trộn vào thì `missing_kind_` không đổi khi chỉ `transform` Val (không fit lại).
+2. Hiện thực: impute trung vị (Train) chỉ để tính MI (với bool/categorical trung vị vẫn là giá trị hợp lệ), dùng `sklearn.feature_selection.mutual_info_classif` với `random_state=0` và `discrete_features` mask; phân loại theo quy ước ở mục "Quyết định thiết kế" #2.
 
 - **Verification Command:** `uv run pytest tests/unit/test_triage.py -v`
 - **Commit Message:** `feat(features): implement F1 NaN/Inf triage with MI scoring`
@@ -288,7 +294,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 **Action Steps:**
 1. Test thất bại — `tests/unit/test_funnel.py`: thứ tự tầng đúng F1→F2→F3+7→F4→F5→F6→F8; số cột giảm đơn điệu qua các tầng (`n_out` của tầng k = `n_in` của tầng k+1, tính cả indicator do F1 sinh); báo cáo ghi đủ 7 tầng kèm lý do; một tầng loại hết feature → các tầng sau pass-through, `selected_features_ == ()`, không ném lỗi (Review Focus #4); `fit` với `UNSUPERVISED` → `InvalidDataError`; `transform` trên Val/OOS/Cal-A/Cal-B trả cùng danh sách cột, `float32`.
 2. Test thất bại — `tests/integration/test_zero_leakage_funnel.py` (dùng dữ liệu 15,000 dòng từ fixture Phase 1): (a) **Hành vi:** thay toàn bộ `Val`, `OOS`, `Cal-A`, `Cal-B` bằng nhiễu → `selected_features_` **giống hệt** (Review Focus #5); (b) **Spy:** bọc `fit` của từng filter, khẳng định độ dài `X` truyền vào bằng `len(split.train.X)` (RULE-01); (c) `FeatureFunnel.fit` ném `DataLeakageError` nếu `split.train.index` không đơn điệu hoặc giao với `index` của Val/OOS/Cal; (d) **BH end-to-end:** 300 feature nhiễu + 5 tín hiệu thật → số feature nhiễu sống sót ≤ 5% và ≥ 4/5 tín hiệu thật được giữ; (e) **Scalability:** N = 20,000, 60 feature chạy trọn funnel < 120 s.
-3. Hiện thực `FeatureFunnel` (khởi tạo filter từ `cfg`, truyền `FitContext` dựng từ `dataset.labels_aux` **cắt theo `split.train.index`**, không dùng nhãn ngoài Train); nối vào `run_pipeline` + `test_pipeline.py` kiểm tra file báo cáo.
+3. Hiện thực `FeatureFunnel` (khởi tạo filter từ `cfg`, truyền `FitContext` dựng từ `dataset.labels_aux` **cắt theo `split.train.index`**, `discrete_features` từ `dataset.report.bool_cols` và `dataset.report.string_maps.keys()`, không dùng nhãn ngoài Train); nối vào `run_pipeline` + `test_pipeline.py` kiểm tra file báo cáo.
 4. Chạy toàn bộ `uv run pytest tests/ -v` PASS 100%; kiểm tra RULE-06 (mọi mảng `float32`), cập nhật checkbox, bàn giao sang Phase 3.
 
 - **Verification Command:** `uv run pytest tests/ -v`

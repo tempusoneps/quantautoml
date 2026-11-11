@@ -106,3 +106,22 @@ Tiêu chí cũ: *"Chỉ cần $\text{ICIR} > 0.3$ ở **bất kỳ** horizon nà
   - *Cons:* Đòi hỏi logic backtesting phức tạp hơn.
 
 > **Quyết định:** Chuẩn hóa việc đánh giá nghiệm thu OOS phải phản ánh **Net Sharpe Ratio (sau phí ma sát)** và có cơ chế buffer band kiểm soát vòng quay danh mục.
+
+---
+
+## 7. F1 NaN Triage: Continuous vs. Discrete (Bool & Categorical) Handling
+
+### Vấn đề:
+Trong dữ liệu dạng bảng định lượng (đặc biệt là phái sinh VN30F), ngoài các biến số thực liên tục (giá, khối lượng, returns, indicators), hệ thống còn chứa các biến nhị phân (boolean) và biến định danh (categorical) đã qua ordinal-encoding (ví dụ: `is_expiry_day`, `session_phase`, `trend_regime`).
+Nếu đối xử với các cột này hoàn toàn như biến liên tục trong tầng F1:
+1. **Ước lượng MI sai lệch & chậm:** Hàm `mutual_info_classif` của scikit-learn mặc định dùng xấp xỉ liên tục qua $k$-NN (Kraskov-Stögbauer-Grassberger). Với biến rời rạc chỉ nhận vài giá trị nguyên, việc dùng $k$-NN liên tục bị chậm và gây sai số do hiện tượng trùng tọa độ (ties).
+2. **Sinh cột trùng lặp (Redundancy / Dual Indicator):** Các cột boolean trong thực tế thường được ghi nhận dưới dạng `1.0` (khi có sự kiện) và `NaN` (khi không có sự kiện). Nếu F1 tự động sinh cột `is_nan_*`, cột mới này là bản sao phủ định đối xứng hoàn hảo ($is\_nan = 1 - col$), gây dư thừa chiều dữ liệu.
+
+### So sánh các hướng tiếp cận:
+| Tiêu chí | Phương án A: Bỏ qua (Skip) Bool & Categorical ở F1 | Phương án B: Xử lý đồng nhất như biến liên tục | Phương án C: Xử lý có nhận biết kiểu rời rạc (Được chọn) |
+| :--- | :--- | :--- | :--- |
+| **Bảo vệ chống dữ liệu rác** | ❌ **Rất nguy hiểm:** Cột bool/cat bị thiếu $> 60\%$ hoặc toàn NaN không bị lọc, lọt vào tầng sau làm hỏng ma trận/cây. | ✅ Tốt: Lọc sạch NaN/Inf qua Hard Gate. | ✅ Tốt: Áp dụng Hard Gate bình đẳng cho mọi loại dữ liệu. |
+| **Độ chính xác tính MI** | Không tính được điểm để triage. | ⚠️ Kém: Dùng $k$-NN liên tục bị chậm và méo điểm do ties. | ✅ **Hoàn hảo:** Truyền `discrete_features` mask để tính MI theo công thức xác suất rời rạc giải tích, nhanh gấp $3-5$ lần. |
+| **Tránh cột đối ngẫu thừa** | N/A | ❌ Dễ sinh thêm cột `is_nan` đối xứng với cột cờ $0/1$. | ✅ **Thông minh:** Không sinh `is_nan` nếu cột bool chỉ có 1 giá trị thực sự kèm NaN, mà chỉ impute bù. |
+
+> **Quyết định:** Áp dụng **Phương án C**. F1 không bỏ qua bool/categorical nhưng nhận biết danh sách discrete features từ `FitContext` để tối ưu hóa MI rời rạc và ngăn chặn sinh cờ đối ngẫu trùng lặp.
