@@ -33,9 +33,11 @@ class MultiMetricVarianceFilter(BaseFeatureFilter):
     selects columns.
 
     Note:
-        The default ``max_peak_var_ratio=50`` is rarely reachable: the 90th percentile of
-        rolling variance is bounded near ~10x the full variance for typical series, so the
-        threshold needs calibration on real data.
+        ``peak_var_ratio`` is bounded: within-window variances average to at most about
+        the full-Train variance, so by Markov's inequality their 90th percentile is at
+        most ~10x it (measured max 7.1). The default ``max_peak_var_ratio=50``, or any
+        threshold above ~10, can therefore never trigger; calibrate it on real data (or
+        change the metric).
 
     Args:
         cfg: Feature config; uses ``min_unique_ratio``, ``min_cv``,
