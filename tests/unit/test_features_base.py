@@ -133,3 +133,19 @@ def test_filter_report_is_frozen() -> None:
     assert r.notes == ()
     with pytest.raises(AttributeError):
         r.n_in = 2  # type: ignore[misc]
+
+
+class WrongWidthFilter(KeepFirstFilter):
+    """Declares one output name but `_transform` returns two columns."""
+
+    name: ClassVar[str] = "wrong_width"
+
+    def _transform(self, X: NDArray[np.float32]) -> NDArray[np.float32]:
+        return X[:, :2].astype(np.float32)
+
+
+def test_transform_output_width_must_match_output_names() -> None:
+    X, y = _data()
+    f = WrongWidthFilter().fit(X, y, _ctx())
+    with pytest.raises(FeatureSelectionError, match="output_names_"):
+        f.transform(X)

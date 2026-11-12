@@ -62,6 +62,11 @@ class BaseFeatureFilter(ABC):
             raise FeatureSelectionError(
                 f"{self.name}: _transform returned {out.dtype}, float32 required"
             )
+        if out.ndim != 2 or out.shape[1] != len(self.output_names_):
+            raise FeatureSelectionError(
+                f"{self.name}: _transform returned shape {out.shape}, expected "
+                f"{len(self.output_names_)} columns (len(output_names_))"
+            )
         return out
 
     @abstractmethod
