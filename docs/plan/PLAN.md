@@ -54,7 +54,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 - [x] **Task 1:** Dependencies (`scipy`, `scikit-learn`, `dcor`), exceptions & `FeaturesConfig`.
 - [x] **Task 2:** `metrics/ic.py` — Rank IC, Rolling IC, ICIR.
 - [x] **Task 3:** `metrics/fdr.py` — Benjamini-Hochberg.
-- [ ] **Task 4:** `features/base.py` — `BaseFeatureFilter` & `FilterReport`.
+- [x] **Task 4:** `features/base.py` — `BaseFeatureFilter` & `FilterReport`.
 - [ ] **Task 5:** F1 `triage.py` — NaN/Inf Triage & MI score.
 - [ ] **Task 6:** F2 `variance.py` — Multi-Metric Variance.
 - [ ] **Task 7:** F3+7 `ic_stability.py` — IC Stability + FDR + Term Structure.
@@ -127,7 +127,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 ---
 
-### [ ] Task 4: BaseFeatureFilter & FilterReport
+### [x] Task 4: BaseFeatureFilter & FilterReport
 
 **Files:**
 - Create: `src/quantautoml/features/__init__.py`, `src/quantautoml/features/base.py`
