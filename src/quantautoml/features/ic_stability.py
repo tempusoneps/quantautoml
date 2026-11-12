@@ -23,10 +23,11 @@ def _rolling_rank_ic(
 ) -> NDArray[np.float64]:
     """Column-vectorized equivalent of ``calc_rolling_ic`` -> shape ``(n // window, p)``.
 
-    Columns without NaN inside a window's valid-label rows are ranked together
-    (Spearman = Pearson of average ranks); any other column falls back to
-    ``calc_rolling_ic`` on that window, so semantics (pairwise NaN masking,
-    degenerate window -> NaN) are identical to the reference.
+    Columns whose values are all finite inside a window's valid-label rows are
+    ranked together (Spearman = Pearson of average ranks). Any column with NaN or
+    +-inf there, and every column of a window whose valid labels contain +-inf,
+    falls back to ``calc_rolling_ic`` on that window, so semantics (pairwise NaN
+    masking, degenerate window -> NaN, inf handling) are identical to the reference.
     """
     n, p = X.shape
     n_windows = n // window
@@ -37,7 +38,7 @@ def _rolling_rank_ic(
         ys = np.asarray(y[sl], dtype=np.float64)
         y_ok = ~np.isnan(ys)
         xv, yv = xs[y_ok], ys[y_ok]
-        fast = ~np.isnan(xv).any(axis=0)
+        fast = np.isfinite(xv).all(axis=0) & bool(np.isfinite(yv).all())
         for j in np.nonzero(~fast)[0]:
             out[i, j] = calc_rolling_ic(X[sl, j], y[sl], window)[0]
         if yv.size < _MIN_PAIRS or np.ptp(yv) == 0.0 or not fast.any():
