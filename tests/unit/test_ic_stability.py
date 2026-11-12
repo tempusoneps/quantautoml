@@ -7,6 +7,7 @@ from collections.abc import Iterator
 import numpy as np
 import pytest
 from numpy.typing import NDArray
+from scipy.stats import ConstantInputWarning
 
 from quantautoml.common.config import FeaturesConfig
 from quantautoml.common.exceptions import FeatureSelectionError, InvalidDataError
@@ -85,6 +86,17 @@ def test_pure_noise_kept_fraction_at_most_5pct() -> None:
     f = _fit(cols, aux)
     elapsed = time.perf_counter() - t0
     assert len(f.output_names_) / 500 <= 0.05
+    # Pin BH itself (not a raw p <= alpha threshold): columns that a raw 5% test would
+    # accept but BH rejects must be dropped with an "fdr" reason. Must be non-vacuous.
+    names = list(f.p_values_)
+    p = np.array([f.p_values_[n] for n in names])
+    bh = apply_fdr_correction(p, 0.05)
+    raw_only = [n for n, pv, ok in zip(names, p, bh, strict=True) if pv <= 0.05 and not ok]
+    assert len(raw_only) >= 5
+    assert f.report_ is not None
+    for n in raw_only:
+        assert n not in f.output_names_
+        assert "fdr" in f.report_.dropped[n]
     assert f.report_ is not None and f.report_.n_in == 500
     assert f.report_.n_out == len(f.output_names_)
     assert elapsed < 5.0
@@ -193,15 +205,26 @@ def test_aux_nan_tail_masked_pairwise() -> None:
 def test_rolling_rank_ic_matches_reference() -> None:
     rng = np.random.default_rng(12)
     n = 63 * 5 + 10
-    X = rng.normal(size=(n, 4)).astype(np.float32)
+    X = rng.normal(size=(n, 6)).astype(np.float32)
     lab = (0.5 * X[:, 0] + rng.normal(size=n)).astype(np.float32)
     lab[-30:] = np.nan
     X[5:20, 1] = np.nan  # NaN in a feature
     X[63:126, 2] = 1.0  # constant window -> NaN window IC
     X[:, 3] = np.round(X[:, 3])  # heavy ties
-    got = _rolling_rank_ic(X, lab, 63)
-    for j in range(4):
-        ref = calc_rolling_ic(X[:, j], lab, 63)
+    X[:, 4] = rng.normal(size=n)
+    X[:63, 4] = np.inf  # all-inf window (reference -> 0.0 IC, not NaN)
+    X[:, 5] = rng.normal(size=n)
+    X[70:75, 5] = -np.inf  # partial -inf
+    X[200:210, 5] = np.inf
+    lab[130:133] = np.inf  # +inf in labels of window 2
+    # On an all-inf window metrics.ic itself (pre-existing, out of scope) emits a numpy
+    # 'invalid value' from np.ptp and a scipy ConstantInputWarning before returning 0.0;
+    # silence only those two for this equivalence check.
+    with np.errstate(invalid="ignore"), warnings.catch_warnings():
+        warnings.simplefilter("ignore", ConstantInputWarning)
+        got = _rolling_rank_ic(X, lab, 63)
+        refs = [calc_rolling_ic(X[:, j], lab, 63) for j in range(6)]
+    for j, ref in enumerate(refs):
         np.testing.assert_allclose(got[:, j], ref, rtol=1e-10, atol=1e-12, equal_nan=True)
 
 
