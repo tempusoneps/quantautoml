@@ -52,7 +52,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 ## Execution Order Overview
 
 - [x] **Task 1:** Dependencies (`scipy`, `scikit-learn`, `dcor`), exceptions & `FeaturesConfig`.
-- [ ] **Task 2:** `metrics/ic.py` — Rank IC, Rolling IC, ICIR.
+- [x] **Task 2:** `metrics/ic.py` — Rank IC, Rolling IC, ICIR.
 - [ ] **Task 3:** `metrics/fdr.py` — Benjamini-Hochberg.
 - [ ] **Task 4:** `features/base.py` — `BaseFeatureFilter` & `FilterReport`.
 - [ ] **Task 5:** F1 `triage.py` — NaN/Inf Triage & MI score.
@@ -88,7 +88,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 ---
 
-### [ ] Task 2: Rank IC, Rolling IC & ICIR
+### [x] Task 2: Rank IC, Rolling IC & ICIR
 
 **Files:**
 - Create: `src/quantautoml/metrics/__init__.py`, `src/quantautoml/metrics/ic.py`
