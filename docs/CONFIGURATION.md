@@ -57,6 +57,8 @@ min_cv = 1e-6
 max_peak_var_ratio = 50.0
 max_features = 30
 monotonic_tolerance = 0.05
+mi_floor = 0.0              # F6: ngưỡng hiệu ứng (nats) cộng thêm trên kiểm định chi2-0.99
+synergy_delta = 0.01        # F6: interaction gain tối thiểu (nats) sau hiệu chỉnh bias
 
 [features.ic_horizons]
 1 = "fwd_ret_1"
@@ -64,5 +66,10 @@ monotonic_tolerance = 0.05
 10 = "fwd_ret_10"
 21 = "fwd_ret_21"
 ```
+
+| Khóa (F6) | Mặc định | Ràng buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `features.mi_floor` | `0.0` | `>= 0` | Giữ feature nếu MI tốt nhất theo regime **đã hiệu chỉnh** `max(0, I - chi2.ppf(0.99, df)/(2 n_r))` lớn hơn **nghiêm ngặt** (`>`) ngưỡng này. `0.0` = "có ý nghĩa thống kê ở mức 1% trong ít nhất một regime"; giá trị dương là ngưỡng effect size bổ sung. |
+| `features.synergy_delta` | `0.01` | `>= 0` | Cặp (Xi, Xj) là synergistic nếu `I(Xi,Xj;Y) - I(Xi;Y) - I(Xj;Y) - chi2.ppf(0.99, (Bi-1)(Bj-1)(C-1))/(2N) > synergy_delta`; hai feature của cặp được giữ dù không qua gate MI. |
 
 Khi có `[features]`, `run_pipeline` fit `FeatureFunnel` (F1 → F2 → F3+7 → F4 → F5 → F6 → F8) chỉ trên Train và ghi thêm vào `out_dir`: `funnel_report.json` (danh sách 7 báo cáo theo thứ tự tầng, mỗi phần tử gồm `stage`, `n_in`, `n_out`, `dropped` {tên: lý do}, `notes`; tầng bị bỏ qua vì hết feature có `n_in = n_out = 0` và note `"skipped: no features left"`) và `selected_features.json` (`{"selected_features": [...]}`). Các file `*.npz` của segment vẫn chứa X chưa lọc; thiếu `[features]` thì output giống hệt Phase 1. Task `unsupervised` cùng `[features]` → `InvalidDataError`.

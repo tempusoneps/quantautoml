@@ -125,11 +125,11 @@ def test_bear_only_signal_kept_and_pure_noise_dropped() -> None:
     bear = regime == -1
     assert bear.sum() > 300
     signal = np.where(bear, y + 0.3 * _noise(1), _noise(2))
-    # pure noise: N=3000, seed 3; best per-regime 5-bin MI stays well below mi_floor
+    # pure noise: N=3000, seed 3; best per-regime corrected MI does not exceed mi_floor
     f = _fit({"noise": _noise(3), "bear_sig": signal}, y)
     mi_bear = f.mi_by_regime_["bear_sig"]
-    assert mi_bear[-1] > 0.2 and max(mi_bear[1], mi_bear[0]) < f.mi_floor
-    assert max(f.mi_by_regime_["noise"].values()) < f.mi_floor
+    assert mi_bear[-1] > 0.2 and max(mi_bear[1], mi_bear[0]) <= f.mi_floor
+    assert max(f.mi_by_regime_["noise"].values()) <= f.mi_floor
     assert f.synergy_pairs_ == ()
     assert f.output_names_ == ("bear_sig",)
     assert f.report_ is not None and f.report_.n_in == 2 and f.report_.n_out == 1
@@ -141,7 +141,7 @@ def test_xor_pair_protected_by_synergy() -> None:
     y = (x1 * x2 > 0).astype(np.int32)
     f = _fit({"x1": x1, "noise": _noise(12), "x2": x2}, y)
     for nm in ("x1", "x2"):
-        assert max(f.mi_by_regime_[nm].values()) < f.mi_floor  # alone: MI ~ 0
+        assert max(f.mi_by_regime_[nm].values()) <= f.mi_floor  # alone: not significant
     assert f.synergy_pairs_ == (("x1", "x2"),)
     assert f.output_names_ == ("x1", "x2")
     assert f.report_ is not None and set(f.report_.dropped) == {"noise"}
@@ -199,7 +199,7 @@ def test_strong_signal_only_in_small_regime_kept(monkeypatch: pytest.MonkeyPatch
     sig = np.where(fixed == -1, y + 0.3 * _noise(700), _noise(701))
     f = _fit({"sig": sig, "const": np.full(N, 3.0)}, y)
     mi = f.mi_by_regime_["sig"]
-    assert mi[-1] > 0.2 and max(mi[1], mi[0]) < f.mi_floor
+    assert mi[-1] > 0.2 and max(mi[1], mi[0]) <= f.mi_floor
     assert f.output_names_ == ("sig",)
 
 
@@ -310,3 +310,77 @@ def test_constructor_rejects_bad_thresholds() -> None:
         RegimeSynergyFilter(_cfg(), mi_floor=-1.0)
     with pytest.raises(InvalidDataError):
         RegimeSynergyFilter(_cfg(), synergy_delta=-1.0)
+
+
+# --------------------------------------------- significance gate & config thresholds
+
+
+def test_thresholds_come_from_cfg_with_keyword_override() -> None:
+    cfg = FeaturesConfig(
+        ic_horizons={1: LABEL, 5: "fwd_ret_5"}, target_horizon=5, mi_floor=0.02, synergy_delta=0.3
+    )
+    f = RegimeSynergyFilter(cfg)
+    assert (f.mi_floor, f.synergy_delta) == (0.02, 0.3)
+    g = RegimeSynergyFilter(cfg, mi_floor=0.5, synergy_delta=0.0)
+    assert (g.mi_floor, g.synergy_delta) == (0.5, 0.0)
+    d = RegimeSynergyFilter(_cfg())
+    assert (d.mi_floor, d.synergy_delta) == (0.0, 0.01)
+
+
+def test_default_gate_is_strict_significance() -> None:
+    """mi_floor = 0.0 keeps only features whose corrected MI is > 0 (strict inequality).
+
+    A constant column has corrected MI exactly 0.0 in every regime; with ``>=`` it would
+    pass the default gate (as would every feature), with ``>`` it is dropped.
+    """
+    y = _y()
+    f = _fit({"const": np.full(N, 2.0), "sig": y + 0.5 * _noise(90)}, y)
+    assert f.mi_floor == 0.0
+    assert all(v == 0.0 for v in f.mi_by_regime_["const"].values())
+    assert f.output_names_ == ("sig",)
+    assert f.report_ is not None and "mi_floor" in f.report_.dropped["const"]
+
+
+def test_realistic_ic_010_signals_kept() -> None:
+    """Five iid signals with Rank IC ~0.10 vs the forward return, binary y, N = 9,000.
+
+    ``r = b * sum(s_k) + e`` with ``b / sqrt(5 b^2 + 1) = 0.10``; y = 1[r > 0]; the h=1
+    column is ``r`` (regimes from its past). The integration signals use corr 0.30, whose
+    per-regime MI (~0.03 nats) clears any floor, so they could not reveal that the old
+    fixed 0.01-nat floor dropped every signal at IC <= 0.15 (0/5 at IC 0.10).
+    """
+    ic = 0.10
+    b = np.sqrt(ic**2 / (1.0 - 5.0 * ic**2))
+    rng = np.random.default_rng(910)
+    n = 9000
+    S = rng.normal(size=(n, 5))
+    r = (S @ np.full(5, b) + rng.normal(size=n)).astype(np.float32)
+    y = (r > 0).astype(np.int32)
+    cols = {f"s{k}": S[:, k] for k in range(5)}
+    f = RegimeSynergyFilter(_cfg()).fit(
+        S.astype(np.float32), y, _ctx(tuple(cols), aux={LABEL: r})
+    )
+    assert len(f.output_names_) >= 4
+
+
+@pytest.mark.parametrize("n_classes", [2, 3])
+def test_noise_small_n_dropped_and_no_spurious_synergy(n_classes: int) -> None:
+    """Aggregate check (fixed seeds): pure noise at N = 1,000, 8 fits x 30 features.
+
+    Of the 240 features <= 5% are kept and of the 3,480 candidate pairs <= 1% are flagged
+    as synergistic. Before the synergy gain was bias-corrected this kept 240/240 (808 /
+    3,335 spurious pairs, binary / 3-class).
+    """
+    n, p, fits = 1000, 30, 8
+    kept = pairs = 0
+    for s in range(fits):
+        rng = np.random.default_rng(3000 + 10 * n_classes + s)
+        Z = rng.normal(size=(n, p))
+        y = rng.integers(0, n_classes, n).astype(np.int32)
+        names = tuple(f"z{j}" for j in range(p))
+        aux = {LABEL: rng.normal(size=n).astype(np.float32)}
+        f = RegimeSynergyFilter(_cfg()).fit(Z.astype(np.float32), y, _ctx(names, aux=aux))
+        kept += len(f.output_names_)
+        pairs += len(f.synergy_pairs_)
+    assert kept / (fits * p) <= 0.05
+    assert pairs / (fits * p * (p - 1) // 2) <= 0.01

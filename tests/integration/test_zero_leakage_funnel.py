@@ -250,7 +250,8 @@ def test_bh_fdr_end_to_end_noise_rejected_signals_kept(
       * F5: their rolling-IC series are nearly uncorrelated -> distance ~ 1 > 0.30,
         each signal is its own cluster.
       * F6: MI(5-bin s_i, y_dir) ~ 0.02 nats in every regime (signals are iid,
-        independent of the past-return regime) > mi_floor 0.01 + chi2 null.
+        independent of the past-return regime) >> the chi2-0.99 null, so the corrected
+        regime MI > mi_floor (default 0.0).
       * F8: <= 30 survivors -> all kept.
     Noise columns have |ICIR| ~ N(0, 0.084): rejected by the ICIR/BH gates.
     """
