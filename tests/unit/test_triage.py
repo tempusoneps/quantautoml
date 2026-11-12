@@ -302,3 +302,28 @@ def test_extra_thresholds_are_keyword_only() -> None:
     assert f.indicator_mi_min == 0.02 and f.mar_corr_min == 0.4
     with pytest.raises(TypeError):
         NaNInfTriage(_cfg(), 0.02)  # type: ignore[misc]
+
+
+def test_refit_resets_scores_and_missing_kind() -> None:
+    y = _labels()
+    rng = np.random.default_rng(19)
+    f = NaNInfTriage(_cfg())
+    X1 = rng.normal(size=(N, 2)).astype(np.float32)
+    f.fit(X1, y, _ctx(("a", "b")))
+    X2 = np.column_stack([_signal(y)]).astype(np.float32)
+    f.fit(X2, y, _ctx(("c",)))
+    assert set(f.scores_) == {"c"}
+    assert set(f.missing_kind_) == set(f.scores_) == {"c"}
+    assert f.output_names_ == ("c",)
+
+
+def test_all_columns_gated_yields_empty_output() -> None:
+    y = _labels()
+    X = np.column_stack(
+        [np.full(N, np.nan), _with_nan_ratio(np.ones(N, dtype=np.float32), 0.7, 20)]
+    ).astype(np.float32)
+    f = _fit(X, y, ("x", "z"))
+    assert f.output_names_ == () and f.report_.n_out == 0
+    assert f.scores_ == {} and f.missing_kind_ == {}
+    out = f.transform(X)
+    assert out.shape == (N, 0) and out.dtype == np.float32
