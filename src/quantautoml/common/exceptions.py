@@ -15,3 +15,7 @@ class TimestampAlignmentError(QuantAutoMLError):
 
 class DataLeakageError(QuantAutoMLError):
     """A look-ahead leakage invariant was violated (RULE-01)."""
+
+
+class FeatureSelectionError(QuantAutoMLError):
+    """Feature funnel cannot be fit or applied (e.g. unfitted filter, empty result)."""

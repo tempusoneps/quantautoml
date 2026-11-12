@@ -74,3 +74,51 @@ def test_unknown_key_is_rejected(write_toml, valid_toml: str) -> None:
 def test_missing_file_raises_file_not_found(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError):
         load_config(tmp_path / "nope.toml")
+
+
+_FEATURES_TOML = (
+    "\n[features]\n"
+    "target_horizon = 5\n"
+    "[features.ic_horizons]\n"
+    '1 = "fwd_ret_1"\n5 = "fwd_ret_5"\n10 = "fwd_ret_10"\n21 = "fwd_ret_21"\n'
+)
+
+
+def test_features_section_parses(write_toml, valid_toml: str) -> None:
+    cfg = load_config(write_toml(valid_toml + _FEATURES_TOML))
+    assert cfg.features is not None
+    assert cfg.features.ic_horizons == {1: "fwd_ret_1", 5: "fwd_ret_5", 10: "fwd_ret_10", 21: "fwd_ret_21"}
+    assert cfg.features.target_horizon == 5
+    assert cfg.features.icir_min == 0.30
+    assert cfg.features.fdr_alpha == 0.05
+    assert cfg.features.rolling_window == 63
+    assert cfg.features.dcor_threshold == 0.85
+    assert cfg.features.cluster_distance == 0.30
+    assert cfg.features.max_nan_ratio == 0.6
+    assert cfg.features.min_unique_ratio == 0.01
+    assert cfg.features.min_cv == 1e-6
+    assert cfg.features.max_peak_var_ratio == 50.0
+    assert cfg.features.max_features == 30
+    assert cfg.features.monotonic_tolerance == 0.05
+
+
+def test_target_horizon_must_be_in_ic_horizons(write_toml, valid_toml: str) -> None:
+    with pytest.raises(pydantic.ValidationError):
+        load_config(write_toml(valid_toml + _FEATURES_TOML.replace("target_horizon = 5", "target_horizon = 7")))
+
+
+def test_missing_features_section_is_none(write_toml, valid_toml: str) -> None:
+    assert load_config(write_toml(valid_toml)).features is None
+
+
+@pytest.mark.parametrize("alpha", ["0", "-0.01", "0.06", "1.0"])
+def test_fdr_alpha_must_be_in_zero_to_005(write_toml, valid_toml: str, alpha: str) -> None:
+    toml = valid_toml + _FEATURES_TOML.replace("target_horizon = 5", f"target_horizon = 5\nfdr_alpha = {alpha}")
+    with pytest.raises(pydantic.ValidationError):
+        load_config(write_toml(toml))
+
+
+def test_feature_selection_error_is_quantautoml_error() -> None:
+    from quantautoml.common.exceptions import FeatureSelectionError, QuantAutoMLError
+
+    assert issubclass(FeatureSelectionError, QuantAutoMLError)
