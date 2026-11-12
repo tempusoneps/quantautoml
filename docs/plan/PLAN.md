@@ -56,7 +56,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 - [x] **Task 3:** `metrics/fdr.py` — Benjamini-Hochberg.
 - [x] **Task 4:** `features/base.py` — `BaseFeatureFilter` & `FilterReport`.
 - [x] **Task 5:** F1 `triage.py` — NaN/Inf Triage & MI score.
-- [ ] **Task 6:** F2 `variance.py` — Multi-Metric Variance.
+- [x] **Task 6:** F2 `variance.py` — Multi-Metric Variance.
 - [ ] **Task 7:** F3+7 `ic_stability.py` — IC Stability + FDR + Term Structure.
 - [ ] **Task 8:** F4 `collinearity.py` — Fast dCor.
 - [ ] **Task 9:** F5 `clustering.py` — IC-Behavior Clustering.
@@ -169,7 +169,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 ---
 
-### [ ] Task 6: F2 — Multi-Metric Variance Filter
+### [x] Task 6: F2 — Multi-Metric Variance Filter
 
 **Files:**
 - Create: `src/quantautoml/features/variance.py`
