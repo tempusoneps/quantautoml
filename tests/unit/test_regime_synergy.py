@@ -149,15 +149,15 @@ def test_xor_pair_protected_by_synergy() -> None:
 
 def test_mid_nan_labels_masked(monkeypatch: pytest.MonkeyPatch) -> None:
     seen: list[int] = []
-    real = regime_synergy.mutual_info_score
+    real = regime_synergy.contingency_mi
 
-    def spy(a: None, b: None, *, contingency: NDArray[np.int64]) -> float:
-        assert a is None and b is None
-        assert contingency.shape[1] == 2  # classes {0, 1}: label -1 is not a class
-        seen.append(int(contingency.sum()))
-        return float(real(a, b, contingency=contingency))
+    def spy(a: NDArray[np.intp], na: int, yc: NDArray[np.intp], nc: int) -> float:
+        assert nc == 2 and set(np.unique(yc).tolist()) <= {0, 1}  # -1 is not a class
+        assert a.size == yc.size
+        seen.append(int(yc.size))
+        return real(a, na, yc, nc)
 
-    monkeypatch.setattr(regime_synergy, "mutual_info_score", spy)
+    monkeypatch.setattr(regime_synergy, "contingency_mi", spy)
     y = _y()
     y[:200] = -1
     _fit({"a": _noise(20), "b": _noise(21)}, y)

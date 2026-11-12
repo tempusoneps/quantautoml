@@ -7,11 +7,11 @@ from typing import ClassVar
 import numpy as np
 from numpy.typing import NDArray
 from scipy.stats import chi2
-from sklearn.metrics import mutual_info_score
 
 from quantautoml.common.config import FeaturesConfig
 from quantautoml.common.exceptions import InvalidDataError
 from quantautoml.common.types import FilterReport
+from quantautoml.features._binning import contingency_mi, quantile_bin_codes
 from quantautoml.features.base import BaseFeatureFilter, FitContext
 
 _MID_NAN_LABEL = -1
@@ -157,29 +157,6 @@ class RegimeSynergyFilter(BaseFeatureFilter):
             )
         return arr, ""
 
-    @staticmethod
-    def _bins(X: NDArray[np.float32]) -> NDArray[np.intp]:
-        """Per-column 5-quantile bin codes ``0..4``; constant/all-NaN columns -> all 0."""
-        Xc = np.where(np.isfinite(X), X, np.nan).astype(np.float64)
-        codes = np.zeros(Xc.shape, dtype=np.intp)
-        qs = np.linspace(0.0, 1.0, _N_BINS + 1)[1:-1]
-        for j in range(Xc.shape[1]):
-            col = Xc[:, j]
-            nan = np.isnan(col)
-            if nan.all():
-                continue
-            col = np.where(nan, float(np.median(col[~nan])), col)
-            edges = np.unique(np.quantile(col, qs))
-            codes[:, j] = np.searchsorted(edges, col, side="right")
-        return codes
-
-    @staticmethod
-    def _contingency(
-        a: NDArray[np.intp], na: int, yc: NDArray[np.intp], nc: int
-    ) -> NDArray[np.int64]:
-        """Dense ``(na, nc)`` count table of codes ``a`` vs class codes ``yc``."""
-        return np.bincount(a * nc + yc, minlength=na * nc).reshape(na, nc).astype(np.int64)
-
     def _pass_through(self, names: tuple[str, ...], note: str) -> None:
         self._keep_idx = np.arange(len(names), dtype=np.intp)
         self.output_names_ = names
@@ -200,15 +177,12 @@ class RegimeSynergyFilter(BaseFeatureFilter):
         rows = y != _MID_NAN_LABEL
         classes, yc = np.unique(y[rows], return_inverse=True)
         nc = max(int(classes.size), 1)
-        # MI via mutual_info_score on a precomputed contingency (skips per-call validation)
+
         def mi(a: NDArray[np.intp], na: int, sel: NDArray[np.bool_] | None = None) -> float:
-            ct = self._contingency(a, na, yc if sel is None else yc[sel], nc)
-            if (ct.sum(axis=1) > 0).sum() < 2 or (ct.sum(axis=0) > 0).sum() < 2:
-                return 0.0  # a single non-empty bin or class: MI is exactly 0
-            return float(mutual_info_score(None, None, contingency=ct))
+            return contingency_mi(a, na, yc if sel is None else yc[sel], nc)
 
         regime = label_regimes(ret, window=self.cfg.rolling_window)[rows]
-        codes = self._bins(X[rows])
+        codes, _ = quantile_bin_codes(X[rows], _N_BINS)
         notes: list[str] = []
         mi_reg: dict[str, dict[int, float]] = {nm: {} for nm in names}
         for r in (1, -1, 0):

@@ -44,6 +44,7 @@ quantautoml/
 │       │   ├── clustering.py         # F5: IC-Behavior Hierarchical Clustering với Max-MI
 │       │   ├── regime_synergy.py     # F6: Regime-Aware MI & Synergistic Pairs Detection
 │       │   ├── jmi.py                # F8: Joint Mutual Information feature selection
+│       │   ├── _binning.py           # Private: quantile bin codes + contingency-table MI (F6, F8)
 │       │   └── funnel.py             # FeatureFunnel pipeline điều phối 7 bộ lọc
 │       ├── models/
 │       │   ├── __init__.py

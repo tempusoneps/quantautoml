@@ -63,20 +63,7 @@ def _fit(
     )
 
 
-# -------------------------------------------------------------- MI primitive
-
-
-def test_contingency_mi_matches_sklearn() -> None:
-    rng = np.random.default_rng(1)
-    for na, nc in ((10, 2), (100, 3), (7, 5)):
-        a = rng.integers(0, na - 2, 3000)  # leaves empty top codes on purpose
-        yc = rng.integers(0, nc, 3000)
-        yc[a < 2] = 0  # dependence
-        got = jmi._mi(a.astype(np.intp), na, yc.astype(np.intp), nc)
-        assert got == pytest.approx(float(mutual_info_score(a, yc)), abs=1e-12)
-    one = np.zeros(50, dtype=np.intp)
-    assert jmi._mi(one, 10, rng.integers(0, 2, 50).astype(np.intp), 2) == 0.0
-    assert jmi._mi(np.empty(0, np.intp), 10, np.empty(0, np.intp), 2) == 0.0
+# ------------------------------- MI on 10 quantile bins (primitive: test_binning.py)
 
 
 def test_marginal_mi_matches_sklearn_on_10_quantile_bins() -> None:
@@ -283,14 +270,14 @@ def test_performance_60_features_20k_rows(monkeypatch: pytest.MonkeyPatch) -> No
     Measured ~0.4-0.5 s locally; the wall-clock bound is only a very generous backstop.
     """
     calls = 0
-    real = jmi._mi
+    real = jmi.contingency_mi
 
     def counting(a: NDArray[np.intp], na: int, yc: NDArray[np.intp], nc: int) -> float:
         nonlocal calls
         calls += 1
         return real(a, na, yc, nc)
 
-    monkeypatch.setattr(jmi, "_mi", counting)
+    monkeypatch.setattr(jmi, "contingency_mi", counting)
     n, p, k = 20_000, 60, 30
     rng = np.random.default_rng(80)
     y = rng.integers(0, 3, n).astype(np.int32)
