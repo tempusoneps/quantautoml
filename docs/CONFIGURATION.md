@@ -36,3 +36,31 @@ Pipeline kiểm tra an toàn: nếu một cột nhãn có số NaN ở cuối l�
 ### Hằng số (không cấu hình)
 
 `STATIC_MIN_ROWS = 10_000`, `MIN_ROWS = 500`, `OOF_N_FOLDS = 5`, tỷ lệ chia 60/10/10/10/10 (5-way) và 80/10/10 (OOF).
+
+
+## Phase 2 — Feature Funnel
+
+Mục `[features]` là tùy chọn; thiếu mục này thì `PipelineConfig.features is None` (tương thích Phase 1).
+`ic_horizons` ánh xạ kỳ hạn -> cột forward-return trong `labels_aux`; `target_horizon` phải là một khóa của `ic_horizons`.
+
+```toml
+[features]
+target_horizon = 5
+icir_min = 0.30             # ICIR(h_target) tối thiểu
+fdr_alpha = 0.05            # Benjamini-Hochberg, miền hợp lệ (0, 0.05] (RULE-08)
+rolling_window = 63
+dcor_threshold = 0.85
+cluster_distance = 0.30     # 1 - |corr(IC_i, IC_j)|
+max_nan_ratio = 0.6
+min_unique_ratio = 0.01
+min_cv = 1e-6
+max_peak_var_ratio = 50.0
+max_features = 30
+monotonic_tolerance = 0.05
+
+[features.ic_horizons]
+1 = "fwd_ret_1"
+5 = "fwd_ret_5"
+10 = "fwd_ret_10"
+21 = "fwd_ret_21"
+```
