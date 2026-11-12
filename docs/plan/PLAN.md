@@ -59,7 +59,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 - [x] **Task 6:** F2 `variance.py` — Multi-Metric Variance.
 - [x] **Task 7:** F3+7 `ic_stability.py` — IC Stability + FDR + Term Structure.
 - [x] **Task 8:** F4 `collinearity.py` — Fast dCor.
-- [ ] **Task 9:** F5 `clustering.py` — IC-Behavior Clustering.
+- [x] **Task 9:** F5 `clustering.py` — IC-Behavior Clustering.
 - [ ] **Task 10:** F6 `regime_synergy.py` — Regime MI & Synergy.
 - [ ] **Task 11:** F8 `jmi.py` — Joint Mutual Information.
 - [ ] **Task 12:** `funnel.py` + wiring vào `pipeline.py` + integration test chống rò rỉ & scalability.
@@ -224,7 +224,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 ---
 
-### [ ] Task 9: F5 — IC-Behavior Hierarchical Clustering
+### [x] Task 9: F5 — IC-Behavior Hierarchical Clustering
 
 **Files:**
 - Create: `src/quantautoml/features/clustering.py`
