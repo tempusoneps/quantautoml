@@ -6,6 +6,7 @@ from typing import ClassVar
 
 import numpy as np
 from numpy.typing import NDArray
+from scipy.stats import chi2
 from sklearn.metrics import mutual_info_score
 
 from quantautoml.common.config import FeaturesConfig
@@ -19,6 +20,7 @@ _N_BINS = 5
 _MIN_REGIME_SAMPLES = 50
 _TOP_K_SYNERGY = 30
 _MIN_SIGMA_OBS = 2
+_NULL_QUANTILE = 0.99
 _REGIME_NAMES: dict[int, str] = {1: "Bull", -1: "Bear", 0: "Sideways"}
 
 
@@ -81,18 +83,27 @@ class RegimeSynergyFilter(BaseFeatureFilter):
     (all columns kept, reason in ``report_.notes``). MI is the plug-in
     ``mutual_info_score`` (nats) on 5 quantile bins (edges from the Train rows with
     ``y != -1``; +-inf -> NaN, NaN imputed with the Train median); rows with ``y == -1``
-    are masked. ``mi_by_regime_[name][r]`` is the MI with ``y`` inside regime ``r``;
-    regimes with < 50 valid rows are skipped and noted. If every regime is skipped the
-    MI gate keeps all columns (noted). Synergy is checked among the top-30 features by
-    overall MI: ``I(Xi,Xj;Y) - I(Xi;Y) - I(Xj;Y) > synergy_delta`` with the joint label
-    ``bin_i * 5 + bin_j``. A feature is kept iff its best regime MI ``>= mi_floor`` or it
-    is in ``synergy_pairs_``. ``output_names_`` keeps the original column order;
-    transform only selects columns.
+    are masked. ``mi_by_regime_[name][r]`` is the *size-corrected* MI with ``y`` inside
+    regime ``r``: ``max(0, I_plugin - chi2.ppf(0.99, df) / (2 n_r))`` with
+    ``df = (B_eff - 1)(C_eff - 1)``, ``B_eff`` the non-empty bins of the feature and
+    ``C_eff`` the classes of ``y`` present in that regime. Since ``2 n_r I_plugin`` is the
+    G-statistic (~ chi2(df) under independence), this removes the plug-in bias *and* its
+    null spread, so noise in a small regime (the max over regimes is the gate) does not
+    clear ``mi_floor``; a plain Miller-Madow ``df / (2 n_r)`` term was measured to still
+    keep ~21% (binary) / ~32% (3-class) of noise at ``n_r = 100``. Regimes with < 50
+    valid rows are skipped and noted. If every regime is skipped the MI gate keeps all
+    columns (noted). Synergy is checked among the top-30 features by uncorrected overall
+    MI: ``I(Xi,Xj;Y) - I(Xi;Y) - I(Xj;Y) > synergy_delta`` with the joint label
+    ``bin_i * 5 + bin_j``; it uses the full Train sample, so its plug-in bias
+    (~``16 (C-1) / (2N)``: 0.0027 binary / 0.0053 3-class at N=3000) stays below
+    ``synergy_delta`` but is not corrected (a few spurious 3-class pairs can occur). The top-30 cap
+    (spec-mandated O(K^2) bound) can miss XOR-type pairs, whose members have ~0 marginal
+    MI, when more than 30 features carry marginal signal. A feature is kept iff its best
+    corrected regime MI ``>= mi_floor`` or it is in ``synergy_pairs_``.
+    ``output_names_`` keeps the original column order; transform only selects columns.
 
     Args:
-        mi_floor: minimum best-regime MI (nats). Default 0.01 sits well above the
-            plug-in bias ``(5-1)(C-1)/(2 n_r)`` of a pure-noise binary feature in a
-            regime of a few hundred rows.
+        mi_floor: minimum best corrected regime MI (nats), default 0.01.
         synergy_delta: minimum interaction information (nats), default 0.01.
 
     Raises:
@@ -146,6 +157,13 @@ class RegimeSynergyFilter(BaseFeatureFilter):
             codes[:, j] = np.searchsorted(edges, col, side="right")
         return codes
 
+    @staticmethod
+    def _contingency(
+        a: NDArray[np.intp], na: int, yc: NDArray[np.intp], nc: int
+    ) -> NDArray[np.int64]:
+        """Dense ``(na, nc)`` count table of codes ``a`` vs class codes ``yc``."""
+        return np.bincount(a * nc + yc, minlength=na * nc).reshape(na, nc).astype(np.int64)
+
     def _pass_through(self, names: tuple[str, ...], note: str) -> None:
         self._keep_idx = np.arange(len(names), dtype=np.intp)
         self.output_names_ = names
@@ -164,7 +182,15 @@ class RegimeSynergyFilter(BaseFeatureFilter):
             return
 
         rows = y != _MID_NAN_LABEL
-        yv = y[rows]
+        classes, yc = np.unique(y[rows], return_inverse=True)
+        nc = max(int(classes.size), 1)
+        # MI via mutual_info_score on a precomputed contingency (skips per-call validation)
+        def mi(a: NDArray[np.intp], na: int, sel: NDArray[np.bool_] | None = None) -> float:
+            ct = self._contingency(a, na, yc if sel is None else yc[sel], nc)
+            if (ct.sum(axis=1) > 0).sum() < 2 or (ct.sum(axis=0) > 0).sum() < 2:
+                return 0.0  # a single non-empty bin or class: MI is exactly 0
+            return float(mutual_info_score(None, None, contingency=ct))
+
         regime = label_regimes(ret, window=self.cfg.rolling_window)[rows]
         codes = self._bins(X[rows])
         notes: list[str] = []
@@ -178,21 +204,25 @@ class RegimeSynergyFilter(BaseFeatureFilter):
                     f"< {_MIN_REGIME_SAMPLES}: skipped"
                 )
                 continue
+            c_eff = int(np.unique(yc[m]).size)
             for j, nm in enumerate(names):
-                mi_reg[nm][r] = float(mutual_info_score(codes[m, j], yv[m]))
+                cm = codes[m, j]
+                df = (int(np.unique(cm).size) - 1) * (c_eff - 1)
+                null = float(chi2.ppf(_NULL_QUANTILE, df)) / (2 * cnt) if df > 0 else 0.0
+                mi_reg[nm][r] = max(0.0, mi(cm, _N_BINS, m) - null)
         evaluated = p > 0 and any(mi_reg[nm] for nm in names)
         if p > 0 and not evaluated:
             notes.append("no regime has enough samples: MI gate keeps all features")
 
         overall = np.asarray(
-            [float(mutual_info_score(codes[:, j], yv)) for j in range(p)], dtype=np.float64
+            [mi(codes[:, j], _N_BINS) for j in range(p)], dtype=np.float64
         )
         top = sorted(sorted(range(p), key=lambda j: (-overall[j], j))[:_TOP_K_SYNERGY])
         pairs: list[tuple[int, int]] = []
         for a, i in enumerate(top):
             for j in top[a + 1 :]:
                 joint = codes[:, i] * _N_BINS + codes[:, j]
-                gain = float(mutual_info_score(joint, yv)) - overall[i] - overall[j]
+                gain = mi(joint, _N_BINS * _N_BINS) - overall[i] - overall[j]
                 if gain > self.synergy_delta:
                     pairs.append((i, j))
         protected = {k for pair in pairs for k in pair}
