@@ -64,3 +64,5 @@ monotonic_tolerance = 0.05
 10 = "fwd_ret_10"
 21 = "fwd_ret_21"
 ```
+
+Khi có `[features]`, `run_pipeline` fit `FeatureFunnel` (F1 → F2 → F3+7 → F4 → F5 → F6 → F8) chỉ trên Train và ghi thêm vào `out_dir`: `funnel_report.json` (danh sách 7 báo cáo theo thứ tự tầng, mỗi phần tử gồm `stage`, `n_in`, `n_out`, `dropped` {tên: lý do}, `notes`; tầng bị bỏ qua vì hết feature có `n_in = n_out = 0` và note `"skipped: no features left"`) và `selected_features.json` (`{"selected_features": [...]}`). Các file `*.npz` của segment vẫn chứa X chưa lọc; thiếu `[features]` thì output giống hệt Phase 1. Task `unsupervised` cùng `[features]` → `InvalidDataError`.
