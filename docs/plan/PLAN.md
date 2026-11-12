@@ -303,9 +303,9 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 ---
 
 ## Final Verification Checklist
-- [ ] `uv run pytest tests/` đạt 100% PASS (gồm Phase 1 không hồi quy).
-- [ ] Mọi `fit()` chỉ nhận dữ liệu Train (spy test PASS).
-- [ ] BH-FDR: tỷ lệ nhiễu sống sót ≤ 5% (Task 3, 7, 12).
-- [ ] dCor N = 20,000 chạy trong giới hạn thời gian/bộ nhớ, không ma trận N×N (Task 8, 12).
-- [ ] Cấu trúc file đúng [`STRUCTURE.md`](STRUCTURE.md); không import ngược tầng.
-- [ ] Sẵn sàng tích hợp sang Phase 3 (GBDT Tournament): `FeatureFunnel.transform` là đầu vào của `ModelTournament`.
+- [x] `uv run pytest tests/` đạt 100% PASS (gồm Phase 1 không hồi quy).
+- [x] Mọi `fit()` chỉ nhận dữ liệu Train (spy test PASS).
+- [x] BH-FDR: tỷ lệ nhiễu sống sót ≤ 5% (Task 3, 7, 12).
+- [x] dCor N = 20,000 chạy trong giới hạn thời gian/bộ nhớ, không ma trận N×N (Task 8, 12).
+- [x] Cấu trúc file đúng [`STRUCTURE.md`](STRUCTURE.md); không import ngược tầng.
+- [x] Sẵn sàng tích hợp sang Phase 3 (GBDT Tournament): `FeatureFunnel.transform` là đầu vào của `ModelTournament`.

@@ -50,7 +50,7 @@ flowchart LR
 - **Tiêu chí kiểm thử độc lập (Independent Verification):**
   - Kiểm thử xác nhận không có ngoại lệ hoặc data leakage (`fit` chỉ trên Train).
   - Thuật toán dCor chạy nhanh với $N > 10,000$ mà không bị tràn bộ nhớ RAM.
-- **Trạng thái:** In Progress
+- **Trạng thái:** Done
 
 ---
 
@@ -64,7 +64,7 @@ flowchart LR
   - Tournament hoàn thành đúng ngân sách và chọn ra đúng Top Models.
   - Decision Engine fallback về Single Model khi độ tương quan giữa các mô hình quá cao ($> 0.88$).
   - Optuna tự động tỉa sớm (prune) các nhánh kém hiệu quả.
-- **Trạng thái:** Planned.
+- **Trạng thái:** In Progress
 
 ---
 
