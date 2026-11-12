@@ -2,5 +2,6 @@
 
 from quantautoml.features.base import BaseFeatureFilter, FitContext
 from quantautoml.features.triage import NaNInfTriage
+from quantautoml.features.variance import MultiMetricVarianceFilter
 
-__all__ = ["BaseFeatureFilter", "FitContext", "NaNInfTriage"]
+__all__ = ["BaseFeatureFilter", "FitContext", "MultiMetricVarianceFilter", "NaNInfTriage"]
