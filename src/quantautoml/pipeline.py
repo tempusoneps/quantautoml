@@ -1,9 +1,14 @@
-"""Pipeline: runs every implemented stage (currently ingestion -> task inference -> split); later stages are skipped until implemented."""
+"""Pipeline: runs every implemented stage; later stages are skipped until implemented.
+
+Stages: ingestion -> task inference -> split -> (only when ``cfg.features`` is set)
+FeatureFunnel fitted on Train, which adds ``funnel_report.json`` and
+``selected_features.json`` to ``out_dir``. Segment ``.npz`` files keep the unfiltered X.
+"""
 
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import numpy as np
@@ -12,12 +17,14 @@ from quantautoml.common.config import PipelineConfig, load_config
 from quantautoml.common.types import Dataset, Segment, SplitResult
 from quantautoml.data.ingestion import DataIngestion
 from quantautoml.data.splitter import AdaptiveTimeSeriesSplitter
+from quantautoml.features.funnel import FeatureFunnel
 
 
 @dataclass(frozen=True)
 class PipelineResult:
     dataset: Dataset
     split: SplitResult
+    funnel: FeatureFunnel | None = None
 
 
 def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> PipelineResult:
@@ -43,10 +50,19 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
         segments |= {"cal_a": split.cal_a, "cal_b": split.cal_b}
     for name, seg in segments.items():
         _save_segment(out / f"{name}.npz", seg)
-    return PipelineResult(dataset, split)
+
+    funnel: FeatureFunnel | None = None
+    if cfg.features is not None:
+        funnel = FeatureFunnel(cfg.features).fit(split, dataset)
+        _dump_json(out / "funnel_report.json", [asdict(r) for r in funnel.reports_])
+        _dump_json(
+            out / "selected_features.json",
+            {"selected_features": list(funnel.selected_features_)},
+        )
+    return PipelineResult(dataset, split, funnel)
 
 
-def _dump_json(path: Path, payload: dict[str, object]) -> None:
+def _dump_json(path: Path, payload: dict[str, object] | list[dict[str, object]]) -> None:
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
