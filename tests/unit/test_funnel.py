@@ -243,3 +243,16 @@ def test_transform_wrong_width_raises(fitted) -> None:
     funnel, split, _ = fitted
     with pytest.raises(FeatureSelectionError):
         funnel.transform(replace(split.val, X=split.val.X[:, :3]))
+
+
+def test_f6_thresholds_passed_from_cfg(fitted) -> None:
+    _, split, ds = fitted
+    cfg = FeaturesConfig(
+        ic_horizons=_cfg().ic_horizons, target_horizon=1, mi_floor=10.0, synergy_delta=10.0
+    )
+    funnel = FeatureFunnel(cfg).fit(split, ds)
+    f6, f8 = funnel.reports_[5], funnel.reports_[6]
+    assert f6.n_in >= 1 and f6.n_out == 0
+    assert all("mi_floor 10" in why for why in f6.dropped.values())
+    assert (f8.n_in, f8.n_out) == (0, 0) and f8.notes == ("skipped: no features left",)
+    assert funnel.selected_features_ == ()

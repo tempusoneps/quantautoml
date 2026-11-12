@@ -42,6 +42,8 @@ class FeaturesConfig(_Strict):
     max_peak_var_ratio: float = Field(default=50.0, gt=0.0)
     max_features: int = Field(default=30, ge=1)
     monotonic_tolerance: float = Field(default=0.05, ge=0.0)
+    mi_floor: float = Field(default=0.0, ge=0.0)
+    synergy_delta: float = Field(default=0.01, ge=0.0)
 
     @model_validator(mode="after")
     def _target_in_horizons(self) -> Self:

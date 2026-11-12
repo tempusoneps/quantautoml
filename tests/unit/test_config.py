@@ -122,3 +122,24 @@ def test_feature_selection_error_is_quantautoml_error() -> None:
     from quantautoml.common.exceptions import FeatureSelectionError, QuantAutoMLError
 
     assert issubclass(FeatureSelectionError, QuantAutoMLError)
+
+
+def test_f6_thresholds_defaults(write_toml, valid_toml: str) -> None:
+    cfg = load_config(write_toml(valid_toml + _FEATURES_TOML))
+    assert cfg.features is not None
+    assert cfg.features.mi_floor == 0.0
+    assert cfg.features.synergy_delta == 0.01
+
+
+def test_f6_thresholds_parse(write_toml, valid_toml: str) -> None:
+    extra = "target_horizon = 5\nmi_floor = 0.002\nsynergy_delta = 0.05"
+    cfg = load_config(write_toml(valid_toml + _FEATURES_TOML.replace("target_horizon = 5", extra)))
+    assert cfg.features is not None
+    assert (cfg.features.mi_floor, cfg.features.synergy_delta) == (0.002, 0.05)
+
+
+@pytest.mark.parametrize("key", ["mi_floor", "synergy_delta"])
+def test_f6_thresholds_must_be_non_negative(write_toml, valid_toml: str, key: str) -> None:
+    toml = valid_toml + _FEATURES_TOML.replace("target_horizon = 5", f"target_horizon = 5\n{key} = -0.001")
+    with pytest.raises(pydantic.ValidationError):
+        load_config(write_toml(toml))

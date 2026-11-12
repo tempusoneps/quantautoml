@@ -80,31 +80,41 @@ class RegimeSynergyFilter(BaseFeatureFilter):
 
     Regimes come from ``label_regimes(labels_aux[cfg.ic_horizons[1]], cfg.rolling_window)``.
     If horizon 1 is not configured or its column is absent the filter is a pass-through
-    (all columns kept, reason in ``report_.notes``). MI is the plug-in
-    ``mutual_info_score`` (nats) on 5 quantile bins (edges from the Train rows with
-    ``y != -1``; +-inf -> NaN, NaN imputed with the Train median); rows with ``y == -1``
-    are masked. ``mi_by_regime_[name][r]`` is the *size-corrected* MI with ``y`` inside
-    regime ``r``: ``max(0, I_plugin - chi2.ppf(0.99, df) / (2 n_r))`` with
-    ``df = (B_eff - 1)(C_eff - 1)``, ``B_eff`` the non-empty bins of the feature and
+    (all columns kept, reason in ``report_.notes``). MI is the plug-in contingency MI
+    (nats) on 5 quantile bins (edges from the Train rows with ``y != -1``; +-inf -> NaN,
+    NaN imputed with the Train median); rows with ``y == -1`` are masked.
+
+    Regime gate (significance test). ``mi_by_regime_[name][r]`` is the *size-corrected*
+    MI with ``y`` inside regime ``r``: ``max(0, I_plugin - chi2.ppf(0.99, df) / (2 n_r))``
+    with ``df = (B_eff - 1)(C_eff - 1)``, ``B_eff`` the non-empty bins of the feature and
     ``C_eff`` the classes of ``y`` present in that regime. Since ``2 n_r I_plugin`` is the
-    G-statistic (~ chi2(df) under independence), this removes the plug-in bias *and* its
-    null spread, so noise in a small regime (the max over regimes is the gate) does not
-    clear ``mi_floor``; a plain Miller-Madow ``df / (2 n_r)`` term was measured to still
-    keep ~21% (binary) / ~32% (3-class) of noise at ``n_r = 100``. Regimes with < 50
-    valid rows are skipped and noted. If every regime is skipped the MI gate keeps all
-    columns (noted). Synergy is checked among the top-30 features by uncorrected overall
-    MI: ``I(Xi,Xj;Y) - I(Xi;Y) - I(Xj;Y) > synergy_delta`` with the joint label
-    ``bin_i * 5 + bin_j``; it uses the full Train sample, so its plug-in bias
-    (~``16 (C-1) / (2N)``: 0.0027 binary / 0.0053 3-class at N=3000) stays below
-    ``synergy_delta`` but is not corrected (a few spurious 3-class pairs can occur). The top-30 cap
-    (spec-mandated O(K^2) bound) can miss XOR-type pairs, whose members have ~0 marginal
-    MI, when more than 30 features carry marginal signal. A feature is kept iff its best
-    corrected regime MI ``>= mi_floor`` or it is in ``synergy_pairs_``.
-    ``output_names_`` keeps the original column order; transform only selects columns.
+    G-statistic (~ chi2(df) under independence), the corrected MI is > 0 iff the feature
+    is dependent on ``y`` in that regime at the 1% level; it removes the plug-in bias *and*
+    its null spread, so noise in a small regime (the max over regimes is the gate) is not
+    kept (a plain Miller-Madow ``df / (2 n_r)`` term still kept ~21% / ~32% of noise at
+    ``n_r = 100``). ``mi_floor`` is an *additional* effect-size floor on top of that test:
+    a feature passes iff its best corrected regime MI is ``> mi_floor`` (strict, so the
+    default ``0.0`` means "significant in at least one regime"; with ``>=`` a floor of 0
+    would keep everything). Regimes with < 50 valid rows are skipped and noted; if every
+    regime is skipped the MI gate keeps all columns (noted).
+
+    Synergy gate. Among the top-30 features by uncorrected overall MI (full valid Train
+    sample, ``N`` rows), a pair is synergistic iff the bias-corrected interaction gain
+    ``I(Xi,Xj;Y) - I(Xi;Y) - I(Xj;Y) - chi2.ppf(0.99, df_ij) / (2N) > synergy_delta``,
+    joint label ``bin_i * 5 + bin_j``, ``df_ij = (B_i - 1)(B_j - 1)(C - 1)`` (see
+    ``_fit`` for the derivation). The top-30 cap (spec-mandated O(K^2) bound) can miss
+    XOR-type pairs, whose members have ~0 marginal MI, when more than 30 features carry
+    marginal signal.
+
+    A feature is kept iff its best corrected regime MI ``> mi_floor`` or it is in
+    ``synergy_pairs_``. ``output_names_`` keeps the original column order; transform only
+    selects columns.
 
     Args:
-        mi_floor: minimum best corrected regime MI (nats), default 0.01.
-        synergy_delta: minimum interaction information (nats), default 0.01.
+        cfg: ``mi_floor`` (default 0.0) and ``synergy_delta`` (default 0.01, nats) are
+            read from it.
+        mi_floor: optional override of ``cfg.mi_floor``.
+        synergy_delta: optional override of ``cfg.synergy_delta``.
 
     Raises:
         InvalidDataError: negative thresholds, or a misaligned h=1 label column.
@@ -113,9 +123,15 @@ class RegimeSynergyFilter(BaseFeatureFilter):
     name: ClassVar[str] = "f6_regime_synergy"
 
     def __init__(
-        self, cfg: FeaturesConfig, *, mi_floor: float = 0.01, synergy_delta: float = 0.01
+        self,
+        cfg: FeaturesConfig,
+        *,
+        mi_floor: float | None = None,
+        synergy_delta: float | None = None,
     ) -> None:
         super().__init__()
+        mi_floor = cfg.mi_floor if mi_floor is None else mi_floor
+        synergy_delta = cfg.synergy_delta if synergy_delta is None else synergy_delta
         if mi_floor < 0.0 or synergy_delta < 0.0:
             raise InvalidDataError(
                 f"{self.name}: mi_floor={mi_floor} and synergy_delta={synergy_delta} "
@@ -218,11 +234,25 @@ class RegimeSynergyFilter(BaseFeatureFilter):
             [mi(codes[:, j], _N_BINS) for j in range(p)], dtype=np.float64
         )
         top = sorted(sorted(range(p), key=lambda j: (-overall[j], j))[:_TOP_K_SYNERGY])
+        # Null of the interaction gain. With Xi, Xj independent of Y, 2N * I(Xi,Xj;Y) ~
+        # chi2((Bi*Bj - 1)(C - 1)) and 2N * I(Xk;Y) ~ chi2((Bk - 1)(C - 1)); the gain is
+        # the G-statistic of the Y x (Xi,Xj) interaction left after both main effects, so
+        # its df is (Bi*Bj - 1 - (Bi - 1) - (Bj - 1))(C - 1) = (Bi - 1)(Bj - 1)(C - 1)
+        # (mean bias df / (2N); 16 / (2N) binary, 32 / (2N) 3-class at 5 bins). B are the
+        # non-empty bins of each member and C the classes present after the y == -1 mask.
+        # When (Xi, Xj) are dependent some joint cells are empty and the true df is lower,
+        # so this full-table df is conservative (it only removes spurious pairs).
+        n_valid = int(yc.size)
+        b_eff = [int(np.unique(codes[:, j]).size) for j in range(p)]
         pairs: list[tuple[int, int]] = []
         for a, i in enumerate(top):
             for j in top[a + 1 :]:
+                df_ij = (b_eff[i] - 1) * (b_eff[j] - 1) * (nc - 1)
+                if df_ij <= 0:
+                    continue  # a single-bin member or one class: no interaction possible
                 joint = codes[:, i] * _N_BINS + codes[:, j]
                 gain = mi(joint, _N_BINS * _N_BINS) - overall[i] - overall[j]
+                gain -= float(chi2.ppf(_NULL_QUANTILE, df_ij)) / (2 * n_valid)
                 if gain > self.synergy_delta:
                     pairs.append((i, j))
         protected = {k for pair in pairs for k in pair}
@@ -231,11 +261,11 @@ class RegimeSynergyFilter(BaseFeatureFilter):
         dropped: dict[str, str] = {}
         for j, nm in enumerate(names):
             best = max(mi_reg[nm].values(), default=0.0)
-            if not evaluated or best >= self.mi_floor or j in protected:
+            if not evaluated or best > self.mi_floor or j in protected:
                 keep.append(j)
             else:
                 dropped[nm] = (
-                    f"best regime MI {best:.4g} < mi_floor {self.mi_floor:.4g} "
+                    f"best corrected regime MI {best:.4g} <= mi_floor {self.mi_floor:.4g} "
                     "and not in a synergy pair"
                 )
 
