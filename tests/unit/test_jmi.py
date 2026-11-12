@@ -148,23 +148,29 @@ def _xor_member(seed: int, p_pos: float = 0.6) -> NDArray[np.float64]:
 
 
 def test_xor_pair_selected_together() -> None:
-    """y = 1[x1 * x2 > 0] with P(x>0) = 0.6 for both members.
+    """y = 1[lead * partner > 0]; partner's sign is + w.p. 0.75, lead's w.p. 0.5.
 
-    The skew gives each member a small but clear marginal MI
-    (P(y=1 | x1>0) = 0.6 -> ~0.02 nats) so the deterministic first pick is an XOR
-    member, never the pure-noise column; the pair then carries ~ln 2 jointly.
+    The partner's skew gives the *lead* marginal MI (P(y=1 | lead>0) = P(partner>0)
+    = 0.75 -> ~0.13 nats) while the partner alone carries ~0 (P(y=1 | partner>0) =
+    0.5). A distractor ``d = y + 2.5 noise`` has more marginal MI than the partner, so
+    a plain top-2-by-MI selector keeps {lead, d}; JMI keeps {lead, partner} because
+    I(partner, lead; Y) ~ 0.6 nats >> I(d, lead; Y). Fixed seeds; margins asserted.
+
+    Limitation: the first pick is by marginal MI, so for a *pure* XOR (both members
+    ~0 marginal MI) the first slot can go to noise/distractor and greedy JMI may then
+    never recover the pair; this test does not (and cannot) cover that case.
     """
-    x1, x2 = _xor_member(20), _xor_member(21)
-    y = (x1 * x2 > 0).astype(np.int32)
-    cols = {"x1": x1, "noise": _noise(22), "x2": x2}
+    lead, partner = _xor_member(21, p_pos=0.5), _xor_member(20, p_pos=0.75)
+    y = (lead * partner > 0).astype(np.int32)
+    cols = {"d": y + 2.5 * _noise(23), "lead": lead, "noise": _noise(22), "partner": partner}
     f = _fit(cols, y, max_features=2)
-    for nm in ("x1", "x2"):
-        assert 0.005 < f.mi_[nm] < 0.05  # alone: little information
-        assert f.mi_[nm] > 3 * f.mi_["noise"]
-    assert set(f.selected_order_) == {"x1", "x2"}
-    assert f.output_names_ == ("x1", "x2")
-    assert f.report_ is not None and set(f.report_.dropped) == {"noise"}
-    codes = (x1 > 0).astype(np.intp) * 2 + (x2 > 0).astype(np.intp)
+    assert max(f.mi_, key=lambda k: f.mi_[k]) == "lead" and f.mi_["lead"] > 0.1
+    assert f.mi_["partner"] < 0.005  # alone: ~no information
+    assert f.mi_["d"] > 5 * f.mi_["partner"]  # top-2 by MI would pick {lead, d}
+    assert f.selected_order_ == ("lead", "partner")
+    assert f.output_names_ == ("lead", "partner")
+    assert f.report_ is not None and set(f.report_.dropped) == {"d", "noise"}
+    codes = (lead > 0).astype(np.intp) * 2 + (partner > 0).astype(np.intp)
     assert float(mutual_info_score(codes, y)) > 0.6  # the pair is near-deterministic
 
 
@@ -271,15 +277,29 @@ def test_refit_leaves_no_stale_state() -> None:
     assert f.report_.n_in == 1 and f.transform(np.zeros((5, 1), np.float32)).shape == (5, 1)
 
 
-def test_performance_60_features_20k_rows() -> None:
-    n, p = 20_000, 60
+def test_performance_60_features_20k_rows(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Deterministic cost check: exactly p marginal + sum_{t=1}^{k-1} (p - t) joint MIs.
+
+    Measured ~0.4-0.5 s locally; the wall-clock bound is only a very generous backstop.
+    """
+    calls = 0
+    real = jmi._mi
+
+    def counting(a: NDArray[np.intp], na: int, yc: NDArray[np.intp], nc: int) -> float:
+        nonlocal calls
+        calls += 1
+        return real(a, na, yc, nc)
+
+    monkeypatch.setattr(jmi, "_mi", counting)
+    n, p, k = 20_000, 60, 30
     rng = np.random.default_rng(80)
     y = rng.integers(0, 3, n).astype(np.int32)
     Z = rng.normal(size=(n, p)) + 0.05 * np.arange(p)[None, :] % 7 * y[:, None]
     X = Z.astype(np.float32)
     names = tuple(f"f{j}" for j in range(p))
     t0 = time.perf_counter()
-    f = JMIFeatureSelector(_cfg(30)).fit(X, y, _ctx(names))
+    f = JMIFeatureSelector(_cfg(k)).fit(X, y, _ctx(names))
     elapsed = time.perf_counter() - t0
-    assert len(f.selected_order_) == 30 and len(f.output_names_) == 30
-    assert elapsed < 5.0
+    assert len(f.selected_order_) == k and len(f.output_names_) == k
+    assert calls == p + sum(p - t for t in range(1, k))  # 1365: O(F*K), MI cached
+    assert elapsed < 30.0
