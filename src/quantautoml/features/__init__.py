@@ -1,6 +1,7 @@
 """Leakage-free feature filter funnel."""
 
 from quantautoml.features.base import BaseFeatureFilter, FitContext
+from quantautoml.features.clustering import ICBehaviorClusterFilter
 from quantautoml.features.collinearity import FastNonlinearCollinearityFilter, fast_dcor
 from quantautoml.features.ic_stability import ICStabilityFilter
 from quantautoml.features.triage import NaNInfTriage
@@ -10,6 +11,7 @@ __all__ = [
     "BaseFeatureFilter",
     "FastNonlinearCollinearityFilter",
     "FitContext",
+    "ICBehaviorClusterFilter",
     "ICStabilityFilter",
     "MultiMetricVarianceFilter",
     "NaNInfTriage",
