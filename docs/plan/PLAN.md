@@ -62,7 +62,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 - [x] **Task 9:** F5 `clustering.py` — IC-Behavior Clustering.
 - [x] **Task 10:** F6 `regime_synergy.py` — Regime MI & Synergy.
 - [x] **Task 11:** F8 `jmi.py` — Joint Mutual Information.
-- [ ] **Task 12:** `funnel.py` + wiring vào `pipeline.py` + integration test chống rò rỉ & scalability.
+- [x] **Task 12:** `funnel.py` + wiring vào `pipeline.py` + integration test chống rò rỉ & scalability.
 
 ---
 
@@ -280,7 +280,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 ---
 
-### [ ] Task 12: FeatureFunnel, Pipeline Wiring & Integration Tests
+### [x] Task 12: FeatureFunnel, Pipeline Wiring & Integration Tests
 
 **Files:**
 - Create: `src/quantautoml/features/funnel.py`, `tests/integration/test_zero_leakage_funnel.py`
