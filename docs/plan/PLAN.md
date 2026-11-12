@@ -58,7 +58,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 - [x] **Task 5:** F1 `triage.py` — NaN/Inf Triage & MI score.
 - [x] **Task 6:** F2 `variance.py` — Multi-Metric Variance.
 - [x] **Task 7:** F3+7 `ic_stability.py` — IC Stability + FDR + Term Structure.
-- [ ] **Task 8:** F4 `collinearity.py` — Fast dCor.
+- [x] **Task 8:** F4 `collinearity.py` — Fast dCor.
 - [ ] **Task 9:** F5 `clustering.py` — IC-Behavior Clustering.
 - [ ] **Task 10:** F6 `regime_synergy.py` — Regime MI & Synergy.
 - [ ] **Task 11:** F8 `jmi.py` — Joint Mutual Information.
@@ -206,7 +206,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 ---
 
-### [ ] Task 8: F4 — Fast Nonlinear Collinearity (dCor)
+### [x] Task 8: F4 — Fast Nonlinear Collinearity (dCor)
 
 **Files:**
 - Create: `src/quantautoml/features/collinearity.py`
