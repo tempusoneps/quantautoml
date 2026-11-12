@@ -35,7 +35,7 @@ class FeaturesConfig(_Strict):
     fdr_alpha: float = Field(default=0.05, gt=0.0, le=0.05)
     rolling_window: int = Field(default=63, ge=2)
     dcor_threshold: float = Field(default=0.85, gt=0.0, le=1.0)
-    cluster_distance: float = Field(default=0.30, gt=0.0, le=1.0)
+    cluster_distance: float = Field(default=0.30, gt=0.0, lt=1.0)
     max_nan_ratio: float = Field(default=0.6, gt=0.0, le=1.0)
     min_unique_ratio: float = Field(default=0.01, ge=0.0, le=1.0)
     min_cv: float = Field(default=1e-6, ge=0.0)
