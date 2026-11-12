@@ -22,7 +22,8 @@ class MultiMetricVarianceFilter(BaseFeatureFilter):
     ``metrics_[name] = (cv, peak_var_ratio, unique_ratio)`` where
       * ``cv = nanstd / max(|nanmean|, eps)``,
       * ``peak_var_ratio`` = 90th percentile of the rolling variance (window
-        ``cfg.rolling_window``, ddof=0, windows containing NaN ignored) divided by the
+        ``cfg.rolling_window``, ddof=0, NaN entries ignored inside each window, windows with fewer than 2
+        valid values skipped; ``0.0`` if no window qualifies) divided by the
         full-Train variance (``0.0`` if that variance is zero),
       * ``unique_ratio = n_unique / n_valid``.
 
@@ -30,6 +31,11 @@ class MultiMetricVarianceFilter(BaseFeatureFilter):
     ``unique_ratio < min_unique_ratio``), or ``|cv| < min_cv``, or
     ``peak_var_ratio > max_peak_var_ratio``. All-NaN columns are dropped. Transform only
     selects columns.
+
+    Note:
+        The default ``max_peak_var_ratio=50`` is rarely reachable: the 90th percentile of
+        rolling variance is bounded near ~10x the full variance for typical series, so the
+        threshold needs calibration on real data.
 
     Args:
         cfg: Feature config; uses ``min_unique_ratio``, ``min_cv``,
@@ -118,17 +124,18 @@ class MultiMetricVarianceFilter(BaseFeatureFilter):
         s1 = np.vstack([zeros, np.cumsum(Z, axis=0)])
         s2 = np.vstack([zeros, np.cumsum(Z * Z, axis=0)])
         cnt = np.vstack([zeros, np.cumsum(isnan, axis=0, dtype=np.float64)])
+        valid_cnt = window - (cnt[window:] - cnt[:-window])
         w1 = s1[window:] - s1[:-window]
         w2 = s2[window:] - s2[:-window]
-        wn = cnt[window:] - cnt[:-window]
-        roll_var = np.maximum(w2 / window - (w1 / window) ** 2, 0.0)
         full_var = np.zeros(p, dtype=np.float64)
         full_var[has_valid] = np.nanvar(Xd[:, has_valid], axis=0)
         for j in range(p):
-            ok = wn[:, j] == 0.0
+            ok = valid_cnt[:, j] >= 2.0
             if not has_valid[j] or not ok.any() or full_var[j] <= 0.0:
                 continue
-            out[j] = np.percentile(roll_var[ok, j], _PEAK_PERCENTILE) / full_var[j]
+            m = valid_cnt[ok, j]
+            rv = np.maximum(w2[ok, j] / m - (w1[ok, j] / m) ** 2, 0.0)
+            out[j] = np.percentile(rv, _PEAK_PERCENTILE) / full_var[j]
         return out
 
     def _transform(self, X: NDArray[np.float32]) -> NDArray[np.float32]:
