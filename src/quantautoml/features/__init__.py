@@ -4,6 +4,7 @@ from quantautoml.features.base import BaseFeatureFilter, FitContext
 from quantautoml.features.clustering import ICBehaviorClusterFilter
 from quantautoml.features.collinearity import FastNonlinearCollinearityFilter, fast_dcor
 from quantautoml.features.ic_stability import ICStabilityFilter
+from quantautoml.features.jmi import JMIFeatureSelector
 from quantautoml.features.regime_synergy import RegimeSynergyFilter, label_regimes
 from quantautoml.features.triage import NaNInfTriage
 from quantautoml.features.variance import MultiMetricVarianceFilter
@@ -14,6 +15,7 @@ __all__ = [
     "FitContext",
     "ICBehaviorClusterFilter",
     "ICStabilityFilter",
+    "JMIFeatureSelector",
     "MultiMetricVarianceFilter",
     "NaNInfTriage",
     "RegimeSynergyFilter",
