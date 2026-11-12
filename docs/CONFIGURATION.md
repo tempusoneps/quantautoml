@@ -12,7 +12,7 @@ timestamp_col   = "timestamp"
 min_match_ratio = 0.95
 
 [labels]
-selected = "fwd_ret_5"    # cột nhãn mục tiêu; các cột nhãn còn lại → labels_aux
+selected = "y_dir"        # cột nhãn mục tiêu; các cột nhãn còn lại → labels_aux
 
 [split]
 horizon_h = 21            # horizon (số nến) LỚN NHẤT của mọi cột nhãn trong file; >= 1
@@ -42,6 +42,8 @@ Pipeline kiểm tra an toàn: nếu một cột nhãn có số NaN ở cuối l�
 
 Mục `[features]` là tùy chọn; thiếu mục này thì `PipelineConfig.features is None` (tương thích Phase 1).
 `ic_horizons` ánh xạ kỳ hạn -> cột forward-return trong `labels_aux`; `target_horizon` phải là một khóa của `ic_horizons`.
+
+> **Lưu ý:** ingestion loại cột `labels.selected` khỏi `labels_aux`, nên mọi cột trong `ic_horizons` phải là cột forward-return phụ **khác** `labels.selected` (ví dụ `selected = "y_dir"` như ví dụ Phase 1, còn `fwd_ret_1..21` nằm trong file labels). Nếu đặt `selected = "fwd_ret_5"` đồng thời ánh xạ `5 = "fwd_ret_5"`, F3+7 báo `labels_aux is missing column 'fwd_ret_5'`.
 
 ```toml
 [features]
@@ -73,3 +75,11 @@ synergy_delta = 0.01        # F6: interaction gain tối thiểu (nats) sau hi�
 | `features.synergy_delta` | `0.01` | `>= 0` | Cặp (Xi, Xj) là synergistic nếu `I(Xi,Xj;Y) - I(Xi;Y) - I(Xj;Y) - chi2.ppf(0.99, (Bi-1)(Bj-1)(C-1))/(2N) > synergy_delta`; hai feature của cặp được giữ dù không qua gate MI. |
 
 Khi có `[features]`, `run_pipeline` fit `FeatureFunnel` (F1 → F2 → F3+7 → F4 → F5 → F6 → F8) chỉ trên Train và ghi thêm vào `out_dir`: `funnel_report.json` (danh sách 7 báo cáo theo thứ tự tầng, mỗi phần tử gồm `stage`, `n_in`, `n_out`, `dropped` {tên: lý do}, `notes`; tầng bị bỏ qua vì hết feature có `n_in = n_out = 0` và note `"skipped: no features left"`) và `selected_features.json` (`{"selected_features": [...]}`). Các file `*.npz` của segment vẫn chứa X chưa lọc; thiếu `[features]` thì output giống hệt Phase 1. Task `unsupervised` cùng `[features]` → `InvalidDataError`.
+
+### Giới hạn đã biết / hiệu chuẩn (Known limitations)
+
+1. **RULE-08 / BH:** p-value của F3+7 là Spearman gộp trên toàn bộ dòng Train (giả định iid, theo plan). Với feature có tính bền (persistent) và target forward-return chồng lấn (`target_horizon > 1`), BH tự nó **không** kiểm soát FDR: mô phỏng nhiễu AR(1) φ = 0.98 với `target_horizon = 5` có 52–123/300 feature được BH chấp nhận. Cả tầng vẫn giữ ≤ 5% trong mô phỏng chỉ nhờ gate ICIR (tệ nhất 15/300). Tỷ lệ nhiễu đã kiểm chứng trong test là cho feature iid với `target_horizon = 1`.
+2. **F2 `max_peak_var_ratio`:** phân vị 90 của rolling variance bị chặn khoảng 10× phương sai toàn Train (bất đẳng thức Markov; đo được tối đa 7.1), nên mặc định `50` (và mọi ngưỡng > ~10) không bao giờ kích hoạt. Cần hiệu chuẩn trên dữ liệu thật hoặc đổi metric.
+3. **F3+7 sign-consistency / monotonic:** luật nghiêm ngặt có thể cắt nhầm tín hiệu thật khi IC ở kỳ hạn dài chỉ là nhiễu (2/10 seed bị loại ở IC 0.10).
+4. **Công suất F6:** gate ý nghĩa chi2-0.99 với 3 regime chỉ giữ ~13/40 tín hiệu ở IC 0.05 và ~34/40 ở IC 0.08 (N = 9,000); nhiễu lọt qua ~5%.
+5. **F6/F8 bỏ qua `ctx.discrete_features`:** mã categorical bị quantile-bin như biến thứ bậc (ordinal).
