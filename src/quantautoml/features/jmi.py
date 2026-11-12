@@ -39,7 +39,8 @@ def _mi(a: NDArray[np.intp], na: int, yc: NDArray[np.intp], nc: int) -> float:
 def _bins(X: NDArray[np.float32]) -> tuple[NDArray[np.intp], NDArray[np.intp]]:
     """Per-column 10-quantile bin codes and bin counts (duplicate edges collapse).
 
-    +-inf -> NaN, NaN imputed with the column median; constant / all-NaN -> 1 bin.
+    +-inf -> NaN, NaN imputed with the column median; constant / all-NaN -> a single
+    non-empty bin (MI exactly 0).
     """
     Xc = np.where(np.isfinite(X), X, np.nan).astype(np.float64)
     codes = np.zeros(Xc.shape, dtype=np.intp)
@@ -62,7 +63,7 @@ class JMIFeatureSelector(BaseFeatureFilter):
 
     Every feature is discretized into 10 quantile bins (edges from the Train rows with
     ``y != -1``; duplicate edges collapse into fewer bins; constant / all-NaN columns
-    become a single bin with MI 0). Rows with ``y == -1`` are masked out of every MI.
+    become a single non-empty bin with MI 0). Rows with ``y == -1`` are masked out of every MI.
     MI is the plug-in estimate in nats (equal to ``sklearn.metrics.mutual_info_score``).
     The first pick maximizes ``I(f; Y)`` (``mi_``; tie -> earlier column). Each next pick
     maximizes ``J(f) = sum_{s in S} I(f, s; Y)`` over the selected set ``S`` (joint code
