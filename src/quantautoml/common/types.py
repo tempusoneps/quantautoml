@@ -109,3 +109,12 @@ class SplitResult:
     cal_b: Segment | None
     oof_folds: list[tuple[NDArray[np.int64], NDArray[np.int64]]] | None
     report: SplitReport
+
+
+@dataclass(frozen=True)
+class FilterReport:
+    stage: str
+    n_in: int
+    n_out: int
+    dropped: dict[str, str]
+    notes: tuple[str, ...] = ()
