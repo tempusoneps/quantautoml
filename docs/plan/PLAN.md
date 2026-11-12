@@ -53,7 +53,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 - [x] **Task 1:** Dependencies (`scipy`, `scikit-learn`, `dcor`), exceptions & `FeaturesConfig`.
 - [x] **Task 2:** `metrics/ic.py` — Rank IC, Rolling IC, ICIR.
-- [ ] **Task 3:** `metrics/fdr.py` — Benjamini-Hochberg.
+- [x] **Task 3:** `metrics/fdr.py` — Benjamini-Hochberg.
 - [ ] **Task 4:** `features/base.py` — `BaseFeatureFilter` & `FilterReport`.
 - [ ] **Task 5:** F1 `triage.py` — NaN/Inf Triage & MI score.
 - [ ] **Task 6:** F2 `variance.py` — Multi-Metric Variance.
@@ -109,7 +109,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 ---
 
-### [ ] Task 3: Benjamini-Hochberg FDR
+### [x] Task 3: Benjamini-Hochberg FDR
 
 **Files:**
 - Create: `src/quantautoml/metrics/fdr.py`
@@ -119,7 +119,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 - Produces: `apply_fdr_correction(p_values: NDArray[np.float64], alpha: float = 0.05) -> NDArray[np.bool_]` → mặt nạ "được chấp nhận" theo công thức $k = \max\{i : p_{(i)} \le \frac{i}{M}\alpha\}$ (ARCHITECTURE §3.3).
 
 **Action Steps:**
-1. Test thất bại: ví dụ tay `p=[0.001, 0.008, 0.039, 0.041, 0.6]`, `alpha=0.05` → `[T, T, T, T, F]`; khớp `scipy.stats.false_discovery_control(p) <= alpha` trên 1,000 p-value ngẫu nhiên; mảng rỗng → mảng rỗng; p-value NaN hoặc ngoài [0,1] → `InvalidDataError`; 1,000 p-value đều U(0,1) thuần nhiễu → tỷ lệ chấp nhận ≤ 0.05 trên 200 lần lặp seed cố định (kiểm chứng chống data-snooping).
+1. Test thất bại: ví dụ tay `p=[0.001, 0.008, 0.039, 0.041, 0.6]`, `alpha=0.05` → `[T, T, F, F, F]` (ngưỡng .01/.02/.03/.04/.05 ⇒ k=2); khớp `scipy.stats.false_discovery_control(p) <= alpha` trên 1,000 p-value ngẫu nhiên; mảng rỗng → mảng rỗng; p-value NaN hoặc ngoài [0,1] → `InvalidDataError`; 1,000 p-value đều U(0,1) thuần nhiễu → tỷ lệ chấp nhận ≤ 0.05 trên 200 lần lặp seed cố định (kiểm chứng chống data-snooping).
 2. Hiện thực thủ công theo công thức (sort, so ngưỡng `i/M·α`, lấy `k` lớn nhất, chấp nhận mọi p ≤ `p_(k)`), trả mặt nạ theo thứ tự gốc.
 
 - **Verification Command:** `uv run pytest tests/unit/test_metrics_fdr.py -v`
