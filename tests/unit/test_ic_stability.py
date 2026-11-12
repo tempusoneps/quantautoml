@@ -7,14 +7,13 @@ from collections.abc import Iterator
 import numpy as np
 import pytest
 from numpy.typing import NDArray
-from scipy.stats import ConstantInputWarning
 
 from quantautoml.common.config import FeaturesConfig
 from quantautoml.common.exceptions import FeatureSelectionError, InvalidDataError
 from quantautoml.common.types import TaskType
 from quantautoml.features import ic_stability
 from quantautoml.features.base import FitContext
-from quantautoml.features.ic_stability import ICStabilityFilter, _rolling_rank_ic
+from quantautoml.features.ic_stability import ICStabilityFilter
 from quantautoml.metrics.fdr import apply_fdr_correction
 from quantautoml.metrics.ic import calc_icir, calc_rank_ic, calc_rolling_ic
 
@@ -200,32 +199,6 @@ def test_aux_nan_tail_masked_pairwise() -> None:
     expected = calc_icir(calc_rolling_ic(sig, lab21, 63))
     assert np.isfinite(f.icir_by_horizon_["sig"][21])
     assert f.icir_by_horizon_["sig"][21] == pytest.approx(expected, rel=1e-9)
-
-
-def test_rolling_rank_ic_matches_reference() -> None:
-    rng = np.random.default_rng(12)
-    n = 63 * 5 + 10
-    X = rng.normal(size=(n, 6)).astype(np.float32)
-    lab = (0.5 * X[:, 0] + rng.normal(size=n)).astype(np.float32)
-    lab[-30:] = np.nan
-    X[5:20, 1] = np.nan  # NaN in a feature
-    X[63:126, 2] = 1.0  # constant window -> NaN window IC
-    X[:, 3] = np.round(X[:, 3])  # heavy ties
-    X[:, 4] = rng.normal(size=n)
-    X[:63, 4] = np.inf  # all-inf window (reference -> 0.0 IC, not NaN)
-    X[:, 5] = rng.normal(size=n)
-    X[70:75, 5] = -np.inf  # partial -inf
-    X[200:210, 5] = np.inf
-    lab[130:133] = np.inf  # +inf in labels of window 2
-    # On an all-inf window metrics.ic itself (pre-existing, out of scope) emits a numpy
-    # 'invalid value' from np.ptp and a scipy ConstantInputWarning before returning 0.0;
-    # silence only those two for this equivalence check.
-    with np.errstate(invalid="ignore"), warnings.catch_warnings():
-        warnings.simplefilter("ignore", ConstantInputWarning)
-        got = _rolling_rank_ic(X, lab, 63)
-        refs = [calc_rolling_ic(X[:, j], lab, 63) for j in range(6)]
-    for j, ref in enumerate(refs):
-        np.testing.assert_allclose(got[:, j], ref, rtol=1e-10, atol=1e-12, equal_nan=True)
 
 
 def test_transform_selects_columns_without_reading_aux() -> None:

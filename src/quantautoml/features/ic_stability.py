@@ -6,53 +6,13 @@ from typing import ClassVar
 
 import numpy as np
 from numpy.typing import NDArray
-from scipy.stats import rankdata
 
 from quantautoml.common.config import FeaturesConfig
 from quantautoml.common.exceptions import InvalidDataError
 from quantautoml.common.types import FilterReport
 from quantautoml.features.base import BaseFeatureFilter, FitContext
 from quantautoml.metrics.fdr import apply_fdr_correction
-from quantautoml.metrics.ic import calc_icir, calc_rank_ic, calc_rolling_ic
-
-_MIN_PAIRS = 3
-
-
-def _rolling_rank_ic(
-    X: NDArray[np.float32], y: NDArray[np.float32], window: int
-) -> NDArray[np.float64]:
-    """Column-vectorized equivalent of ``calc_rolling_ic`` -> shape ``(n // window, p)``.
-
-    Columns whose values are all finite inside a window's valid-label rows are
-    ranked together (Spearman = Pearson of average ranks). Any column with NaN or
-    +-inf there, and every column of a window whose valid labels contain +-inf,
-    falls back to ``calc_rolling_ic`` on that window, so semantics (pairwise NaN
-    masking, degenerate window -> NaN, inf handling) are identical to the reference.
-    """
-    n, p = X.shape
-    n_windows = n // window
-    out = np.full((n_windows, p), np.nan, dtype=np.float64)
-    for i in range(n_windows):
-        sl = slice(i * window, (i + 1) * window)
-        xs = X[sl].astype(np.float64)
-        ys = np.asarray(y[sl], dtype=np.float64)
-        y_ok = ~np.isnan(ys)
-        xv, yv = xs[y_ok], ys[y_ok]
-        fast = np.isfinite(xv).all(axis=0) & bool(np.isfinite(yv).all())
-        for j in np.nonzero(~fast)[0]:
-            out[i, j] = calc_rolling_ic(X[sl, j], y[sl], window)[0]
-        if yv.size < _MIN_PAIRS or np.ptp(yv) == 0.0 or not fast.any():
-            continue
-        cols = np.nonzero(fast & (np.ptp(xv, axis=0) > 0.0))[0]
-        if cols.size == 0:
-            continue
-        rx = rankdata(xv[:, cols], axis=0)
-        ry = rankdata(yv)
-        rx -= rx.mean(axis=0)
-        ry -= ry.mean()
-        denom = np.sqrt((rx * rx).sum(axis=0) * float(ry @ ry))
-        out[i, cols] = np.clip((ry @ rx) / denom, -1.0, 1.0)
-    return out
+from quantautoml.metrics.ic import calc_icir, calc_rank_ic, calc_rolling_ic_matrix
 
 
 class ICStabilityFilter(BaseFeatureFilter):
@@ -119,7 +79,7 @@ class ICStabilityFilter(BaseFeatureFilter):
         icir = np.zeros((len(horizons), p), dtype=np.float64)
         mean_ic = np.zeros((len(horizons), p), dtype=np.float64)
         for k, h in enumerate(horizons):
-            roll = _rolling_rank_ic(X, labels[h], cfg.rolling_window)
+            roll = calc_rolling_ic_matrix(X, labels[h], cfg.rolling_window)
             for j in range(p):
                 series = roll[:, j]
                 valid = series[~np.isnan(series)]
