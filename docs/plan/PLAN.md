@@ -57,7 +57,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 - [x] **Task 4:** `features/base.py` — `BaseFeatureFilter` & `FilterReport`.
 - [x] **Task 5:** F1 `triage.py` — NaN/Inf Triage & MI score.
 - [x] **Task 6:** F2 `variance.py` — Multi-Metric Variance.
-- [ ] **Task 7:** F3+7 `ic_stability.py` — IC Stability + FDR + Term Structure.
+- [x] **Task 7:** F3+7 `ic_stability.py` — IC Stability + FDR + Term Structure.
 - [ ] **Task 8:** F4 `collinearity.py` — Fast dCor.
 - [ ] **Task 9:** F5 `clustering.py` — IC-Behavior Clustering.
 - [ ] **Task 10:** F6 `regime_synergy.py` — Regime MI & Synergy.
@@ -187,7 +187,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 ---
 
-### [ ] Task 7: F3+7 — IC Stability, FDR & Term Structure
+### [x] Task 7: F3+7 — IC Stability, FDR & Term Structure
 
 **Files:**
 - Create: `src/quantautoml/features/ic_stability.py`
