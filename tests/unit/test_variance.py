@@ -81,13 +81,13 @@ def test_variance_burst_dropped_by_peak_var_ratio() -> None:
     assert f.metrics_["burst"][1] > 2.0 > f.metrics_["calm"][1]
 
 
-def test_near_zero_mean_no_division_error_and_low_cv_dropped() -> None:
+def test_near_zero_mean_no_division_error_and_kept() -> None:
     x = np.random.default_rng(4).normal(scale=1.0, size=N).astype(np.float32)
     x -= x.mean()
     f = _fit({"zm": x})
     cv = f.metrics_["zm"][0]
     assert np.isfinite(cv)
-    # tiny-but-nonconstant scale with mean exactly 0 -> cv huge, kept
+    # mean ~ 0 -> cv = std / eps is huge (finite), so the column is kept
     assert f.output_names_ == ("zm",)
 
 
@@ -115,7 +115,21 @@ def test_partial_nan_handled() -> None:
     x[::5] = np.nan
     f = _fit({"p": x})
     assert f.output_names_ == ("p",)
-    assert all(np.isfinite(v) for v in f.metrics_["p"])
+    cv, peak, ur = f.metrics_["p"]
+    assert all(np.isfinite(v) for v in (cv, peak, ur))
+    assert cv == pytest.approx(1.0 / 5.0, rel=0.1)
+    assert 0.5 < peak < 3.0
+    assert ur == pytest.approx(1.0, abs=0.01)
+
+
+def test_nan_every_few_rows_burst_still_detected() -> None:
+    x = _normal(13)
+    x[100:260] = 5.0 + (x[100:260] - 5.0) * 40.0
+    x[::5] = np.nan
+    f = _fit({"b": x}, _cfg(max_peak_var_ratio=2.0))
+    assert f.metrics_["b"][1] > 2.0
+    assert f.output_names_ == ()
+    assert f.report_ is not None and "peak_var_ratio" in f.report_.dropped["b"]
 
 
 def test_transform_selects_columns_float32() -> None:
