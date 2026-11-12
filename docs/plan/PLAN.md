@@ -51,7 +51,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 ## Execution Order Overview
 
-- [ ] **Task 1:** Dependencies (`scipy`, `scikit-learn`, `dcor`), exceptions & `FeaturesConfig`.
+- [x] **Task 1:** Dependencies (`scipy`, `scikit-learn`, `dcor`), exceptions & `FeaturesConfig`.
 - [ ] **Task 2:** `metrics/ic.py` — Rank IC, Rolling IC, ICIR.
 - [ ] **Task 3:** `metrics/fdr.py` — Benjamini-Hochberg.
 - [ ] **Task 4:** `features/base.py` — `BaseFeatureFilter` & `FilterReport`.
@@ -68,7 +68,7 @@ Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng
 
 ## Detailed Task Breakdown
 
-### [ ] Task 1: Dependencies, Exceptions & FeaturesConfig
+### [x] Task 1: Dependencies, Exceptions & FeaturesConfig
 
 **Files:**
 - Modify: `pyproject.toml`, `src/quantautoml/common/exceptions.py`, `src/quantautoml/common/config.py`, `docs/CONFIGURATION.md`
