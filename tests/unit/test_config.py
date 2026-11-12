@@ -143,3 +143,17 @@ def test_f6_thresholds_must_be_non_negative(write_toml, valid_toml: str, key: st
     toml = valid_toml + _FEATURES_TOML.replace("target_horizon = 5", f"target_horizon = 5\n{key} = -0.001")
     with pytest.raises(pydantic.ValidationError):
         load_config(write_toml(toml))
+
+
+@pytest.mark.parametrize(("dist", "ok"), [("1.0", False), ("0.99", True), ("0", False)])
+def test_cluster_distance_open_unit_interval(
+    write_toml, valid_toml: str, dist: str, ok: bool
+) -> None:
+    """d = 1 - |corr| <= 1 always, so a cut at 1.0 would merge every feature."""
+    toml = valid_toml + _FEATURES_TOML.replace("target_horizon = 5", f"target_horizon = 5\ncluster_distance = {dist}")
+    if ok:
+        cfg = load_config(write_toml(toml))
+        assert cfg.features is not None and cfg.features.cluster_distance == 0.99
+    else:
+        with pytest.raises(pydantic.ValidationError):
+            load_config(write_toml(toml))
