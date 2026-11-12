@@ -30,6 +30,7 @@ class NaNInfTriage(BaseFeatureFilter):
         lower median for discrete columns so the value stays a valid code) is used for MI
         only. MI uses ``mutual_info_classif(..., discrete_features=mask, random_state=0)``
         on rows with ``y != -1`` (mid-NaN labels masked). Constant columns score ``0.0``.
+      * Row scope: nan_ratio, MAR correlation and imputation use all Train rows; MI only ``y != -1``.
       * ``missing_kind_``: ``"none"`` without NaN; ``"MNAR"`` if MI(is_nan, y) >
         ``indicator_mi_min``; ``"MAR"`` if max |Spearman(is_nan, other kept feature)| >
         ``mar_corr_min``; otherwise ``"MCAR"``.
@@ -101,16 +102,18 @@ class NaNInfTriage(BaseFeatureFilter):
 
         feat_mi, ind_mi = self._mutual_info(imputed, nan_mask[:, keep], keep, names, discrete, y)
 
+        scores: dict[str, float] = {}
         kinds: dict[str, MissingKind] = {}
         indicators: list[int] = []
         for k, j in enumerate(keep):
             name = names[j]
-            self.scores_[name] = float(feat_mi[k] * (1.0 - nan_ratio[j]))
+            scores[name] = float(feat_mi[k] * (1.0 - nan_ratio[j]))
             kind = self._missing_kind(k, ind_mi[k], nan_mask[:, j], Xc, keep)
             kinds[name] = kind
             if kind in ("MAR", "MNAR") and j not in bool_fill:
                 indicators.append(j)
 
+        self.scores_ = scores
         self.missing_kind_ = kinds
         self._keep_idx = np.asarray(keep, dtype=np.intp)
         self._indicator_idx = np.asarray(indicators, dtype=np.intp)
