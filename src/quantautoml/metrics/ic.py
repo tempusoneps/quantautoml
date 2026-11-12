@@ -1,8 +1,8 @@
-"""Spearman Rank IC, non-overlapping rolling IC and ICIR (RULE-02)."""
+"""Spearman Rank IC, non-overlapping rolling IC (per column / matrix) and ICIR (RULE-02)."""
 
 import numpy as np
 from numpy.typing import NDArray
-from scipy.stats import spearmanr
+from scipy.stats import rankdata, spearmanr
 
 from quantautoml.common.exceptions import InvalidDataError
 
@@ -63,6 +63,51 @@ def calc_rolling_ic(
         if mask.sum() < _MIN_PAIRS or np.ptp(xa[mask]) == 0.0 or np.ptp(ya[mask]) == 0.0:
             continue
         out[i] = calc_rank_ic(xs, ys, ignore_value=ignore_value)[0]
+    return out
+
+
+def calc_rolling_ic_matrix(
+    X: NDArray[np.float32],
+    y: NDArray[np.float32 | np.int32],
+    window: int,
+    *,
+    ignore_value: float | None = None,
+) -> NDArray[np.float64]:
+    """Column-vectorized ``calc_rolling_ic`` for every column -> ``(n // window, p)``.
+
+    Columns whose values are all finite inside a window's valid-label rows are
+    ranked together (Spearman = Pearson of average ranks). Any column with NaN or
+    +-inf there, and every column of a window whose valid labels contain +-inf,
+    falls back to ``calc_rolling_ic`` on that window, so semantics (pairwise NaN
+    masking, ``ignore_value``, degenerate window -> NaN, inf handling) are identical.
+    """
+    if window < 1:
+        raise InvalidDataError(f"window must be >= 1, got {window}")
+    n, p = X.shape
+    n_windows = n // window
+    out = np.full((n_windows, p), np.nan, dtype=np.float64)
+    for i in range(n_windows):
+        sl = slice(i * window, (i + 1) * window)
+        xs = X[sl].astype(np.float64)
+        ys = np.asarray(y[sl], dtype=np.float64)
+        y_ok = ~np.isnan(ys)
+        if ignore_value is not None:
+            y_ok &= ys != ignore_value
+        xv, yv = xs[y_ok], ys[y_ok]
+        fast = np.isfinite(xv).all(axis=0) & bool(np.isfinite(yv).all())
+        for j in np.nonzero(~fast)[0]:
+            out[i, j] = calc_rolling_ic(X[sl, j], y[sl], window, ignore_value=ignore_value)[0]
+        if yv.size < _MIN_PAIRS or np.ptp(yv) == 0.0 or not fast.any():
+            continue
+        cols = np.nonzero(fast & (np.ptp(xv, axis=0) > 0.0))[0]
+        if cols.size == 0:
+            continue
+        rx = rankdata(xv[:, cols], axis=0)
+        ry = rankdata(yv)
+        rx -= rx.mean(axis=0)
+        ry -= ry.mean()
+        denom = np.sqrt((rx * rx).sum(axis=0) * float(ry @ ry))
+        out[i, cols] = np.clip((ry @ rx) / denom, -1.0, 1.0)
     return out
 
 
