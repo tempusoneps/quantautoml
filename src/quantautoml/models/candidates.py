@@ -12,6 +12,19 @@ from quantautoml.common.exceptions import InvalidDataError, ModelError
 from quantautoml.common.types import TaskType
 
 
+def _clip01(value: float) -> float:
+    return min(1.0, max(0.01, value))
+
+
+def _complexity(n_estimators: float, structure: float, learning_rate: float) -> float:
+    """Blend of ensemble size, tree structure and learning rate, each scaled to (0, 1]."""
+    return float(
+        0.4 * _clip01(n_estimators / 500.0)
+        + 0.4 * _clip01(structure)
+        + 0.2 * _clip01(learning_rate / 0.3)
+    )
+
+
 class BaseGBDCandidate(ABC):
     """Abstract base wrapper for GBDT candidate models."""
 
@@ -109,9 +122,11 @@ class LightGBMCandidate(BaseGBDCandidate):
     def complexity_score(self) -> float:
         n_est = self.params.get("n_estimators", 100)
         n_leaves = self.params.get("num_leaves", 31)
-        est_part = min(1.0, max(0.01, n_est / 500.0))
-        leaves_part = min(1.0, max(0.01, n_leaves / 64.0))
-        return float(0.5 * est_part + 0.5 * leaves_part)
+        max_depth = self.params.get("max_depth", -1)
+        if max_depth > 0:
+            n_leaves = min(n_leaves, 2**max_depth)
+        lr = self.params.get("learning_rate", 0.05)
+        return _complexity(n_est, n_leaves / 64.0, lr)
 
 
 class XGBoostCandidate(BaseGBDCandidate):
@@ -159,9 +174,8 @@ class XGBoostCandidate(BaseGBDCandidate):
     def complexity_score(self) -> float:
         n_est = self.params.get("n_estimators", 100)
         depth = self.params.get("max_depth", 6)
-        est_part = min(1.0, max(0.01, n_est / 500.0))
-        depth_part = min(1.0, max(0.01, depth / 10.0))
-        return float(0.5 * est_part + 0.5 * depth_part)
+        lr = self.params.get("learning_rate", 0.05)
+        return _complexity(n_est, depth / 10.0, lr)
 
 
 class CatBoostCandidate(BaseGBDCandidate):
@@ -213,9 +227,8 @@ class CatBoostCandidate(BaseGBDCandidate):
     def complexity_score(self) -> float:
         n_est = self.params.get("n_estimators", self.params.get("iterations", 100))
         depth = self.params.get("depth", 6)
-        est_part = min(1.0, max(0.01, n_est / 500.0))
-        depth_part = min(1.0, max(0.01, depth / 10.0))
-        return float(0.5 * est_part + 0.5 * depth_part)
+        lr = self.params.get("learning_rate", 0.05)
+        return _complexity(n_est, depth / 10.0, lr)
 
 
 _CANDIDATE_REGISTRY: dict[str, type[BaseGBDCandidate]] = {

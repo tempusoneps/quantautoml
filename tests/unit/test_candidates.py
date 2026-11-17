@@ -121,3 +121,16 @@ def test_complexity_score(model_name: str) -> None:
     assert 0.0 < s_simple <= 1.0
     assert 0.0 < s_complex <= 1.0
     assert s_complex > s_simple
+
+
+@pytest.mark.parametrize("model_name", ["lightgbm", "xgboost", "catboost"])
+def test_complexity_score_increases_with_learning_rate(model_name: str) -> None:
+    low = create_candidate(model_name, TaskType.BINARY_CLASSIFICATION, params={"learning_rate": 0.01})
+    high = create_candidate(model_name, TaskType.BINARY_CLASSIFICATION, params={"learning_rate": 0.1})
+    assert high.complexity_score() > low.complexity_score()
+
+
+def test_lightgbm_complexity_respects_max_depth() -> None:
+    free = create_candidate("lightgbm", TaskType.BINARY_CLASSIFICATION, params={"num_leaves": 63, "max_depth": -1})
+    capped = create_candidate("lightgbm", TaskType.BINARY_CLASSIFICATION, params={"num_leaves": 63, "max_depth": 3})
+    assert capped.complexity_score() < free.complexity_score()
