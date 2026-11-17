@@ -127,3 +127,49 @@ def test_decision_engine_selects_ensemble_when_all_pass() -> None:
     assert report.diversity_score > 0.12
     assert report.marginal_gain >= 0.01
     assert report.wf_consistency >= 0.60
+
+
+def test_wf_consistency_requires_strict_outperformance() -> None:
+    """Ties between ensemble and single best must NOT count as outperformance."""
+    cfg = ModelsConfig()
+    engine = ModelDecisionEngine(cfg=cfg)
+    n = 200
+    rng = np.random.default_rng(1)
+    y_true = rng.normal(size=n).astype(np.float32)
+    base = (y_true + rng.normal(size=n)).tolist()
+    t_res = create_mock_tournament_result(
+        oof_preds={"lightgbm": base, "xgboost": list(base)},  # identical -> ensemble == single
+        test_indices=list(range(n)),
+        fold_test_lens=[100, 100],
+        best_sharpes={"lightgbm": 1.5, "xgboost": 1.4},
+    )
+    report = engine.evaluate(t_res, y_true)
+    assert report.wf_consistency == 0.0
+    assert report.decision == DecisionType.SINGLE_MODEL
+
+
+def test_ensemble_ranks_are_normalised_per_fold() -> None:
+    """A per-fold offset in one model's scale must not change the report."""
+    cfg = ModelsConfig()
+    engine = ModelDecisionEngine(cfg=cfg)
+    n = 300
+    rng = np.random.default_rng(7)
+    y_true = rng.normal(size=n).astype(np.float32)
+    p1 = y_true * 0.6 + rng.normal(size=n)
+    p2 = y_true * 0.6 + rng.normal(size=n)
+    lens = [100, 100, 100]
+    offset = np.repeat([0.0, 50.0, -80.0], 100)
+
+    def run(second: np.ndarray):
+        t_res = create_mock_tournament_result(
+            oof_preds={"lightgbm": p1.tolist(), "xgboost": second.tolist()},
+            test_indices=list(range(n)),
+            fold_test_lens=lens,
+            best_sharpes={"lightgbm": 1.5, "xgboost": 1.4},
+        )
+        return engine.evaluate(t_res, y_true)
+
+    a = run(p2)
+    b = run(p2 + offset)
+    assert a.wf_consistency == b.wf_consistency
+    assert a.marginal_gain == pytest.approx(b.marginal_gain, abs=1e-12)

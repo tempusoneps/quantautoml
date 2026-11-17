@@ -12,8 +12,11 @@ from pydantic import BaseModel, ConfigDict
 from scipy.stats import rankdata
 
 from quantautoml.common.config import ModelsConfig
+from quantautoml.common.exceptions import InvalidDataError
 from quantautoml.metrics.ic import calc_rank_ic
 from quantautoml.models.tournament import TournamentResult
+
+_TIE_TOL = 1e-12
 
 
 class DecisionType(StrEnum):
@@ -103,12 +106,25 @@ class ModelDecisionEngine:
         diversity_score = float(1.0 - max_corr)
         cond_diversity = max_corr < self.cfg.diversity_threshold
 
-        # Equal-weights rank-normalized ensemble
-        rank_norms = np.array(
-            [rankdata(preds[m]) / n_test for m in candidate_models],
-            dtype=np.float64,
-        )
-        ens_pred = np.mean(rank_norms, axis=0)
+        # Equal-weights ensemble, rank-normalised WITHIN each walk-forward fold so that
+        # folds with different prediction scales are not mixed into one global ranking.
+        fold_lens = tournament_result.fold_test_lens or [n_test]
+        if sum(fold_lens) != n_test:
+            raise InvalidDataError(
+                f"fold_test_lens sum ({sum(fold_lens)}) != number of OOF rows ({n_test})"
+            )
+        fold_slices: list[slice] = []
+        offset = 0
+        for flen in fold_lens:
+            fold_slices.append(slice(offset, offset + flen))
+            offset += flen
+
+        ens_pred = np.empty(n_test, dtype=np.float64)
+        for sl in fold_slices:
+            fold_len = sl.stop - sl.start
+            ens_pred[sl] = np.mean(
+                [rankdata(preds[m][sl]) / fold_len for m in candidate_models], axis=0
+            )
         single_best_pred = preds[best_single_name]
 
         # 2. Marginal Gain Condition: Ensemble Rank IC vs Single Best Rank IC
@@ -118,20 +134,14 @@ class ModelDecisionEngine:
         cond_gain = marginal_gain >= self.cfg.marginal_gain_threshold
 
         # 3. Walk-Forward Consistency Condition: Across folds
-        fold_lens = tournament_result.fold_test_lens
-        if fold_lens:
-            n_consistent = 0
-            offset = 0
-            for flen in fold_lens:
-                sl = slice(offset, offset + flen)
-                fold_ic_ens = calc_rank_ic(ens_pred[sl], y_test[sl])[0]
-                fold_ic_single = calc_rank_ic(single_best_pred[sl], y_test[sl])[0]
-                if fold_ic_ens >= fold_ic_single:
-                    n_consistent += 1
-                offset += flen
-            wf_consistency = float(n_consistent / len(fold_lens))
-        else:
-            wf_consistency = 1.0 if cond_gain else 0.0
+        n_outperform = 0
+        for sl in fold_slices:
+            fold_ic_ens = calc_rank_ic(ens_pred[sl], y_test[sl])[0]
+            fold_ic_single = calc_rank_ic(single_best_pred[sl], y_test[sl])[0]
+            # Strict outperformance: ties (e.g. identical models) do not count.
+            if fold_ic_ens > fold_ic_single + _TIE_TOL:
+                n_outperform += 1
+        wf_consistency = float(n_outperform / len(fold_slices))
 
         cond_consistency = wf_consistency >= self.cfg.wf_consistency_threshold
 

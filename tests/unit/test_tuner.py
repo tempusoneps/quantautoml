@@ -78,3 +78,17 @@ def test_tuner_empty_models_rejected(tuning_data) -> None:
     tuner = DeepOptunaTuner(cfg=cfg, task_type=TaskType.BINARY_CLASSIFICATION)
     with pytest.raises(InvalidDataError):
         tuner.tune(models_to_tune=[], X=X, y=y)
+
+
+def test_tuner_hyperband_prunes_weak_trials() -> None:
+    rng = np.random.default_rng(0)
+    n = 600
+    X = rng.normal(size=(n, 5)).astype(np.float32)
+    y = (rng.normal(size=n) > 0).astype(np.int32)  # pure noise -> unstable fold ICs
+    cfg = ModelsConfig(tuning_trials=25, n_wf_folds=5, random_state=0)
+    result = DeepOptunaTuner(cfg=cfg, task_type=TaskType.BINARY_CLASSIFICATION).tune(
+        models_to_tune=["lightgbm"], X=X, y=y
+    )
+    summary = result.study_summaries["lightgbm"]
+    assert summary["n_trials"] == 25
+    assert summary["n_pruned"] >= 1

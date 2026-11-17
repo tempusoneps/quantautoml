@@ -1,24 +1,26 @@
 """Integration test for Phase 3 models: verifying Zero Look-Ahead Leakage (RULE-01).
 
-Proves that tournament evaluation, decision engine, and deep Optuna tuning depend
-strictly and exclusively on split.train. Changing val, cal_a, cal_b, or oos has
-zero impact on tournament ranking, decision, or tuned hyperparameters.
+The *source files* are rewritten so that every row after the last Train timestamp
+(purge gap, Cal-A, Cal-B, Val, OOS) carries different features AND labels, then the
+whole pipeline is re-run end-to-end. Tournament, decision and tuning outputs must be
+bit-identical, proving they depend strictly on split.train.
 """
 
 from pathlib import Path
 
 import numpy as np
+import polars as pl
 import pytest
 
 from quantautoml.common.config import ModelsConfig, PipelineConfig
-from quantautoml.pipeline import run_pipeline
+from quantautoml.pipeline import PipelineResult, run_pipeline
 
 
 @pytest.fixture
-def market_dataset(tmp_path: Path, make_frames, build_config):
+def cfg(make_frames, build_config) -> PipelineConfig:
     feats, labels = make_frames(n=1200, n_features=6)
     base_cfg = build_config(feats, labels, horizon_h=21)
-    cfg = base_cfg.model_copy(
+    return base_cfg.model_copy(
         update={
             "models": ModelsConfig(
                 tournament_trials=2,
@@ -29,63 +31,90 @@ def market_dataset(tmp_path: Path, make_frames, build_config):
             )
         }
     )
-    return cfg, tmp_path
 
 
-def test_zero_leakage_models_invariance(market_dataset) -> None:
-    cfg, tmp_path = market_dataset
-    out1 = tmp_path / "run1"
-    res1 = run_pipeline(cfg, out1)
-
-    assert res1.tournament_result is not None
-    assert res1.decision_report is not None
-    assert res1.tuning_result is not None
-
-    # Check generated report files
-    assert (out1 / "tournament_report.json").is_file()
-    assert (out1 / "decision_report.json").is_file()
-    assert (out1 / "tuning_report.json").is_file()
-
-    # Now verify zero leakage:
-    # Perturb the validation and OOS segments in split:
-    split_perturbed = res1.split
+def _rewrite_sources(
+    cfg: PipelineConfig, tmp_path: Path, *, cutoff: np.datetime64, perturb_train: bool
+) -> PipelineConfig:
+    """Write copies of features/labels with perturbed rows; return a config pointing at them."""
     rng = np.random.default_rng(999)
-    split_perturbed.val.X[:] = rng.normal(size=split_perturbed.val.X.shape).astype(np.float32)
-    split_perturbed.oos.X[:] = rng.normal(size=split_perturbed.oos.X.shape).astype(np.float32)
-    if split_perturbed.cal_a is not None:
-        split_perturbed.cal_a.X[:] = rng.normal(size=split_perturbed.cal_a.X.shape).astype(np.float32)
-    if split_perturbed.cal_b is not None:
-        split_perturbed.cal_b.X[:] = rng.normal(size=split_perturbed.cal_b.X.shape).astype(np.float32)
+    assert cfg.data.labels_path is not None
 
-    # Re-run pipeline with perturbed future segments
-    # Running tournament & tuning directly on split_perturbed.train
-    from quantautoml.models.decision_engine import ModelDecisionEngine
-    from quantautoml.models.tournament import ModelTournament
-    from quantautoml.models.tuner import DeepOptunaTuner
+    def _perturb(df: pl.DataFrame, binary: set[str]) -> pl.DataFrame:
+        ts = df["timestamp"].dt.replace_time_zone(None).to_numpy()
+        mask = (ts <= cutoff) if perturb_train else (ts > cutoff)
+        cols = []
+        for name in df.columns:
+            if name == "timestamp":
+                continue
+            vals = df[name].to_numpy().astype(np.float64).copy()
+            valid = mask & ~np.isnan(vals)
+            if name in binary:
+                vals[valid] = rng.integers(0, 2, size=int(valid.sum())).astype(np.float64)
+            else:
+                vals[valid] = rng.normal(size=int(valid.sum()))
+            cols.append(pl.Series(name, vals))
+        return pl.DataFrame([df["timestamp"], *cols])
 
-    tourn = ModelTournament(cfg.models, res1.dataset.task_type)
-    t_res2 = tourn.run(split_perturbed.train.X, split_perturbed.train.y, embargo_bars=cfg.split.horizon_h)
+    feats = _perturb(pl.read_parquet(cfg.data.features_path), set())
+    labels = _perturb(pl.read_parquet(cfg.data.labels_path), {"y_dir"})
+    f_path, l_path = tmp_path / "features_perturbed.parquet", tmp_path / "labels_perturbed.parquet"
+    feats.write_parquet(f_path)
+    labels.write_parquet(l_path)
 
-    dec_engine = ModelDecisionEngine(cfg.models)
-    dec_res2 = dec_engine.evaluate(t_res2, split_perturbed.train.y)
+    raw = cfg.model_dump(mode="json")
+    raw["data"]["features_path"] = str(f_path)
+    raw["data"]["labels_path"] = str(l_path)
+    return PipelineConfig.model_validate(raw)
 
-    tuner = DeepOptunaTuner(cfg.models, res1.dataset.task_type)
-    tune_res2 = tuner.tune(dec_res2.selected_models, split_perturbed.train.X, split_perturbed.train.y, embargo_bars=cfg.split.horizon_h)
 
-    # Exact equality of tournament ranking
-    assert [r.model_name for r in t_res2.rankings] == [r.model_name for r in res1.tournament_result.rankings]
-    assert [r.ic_sharpe for r in t_res2.rankings] == [r.ic_sharpe for r in res1.tournament_result.rankings]
+def _signature(res: PipelineResult) -> dict[str, object]:
+    assert res.tournament_result is not None
+    assert res.decision_report is not None
+    assert res.tuning_result is not None
+    train_X = res.split.train.X
+    return {
+        "rankings": [(r.model_name, r.params, r.fold_ics, r.ic_sharpe) for r in res.tournament_result.rankings],
+        "oof": res.tournament_result.oof_predictions,
+        "decision": res.decision_report.model_dump(),
+        "tuned": [(c.model_name, c.best_params, c.best_score) for c in res.tuning_result.tuned_candidates],
+        "preds": [c.fitted_model.predict(train_X).tobytes() for c in res.tuning_result.tuned_candidates],
+    }
 
-    # Exact equality of decision report
-    assert dec_res2.decision == res1.decision_report.decision
-    assert dec_res2.selected_models == res1.decision_report.selected_models
 
-    # Exact equality of tuned parameters
-    assert [c.best_params for c in tune_res2.tuned_candidates] == [c.best_params for c in res1.tuning_result.tuned_candidates]
+def test_models_depend_only_on_train(cfg: PipelineConfig, tmp_path: Path) -> None:
+    res1 = run_pipeline(cfg, tmp_path / "run1")
+    for name in ("tournament_report.json", "decision_report.json", "tuning_report.json"):
+        assert (tmp_path / "run1" / name).is_file()
 
-    # Precision contract (RULE-06): check float32
-    for c in res1.tuning_result.tuned_candidates:
-        pred = c.fitted_model.predict(res1.split.val.X)
-        assert pred.dtype == np.float32
-        proba = c.fitted_model.predict_proba(res1.split.val.X)
-        assert proba.dtype == np.float32
+    cutoff = res1.split.train.timestamps[-1]
+    cfg2 = _rewrite_sources(cfg, tmp_path, cutoff=cutoff, perturb_train=False)
+    res2 = run_pipeline(cfg2, tmp_path / "run2")
+
+    # Train segment itself must be untouched, otherwise the comparison is meaningless.
+    np.testing.assert_array_equal(res1.split.train.X, res2.split.train.X)
+    np.testing.assert_array_equal(res1.split.train.y, res2.split.train.y)
+    # ...while the future segments really did change.
+    assert not np.array_equal(res1.split.oos.X, res2.split.oos.X)
+    assert not np.array_equal(res1.split.val.y, res2.split.val.y)
+
+    assert _signature(res1) == _signature(res2)
+    for name in ("tournament_report.json", "decision_report.json", "tuning_report.json"):
+        assert (tmp_path / "run1" / name).read_bytes() == (tmp_path / "run2" / name).read_bytes()
+
+
+def test_leakage_check_has_teeth(cfg: PipelineConfig, tmp_path: Path) -> None:
+    """Perturbing Train rows MUST change the outputs, so the invariance test above is meaningful."""
+    res1 = run_pipeline(cfg, tmp_path / "run1")
+    cutoff = res1.split.train.timestamps[-1]
+    cfg2 = _rewrite_sources(cfg, tmp_path, cutoff=cutoff, perturb_train=True)
+    res2 = run_pipeline(cfg2, tmp_path / "run2")
+    assert _signature(res1) != _signature(res2)
+
+
+def test_models_output_float32(cfg: PipelineConfig, tmp_path: Path) -> None:
+    res = run_pipeline(cfg, tmp_path / "run")
+    assert res.tuning_result is not None
+    for c in res.tuning_result.tuned_candidates:
+        assert c.fitted_model.predict(res.split.val.X).dtype == np.float32
+        assert c.fitted_model.predict_proba(res.split.val.X).dtype == np.float32

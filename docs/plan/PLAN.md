@@ -125,6 +125,7 @@
   - `class CatBoostCandidate(BaseGBDCandidate)`
   - `class XGBoostCandidate(BaseGBDCandidate)`
   - `def create_candidate(name: str, task_type: TaskType, params: dict[str, Any] | None = None, random_state: int = 42) -> BaseGBDCandidate`
+  - **Ghi chú phạm vi:** `TaskType` hiện chỉ có Binary/Multiclass/Unsupervised nên wrapper là classifier; hồi quy (Continuous) chưa hỗ trợ và nằm ngoài phạm vi v1.0.
   - `complexity_score()`:
     - Chuẩn hóa thang điểm $[0, 1]$ dựa trên `n_estimators`, `max_depth` (hoặc `num_leaves`), `learning_rate` nhằm phạt mô hình quá phức tạp dễ overfit.
 
