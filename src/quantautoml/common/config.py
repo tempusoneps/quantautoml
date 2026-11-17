@@ -6,7 +6,7 @@ import tomllib
 from pathlib import Path
 from typing import Self
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class _Strict(BaseModel):
@@ -52,11 +52,37 @@ class FeaturesConfig(_Strict):
         return self
 
 
+_ALLOWED_MODELS = {"lightgbm", "xgboost", "catboost"}
+
+
+class ModelsConfig(_Strict):
+    tournament_trials: int = Field(default=30, ge=1)
+    tuning_trials: int = Field(default=50, ge=1)
+    n_wf_folds: int = Field(default=5, ge=2)
+    diversity_threshold: float = Field(default=0.88, gt=0.0, le=1.0)
+    marginal_gain_threshold: float = Field(default=0.015, ge=0.0)
+    wf_consistency_threshold: float = Field(default=0.60, gt=0.0, le=1.0)
+    complexity_penalty: float = Field(default=0.05, ge=0.0)
+    random_state: int = Field(default=42)
+    enabled_models: list[str] = Field(default_factory=lambda: ["lightgbm", "xgboost", "catboost"])
+
+    @field_validator("enabled_models")
+    @classmethod
+    def _validate_enabled_models(cls, v: list[str]) -> list[str]:
+        if not v:
+            raise ValueError("enabled_models cannot be empty")
+        for m in v:
+            if m not in _ALLOWED_MODELS:
+                raise ValueError(f"Unknown model '{m}', must be one of {_ALLOWED_MODELS}")
+        return v
+
+
 class PipelineConfig(_Strict):
     data: DataConfig
     labels: LabelsConfig = LabelsConfig()
     split: SplitConfig
     features: FeaturesConfig | None = None
+    models: ModelsConfig | None = None
 
     @model_validator(mode="after")
     def _labels_consistency(self) -> Self:
