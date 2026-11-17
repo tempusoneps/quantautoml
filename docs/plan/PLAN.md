@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: dùng `superpowers:subagent-driven-development` (khuyến nghị) hoặc `superpowers:executing-plans` để thực thi plan theo từng task. Quy trình TDD bắt buộc (RED → GREEN → REFACTOR), cập nhật `- [x]` sau mỗi task theo RULE-10.
 
 **Active Phase:** Phase 4 — Convex Ensemble Optimization ($C^2$ Objective) & Temperature Calibration  
-**Branch:** `develop/v1.0`  
+**Branch:** `develop/v1.0-phase4`  
 **Goal:** Tối ưu hóa trọng số kết hợp mô hình theo phương pháp quy hoạch phi tuyến SLSQP có hàm mục tiêu khả vi bậc hai liên tục ($C^2$) trên tập Cal-B, kiểm soát tính vững bằng Bootstrap Shrinkage về $1/K$ (kèm 5% Hurdle Rule), và hiệu chuẩn xác suất bằng Temperature Scaling trên tập Cal-A đảm bảo bảo toàn 100% Rank IC và $\text{ECE} < 0.05$.  
 **Architecture:** `ensemble/` là module độc lập tiếp nhận đầu ra của Phase 3 (`TuningResult` hoặc `DecisionReport` với $K \le 3$ models). `slsqp.py` giải bài toán tối ưu với hàm mục tiêu Pearson trên ma trận dự đoán đã Rank-Transform ($\tilde{Y} \in [0, 1]$), ràng buộc $0.05 \le w_i \le 0.60, \sum w_i = 1$. `bootstrap.py` lấy mẫu $80\%$ Cal-B ($N=200$), tính median weight, co cụm shrinkage về $1/K$ và áp dụng hurdle threshold $+5\%$ IC Sharpe. `calibration.py` tối ưu scalar $T > 0$ trên Cal-A để cực tiểu hóa NLL/ECE mà không làm thay đổi thứ tự phân hạng. Metric $\text{ECE}$ nằm tại `metrics/calibration.py`.  
 **Tech Stack:** `scipy.optimize`, `numpy`, `pydantic` v2, `pytest`.  
