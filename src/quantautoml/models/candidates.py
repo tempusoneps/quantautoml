@@ -44,6 +44,7 @@ class BaseGBDCandidate(ABC):
         self.params = dict(params or {})
         self.random_state = random_state
         self.estimator_: Any = None
+        self.classes_: NDArray[np.int32] | None = None
 
     @abstractmethod
     def fit(self, X: NDArray[np.float32], y: NDArray[np.float32 | np.int32]) -> Self:
@@ -57,14 +58,26 @@ class BaseGBDCandidate(ABC):
         """Predict continuous scores suitable for Spearman Rank IC evaluation.
 
         For binary classification, returns P(y=1).
-        For multiclass classification, returns expected class index sum(c * P(y=c)).
+        For multiclass classification, returns expected class value sum(c * P(y=c))
+        over the classes seen in training.
         Always returns 1D float32 array of length n_samples.
         """
         probs = self.predict_proba(X)
         if self.task_type == TaskType.BINARY_CLASSIFICATION:
             return probs[:, 1].copy()
-        classes = np.arange(probs.shape[1], dtype=np.float32)
-        return (probs @ classes).astype(np.float32)
+        assert self.classes_ is not None
+        return (probs @ self.classes_.astype(np.float32)).astype(np.float32)
+
+    def _encode_labels(self, y: NDArray[np.float32 | np.int32]) -> NDArray[np.int32]:
+        """Map labels to contiguous 0..k-1 (required by XGBoost) and remember the originals."""
+        classes, encoded = np.unique(np.asarray(y, dtype=np.int32), return_inverse=True)
+        if len(classes) < 2:
+            raise ModelError(
+                f"Candidate '{self.name}' needs at least 2 classes in the training segment, "
+                f"got {len(classes)}"
+            )
+        self.classes_ = classes.astype(np.int32)
+        return encoded.astype(np.int32)
 
     @abstractmethod
     def complexity_score(self) -> float:
@@ -100,15 +113,13 @@ class LightGBMCandidate(BaseGBDCandidate):
         for k, v in self.params.items():
             default_kwargs[k] = v
 
-        if self.task_type == TaskType.BINARY_CLASSIFICATION:
-            default_kwargs["objective"] = "binary"
-            clf = lgb.LGBMClassifier(**default_kwargs)
-        else:
-            default_kwargs["objective"] = "multiclass"
-            clf = lgb.LGBMClassifier(**default_kwargs)
-
         X_arr = np.asarray(X, dtype=np.float32)
-        y_arr = np.asarray(y, dtype=np.int32)
+        y_arr = self._encode_labels(y)
+        assert self.classes_ is not None
+        # LightGBM's multiclass objective needs >= 3 classes; a fold seeing only two is binary.
+        is_binary = self.task_type == TaskType.BINARY_CLASSIFICATION or len(self.classes_) == 2
+        default_kwargs["objective"] = "binary" if is_binary else "multiclass"
+        clf = lgb.LGBMClassifier(**default_kwargs)
         clf.fit(X_arr, y_arr)
         self.estimator_ = clf
         return self
@@ -160,7 +171,7 @@ class XGBoostCandidate(BaseGBDCandidate):
             clf = xgb.XGBClassifier(**default_kwargs)
 
         X_arr = np.asarray(X, dtype=np.float32)
-        y_arr = np.asarray(y, dtype=np.int32)
+        y_arr = self._encode_labels(y)
         clf.fit(X_arr, y_arr)
         self.estimator_ = clf
         return self
@@ -213,7 +224,7 @@ class CatBoostCandidate(BaseGBDCandidate):
             clf = CatBoostClassifier(**default_kwargs)
 
         X_arr = np.asarray(X, dtype=np.float32)
-        y_arr = np.asarray(y, dtype=np.int32)
+        y_arr = self._encode_labels(y)
         clf.fit(X_arr, y_arr)
         self.estimator_ = clf
         return self

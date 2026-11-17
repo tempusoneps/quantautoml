@@ -134,3 +134,26 @@ def test_lightgbm_complexity_respects_max_depth() -> None:
     free = create_candidate("lightgbm", TaskType.BINARY_CLASSIFICATION, params={"num_leaves": 63, "max_depth": -1})
     capped = create_candidate("lightgbm", TaskType.BINARY_CLASSIFICATION, params={"num_leaves": 63, "max_depth": 3})
     assert capped.complexity_score() < free.complexity_score()
+
+
+@pytest.mark.parametrize("model_name", ["lightgbm", "xgboost", "catboost"])
+def test_multiclass_train_missing_a_class(model_name: str) -> None:
+    """Early walk-forward folds may lack a class; labels {0, 2} must still fit and score."""
+    rng = np.random.default_rng(3)
+    X = rng.normal(size=(150, 4)).astype(np.float32)
+    y = np.where(X[:, 0] > 0, 2, 0).astype(np.int32)
+    m = create_candidate(model_name, TaskType.MULTICLASS_CLASSIFICATION, params={"n_estimators": 10})
+    m.fit(X, y)
+    pred = m.predict(X)
+    assert pred.shape == (150,) and pred.dtype == np.float32
+    # expected class value lies in [0, 2] and tracks the signal
+    assert pred.min() >= 0.0 and pred.max() <= 2.0
+    assert pred[X[:, 0] > 1].mean() > pred[X[:, 0] < -1].mean()
+
+
+@pytest.mark.parametrize("model_name", ["lightgbm", "xgboost", "catboost"])
+def test_single_class_train_raises_model_error(model_name: str) -> None:
+    X = np.random.randn(50, 3).astype(np.float32)
+    m = create_candidate(model_name, TaskType.BINARY_CLASSIFICATION, params={"n_estimators": 5})
+    with pytest.raises(ModelError):
+        m.fit(X, np.ones(50, dtype=np.int32))
