@@ -29,7 +29,7 @@
 ## Execution Order Overview
 
 - [x] **Task 1: Dependencies, Exceptions & ModelsConfig** — Bổ sung thư viện GBDT/Optuna vào `pyproject.toml`, định nghĩa custom exceptions và Pydantic `ModelsConfig`.
-- [ ] **Task 2: Quantitative Metrics — IC Sharpe & Walk-Forward Validation Helper** — Hiện thực `calc_ic_sharpe()` và expanding window walk-forward fold splitter kèm purging/embargo.
+- [x] **Task 2: Quantitative Metrics — IC Sharpe & Walk-Forward Validation Helper** — Hiện thực `calc_ic_sharpe()` và expanding window walk-forward fold splitter kèm purging/embargo.
 - [ ] **Task 3: Modern GBDT Trio Pool (Candidates Wrappers)** — Gói `LightGBM`, `CatBoost`, `XGBoost` theo giao diện chuẩn `BaseGBDCandidate`, hỗ trợ Binary/Multiclass/Continuous và hàm tính `complexity_score()`.
 - [ ] **Task 4: ModelTournament (30-Trial Walk-Forward Tournament)** — Cơ chế đấu loại 30 trials `RandomSampler` trên 5-fold Walk-Forward, xếp hạng bằng Out-of-Fold IC Sharpe.
 - [ ] **Task 5: ModelDecisionEngine (Single Model vs. Ensemble Gate)** — Thẩm định 3 điều kiện (Diversity < 0.88, Marginal Gain ≥ 1.5%, WF Consistency ≥ 60%) và chọn lọc Ensemble Pool ($K \le 3$) hoặc fallback về Single Best.
@@ -80,7 +80,7 @@
 
 ---
 
-### Task 2: Quantitative Metrics — IC Sharpe & Walk-Forward Validation Helper
+### [x] Task 2: Quantitative Metrics — IC Sharpe & Walk-Forward Validation Helper
 
 **Files:**
 - Modify: `src/quantautoml/metrics/ic.py`, `src/quantautoml/metrics/__init__.py`
