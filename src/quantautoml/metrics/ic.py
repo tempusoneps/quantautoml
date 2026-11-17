@@ -112,12 +112,28 @@ def calc_rolling_ic_matrix(
 
 
 def calc_icir(ic_series: NDArray[np.float64]) -> float:
-    """Return mean/std (ddof=1, NaN ignored); 0.0 if std == 0 or < 2 points."""
+    """Return mean/std (ddof=1, NaN ignored); 0.0 if std == 0, constant series, or < 2 points."""
     v = np.asarray(ic_series, dtype=np.float64)
     v = v[~np.isnan(v)]
-    if v.size < 2:
+    if v.size < 2 or np.ptp(v) == 0.0:
         return 0.0
     std = float(np.std(v, ddof=1))
-    if std == 0.0:
+    if std <= 1e-12:
         return 0.0
     return float(np.mean(v)) / std
+
+
+def calc_ic_sharpe(
+    ic_series: NDArray[np.float64],
+    *,
+    annualization_factor: float = 1.0,
+) -> float:
+    """Calculate IC Sharpe = ICIR * sqrt(annualization_factor).
+
+    Returns 0.0 if std == 0, fewer than 2 valid points, or all NaN.
+    Raises InvalidDataError if annualization_factor <= 0.
+    """
+    if annualization_factor <= 0.0:
+        raise InvalidDataError(f"annualization_factor must be positive, got {annualization_factor}")
+    icir = calc_icir(ic_series)
+    return float(icir * np.sqrt(annualization_factor))

@@ -2,6 +2,7 @@
 
 from quantautoml.metrics.fdr import apply_fdr_correction
 from quantautoml.metrics.ic import (
+    calc_ic_sharpe,
     calc_icir,
     calc_rank_ic,
     calc_rolling_ic,
@@ -10,6 +11,7 @@ from quantautoml.metrics.ic import (
 
 __all__ = [
     "apply_fdr_correction",
+    "calc_ic_sharpe",
     "calc_icir",
     "calc_rank_ic",
     "calc_rolling_ic",
