@@ -64,7 +64,7 @@ flowchart LR
   - Tournament hoàn thành đúng ngân sách và chọn ra đúng Top Models.
   - Decision Engine fallback về Single Model khi độ tương quan giữa các mô hình quá cao ($> 0.88$).
   - Optuna tự động tỉa sớm (prune) các nhánh kém hiệu quả.
-- **Trạng thái:** In Progress
+- **Trạng thái:** Done
 
 ---
 
@@ -77,7 +77,7 @@ flowchart LR
 - **Tiêu chí kiểm thử độc lập (Independent Verification):**
   - Trọng số $w$ luôn nằm trong khoảng $[0.05, 0.60]$ và có tổng bằng 1.
   - Quá trình hiệu chuẩn không làm thay đổi thứ tự phân hạng của các mẫu (Rank Invariance test).
-- **Trạng thái:** Planned.
+- **Trạng thái:** In Progress
 
 ---
 
