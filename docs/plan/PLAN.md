@@ -28,7 +28,7 @@
 
 ## Execution Order Overview
 
-- [ ] **Task 1: Dependencies, Exceptions & ModelsConfig** — Bổ sung thư viện GBDT/Optuna vào `pyproject.toml`, định nghĩa custom exceptions và Pydantic `ModelsConfig`.
+- [x] **Task 1: Dependencies, Exceptions & ModelsConfig** — Bổ sung thư viện GBDT/Optuna vào `pyproject.toml`, định nghĩa custom exceptions và Pydantic `ModelsConfig`.
 - [ ] **Task 2: Quantitative Metrics — IC Sharpe & Walk-Forward Validation Helper** — Hiện thực `calc_ic_sharpe()` và expanding window walk-forward fold splitter kèm purging/embargo.
 - [ ] **Task 3: Modern GBDT Trio Pool (Candidates Wrappers)** — Gói `LightGBM`, `CatBoost`, `XGBoost` theo giao diện chuẩn `BaseGBDCandidate`, hỗ trợ Binary/Multiclass/Continuous và hàm tính `complexity_score()`.
 - [ ] **Task 4: ModelTournament (30-Trial Walk-Forward Tournament)** — Cơ chế đấu loại 30 trials `RandomSampler` trên 5-fold Walk-Forward, xếp hạng bằng Out-of-Fold IC Sharpe.
@@ -40,7 +40,7 @@
 
 ## Detailed Task Breakdown
 
-### Task 1: Dependencies, Exceptions & ModelsConfig
+### [x] Task 1: Dependencies, Exceptions & ModelsConfig
 
 **Files:**
 - Modify: `pyproject.toml`, `src/quantautoml/common/exceptions.py`, `src/quantautoml/common/config.py`, `docs/CONFIGURATION.md`

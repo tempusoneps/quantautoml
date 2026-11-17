@@ -19,3 +19,15 @@ class DataLeakageError(QuantAutoMLError):
 
 class FeatureSelectionError(QuantAutoMLError):
     """Feature funnel cannot be fit or applied (e.g. unfitted filter, empty result)."""
+
+
+class ModelError(QuantAutoMLError):
+    """Base class for model training, tournament, and tuning failures."""
+
+
+class TournamentError(ModelError):
+    """Tournament evaluation or candidate selection failed."""
+
+
+class TuningError(ModelError):
+    """Hyperparameter optimization failed or produced invalid results."""

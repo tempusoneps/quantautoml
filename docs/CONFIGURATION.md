@@ -83,3 +83,34 @@ Khi có `[features]`, `run_pipeline` fit `FeatureFunnel` (F1 → F2 → F3+7 →
 3. **F3+7 sign-consistency / monotonic:** luật nghiêm ngặt có thể cắt nhầm tín hiệu thật khi IC ở kỳ hạn dài chỉ là nhiễu (2/10 seed bị loại ở IC 0.10).
 4. **Công suất F6:** gate ý nghĩa chi2-0.99 với 3 regime chỉ giữ ~13/40 tín hiệu ở IC 0.05 và ~34/40 ở IC 0.08 (N = 9,000); nhiễu lọt qua ~5%.
 5. **F6/F8 bỏ qua `ctx.discrete_features`:** mã categorical bị quantile-bin như biến thứ bậc (ordinal).
+
+
+## Phase 3 — GBDT Tournament & Deep Tuning
+
+Mục `[models]` là tùy chọn; thiếu mục này thì `PipelineConfig.models is None` (tương thích ngược Phase 1 & 2).
+
+```toml
+[models]
+tournament_trials = 30           # Ngân sách RandomSampler cho mỗi candidate
+tuning_trials = 50               # Ngân sách Optuna Bayesian TPE tuning
+n_wf_folds = 5                   # Số folds Expanding Walk-Forward
+diversity_threshold = 0.88       # Ngưỡng tương quan dự đoán tối đa giữa các model (< 0.88)
+marginal_gain_threshold = 0.015  # Tăng trưởng Rank IC tối thiểu của Ensemble (+1.5%)
+wf_consistency_threshold = 0.60  # Tỷ lệ fold vượt trội của Ensemble (>= 60%)
+complexity_penalty = 0.05        # Hệ số phạt độ phức tạp mô hình
+random_state = 42
+enabled_models = ["lightgbm", "xgboost", "catboost"]
+```
+
+| Khóa | Mặc định | Ràng buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `models.tournament_trials` | `30` | `>= 1` | Số lượt thử ngẫu nhiên cho mỗi model ở vòng đấu loại. |
+| `models.tuning_trials` | `50` | `>= 1` | Số trials tối ưu hóa siêu tham số sâu bằng Optuna TPE. |
+| `models.n_wf_folds` | `5` | `>= 2` | Số fold Expanding Window Walk-Forward trên tập Train. |
+| `models.diversity_threshold` | `0.88` | `(0, 1]` | Ngưỡng tương quan dự đoán tối đa (Diversity $> 0.12$). |
+| `models.marginal_gain_threshold` | `0.015` | `>= 0` | Biên độ tăng Rank IC tối thiểu để Ensemble được chấp thuận. |
+| `models.wf_consistency_threshold` | `0.60` | `(0, 1]` | Tỷ lệ fold Walk-Forward mà Ensemble vượt hơn Single Best Model. |
+| `models.complexity_penalty` | `0.05` | `>= 0` | Trọng số phạt độ phức tạp trong hàm mục tiêu Optuna. |
+| `models.random_state` | `42` | int | Random seed đảm bảo tính tái lập kết quả. |
+| `models.enabled_models` | trio | subset | Danh sách model tham gia (LightGBM, XGBoost, CatBoost). |
+
