@@ -1,311 +1,279 @@
-# Implementation Plan: Quant AutoML Pipeline
+# Implementation Plan: Quant AutoML Pipeline — Phase 3
 
 > **For agentic workers:** REQUIRED SUB-SKILL: dùng `superpowers:subagent-driven-development` (khuyến nghị) hoặc `superpowers:executing-plans` để thực thi plan theo từng task. Quy trình TDD bắt buộc (RED → GREEN → REFACTOR), cập nhật `- [x]` sau mỗi task theo RULE-10.
 
-**Active Phase:** Phase 2 — Leakage-Free Feature Funnel (Fast dCor & FDR Control)
-**Branch:** `develop/v1.0-phase2`
-**Goal:** Xây phễu lọc tính năng 7 tầng (F1 → F2 → F3+7 → F4 → F5 → F6 → F8) chỉ `fit()` trên Train, kiểm soát FDR ≤ 0.05, dCor chạy được với N > 10,000 mà không tràn RAM.
-**Architecture:** Mỗi tầng là một `BaseFeatureFilter` độc lập (SRP), nhận mảng `float32` của segment Train để `fit()` và chỉ `transform()` trên Val/Cal/OOS. `FeatureFunnel` nối tuần tự các tầng, ghi lại báo cáo loại bỏ theo từng tầng. Các hàm thống kê dùng chung (Rank IC, ICIR, BH-FDR) nằm ở `metrics/` (tầng nền, không import ngược).
-**Tech Stack:** `numpy`, `scipy` (Spearman, `cluster.hierarchy`), `scikit-learn` (mutual information), `dcor` (Fast dCor, phương thức `AVL`), `pydantic` v2, `pytest`.
-**Spec:** [`SCOPE.md`](SCOPE.md) (Module 2), [`PHASES.md`](PHASES.md) (Phase 2), [`ARCHITECTURE.md`](ARCHITECTURE.md) §3.3, [`TRADE-OFF.md`](TRADE-OFF.md) §4, [`STRUCTURE.md`](STRUCTURE.md).
+**Active Phase:** Phase 3 — Modern GBDT Tournament & Deep Hyperparameter Optimization  
+**Branch:** `develop/v1.0-phase3`  
+**Goal:** Xây dựng hệ thống đấu loại công bằng giữa 3 mô hình GBDT hiện đại (LightGBM, CatBoost, XGBoost), tự động quyết định Single Best Model vs. Ensemble Pool (Diversity < 0.88, Marginal Gain ≥ 1.5%, WF Consistency ≥ 60%), và tinh chỉnh siêu tham số chuyên sâu bằng Optuna Multivariate TPE + HyperbandPruner tối ưu theo hàm mục tiêu $\text{IC Sharpe}_{WF} - 0.05 \times \text{Complexity\_Score}$.  
+**Architecture:** `models/` là module độc lập tiếp nhận đầu ra của `FeatureFunnel` trên `split.train`. Các mô hình GBDT được đóng gói qua giao diện chuẩn `GBDTTrioPool` trong `candidates.py`. `tournament.py` tổ chức 30 trials `RandomSampler` trên 5-fold Expanding Window Walk-Forward. `decision_engine.py` thẩm định 3 điều kiện chọn Ensemble ($K \le 3$) hay Single Model. `tuner.py` chạy Bayesian Optimization chuyên sâu. Các metric định lượng (IC Sharpe, Walk-Forward IC) nằm tại `metrics/ic.py`.  
+**Tech Stack:** `lightgbm`, `xgboost`, `catboost`, `optuna`, `scipy`, `numpy`, `pydantic` v2, `pytest`.  
+**Spec:** [`PHASES.md`](PHASES.md) (Phase 3), [`ARCHITECTURE.md`](ARCHITECTURE.md) §3, [`TRADE-OFF.md`](TRADE-OFF.md) §3, [`STRUCTURE.md`](STRUCTURE.md), [`03-model-selection/`](03-model-selection/), [`04-tuning/`](04-tuning/).
+
+---
 
 ## Global Constraints
 
-- **RULE-01:** `fit()` chỉ nhận `Segment` Train; Val/Cal/OOS chỉ `transform()`. Vi phạm → `DataLeakageError`.
-- **RULE-02:** mọi tiêu chí chọn feature dựa trên Spearman Rank IC / ICIR (MI chỉ dùng cho F1/F5/F6/F8 như spec quy định).
-- **RULE-06:** đầu vào/đầu ra của mọi filter là `np.float32`. Ngoại lệ có chủ đích: dCor cast tạm sang `float64` ngay trước khi gọi `dcor` (float32 làm `dcor` rơi về bản chưa biên dịch, đã kiểm chứng), kết quả không lưu lại.
-- **RULE-08:** BH-FDR ≤ 0.05 và đơn điệu kỳ hạn trên `{1, 5, 10, 21}`.
-- Ngưỡng cố định từ spec: ICIR(h_target) > 0.30; dCor > 0.85; rolling window = 63; IC horizons = {1, 5, 10, 21}; Max-MI / Rank-IC chọn đại diện cụm; khoảng cách cụm = `1 − |corr(IC_i, IC_j)|`.
-- Python ≥ 3.12, type hints 100%, không `Any` mơ hồ, exception kế thừa `QuantAutoMLError`, không `except Exception: pass`.
-- Phụ thuộc một chiều: `common`/`metrics` không import `features`; `features` chỉ import `common`, `metrics`, `numpy`, `scipy`, `sklearn`, `dcor`.
-- Zero Scope Creep: `calc_ic_sharpe`, Downside IC, `calibration.py` (ECE) **không** thuộc Phase 2 (để Phase 3/4/5).
-
-## Quyết định thiết kế (cần bạn xác nhận)
-
-Spec không chốt các điểm dưới đây; plan chọn mặc định hợp lý, đều chỉnh được qua `[features]` trong config:
-
-1. **Ánh xạ horizon → cột nhãn:** `y` là nhãn phân loại, nên IC đa kỳ hạn lấy từ `labels_aux` (cột forward-return). Config khai báo `features.ic_horizons = {1 = "fwd_ret_1", 5 = "fwd_ret_5", ...}` và `features.target_horizon`.
-2. **F1 MCAR/MAR/MNAR & Discrete Features (Bool/Categorical):** 
-   - Quy ước vận hành: `MNAR` nếu MI(indicator NaN, y) > `indicator_mi_min`; `MAR` nếu |Spearman(indicator, feature khác)| lớn nhất > 0.3; còn lại `MCAR`. Chỉ `MNAR`/`MAR` sinh cột `is_nan_<tên>`. 
-   - Hard Gate: cột toàn NaN hoặc NaN ratio > `max_nan_ratio` (0.6) bị loại (áp dụng cho cả continuous, bool và categorical).
-   - **Xử lý đặc thù Bool & Categorical:**
-     - Không bỏ qua (skip) bool/cat ở F1; vẫn phải qua Hard Gate dọn rác.
-     - Tận dụng `discrete_features` (từ `IngestionReport.bool_cols` và `string_maps.keys()`) để truyền mask vào `mutual_info_classif`, tính MI theo phân phối xác suất rời rạc chuẩn xác và nhanh hơn $k$-NN liên tục.
-     - Với cột `bool`, nếu chỉ chứa một giá trị thực sự kèm NaN (ví dụ chỉ có `{1.0, NaN}` hoặc `{0.0, NaN}`), không sinh thêm cột `is_nan_<tên>` (tránh tạo bản sao đối ngẫu thừa thãi), mà impute giá trị bù đối ứng (0.0 hoặc 1.0).
-3. **F2 ngưỡng:** `min_unique_ratio=0.01`, `min_cv=1e-6`, `max_peak_var_ratio=50` (phân vị 90 của rolling variance w=63 chia phương sai toàn Train). Đây là giá trị khởi điểm, cần hiệu chỉnh trên dữ liệu thật.
-4. **F6 regime:** Bull/Bear/Sideways suy ra *nhân quả* từ nhãn h=1 đã realized (dịch 1 nến), tổng 63 nến, ngưỡng ±0.5σ của Train. Thiếu cột h=1 → F6 bỏ qua kèm cảnh báo trong báo cáo.
-5. **F8:** `max_features=30` (mặc định); MI rời rạc hóa bằng 10 quantile bin.
-6. **dCor:** `dcor.distance_correlation(..., method="AVL")` trên toàn Train (đã đo: N=20,000 ≈ 0.04 s/cặp). Chỉ tính cặp giữa các feature còn sống, không bao giờ tạo ma trận N×N. Quy tắc loại trong cặp: giữ feature có |Rank IC| cao hơn.
-
-## Review Focus
-
-Các đầu vào mà spec không nói tới nhưng dễ gây hỏng, mỗi dòng có test ở task sở hữu:
-
-1. Nhãn `y = -1` (mid-NaN từ Phase 1) lọt vào tính IC/MI làm lệch kết quả → phải mask (Task 2, 5).
-2. Cột hằng số / toàn NaN / chỉ 1 giá trị → không được ném `ZeroDivisionError` hay trả NaN IC (Task 2, 5, 6, 8).
-3. Train quá ngắn (N < `rolling_window` × 2) → báo `InvalidDataError` rõ ràng thay vì mảng rỗng (Task 2, 7).
-4. Không feature nào sống sau một tầng → funnel trả tập rỗng kèm báo cáo, không crash ở tầng sau (Task 12).
-5. Thay đổi giá trị Val/OOS không được làm thay đổi tập feature chọn (kiểm tra rò rỉ ở mức hành vi) (Task 12).
+- **RULE-01:** Mọi thao tác huấn luyện mô hình, cross-validation Walk-Forward chỉ diễn ra trên `split.train`. Tuyệt đối cấm lọt mẫu từ Cal-A, Cal-B, Val, OOS. Vi phạm $\to$ `DataLeakageError`.
+- **RULE-02:** Xuyên suốt Tournament và Deep Tuning, chỉ số đánh giá tối ưu bắt buộc là **Spearman Rank IC & IC Sharpe** (không dùng raw Accuracy hay MSE đơn thuần).
+- **RULE-05:** Decision Engine chỉ chấp thuận cấu hình Ensemble khi vượt qua cả 3 điều kiện:
+  1. Diversity correlation giữa các mô hình $< 0.88$ (độ đa dạng $> 0.12$).
+  2. Marginal Gain của Equal-Weight ensemble $\ge +1.5\%$ Rank IC so với Single Best Model.
+  3. Walk-Forward Consistency $\ge 60\%$ (tối thiểu 3/5 fold ensemble vượt trội hơn single model).
+  Nếu không đạt, tự động fallback về Single Best Model.
+- **RULE-06:** Dữ liệu ma trận số học đầu vào và đầu ra xác suất/dự đoán phải dùng chuẩn `np.float32`.
+- **Python $\ge 3.12$**, type hints 100%, không dùng `Any` mơ hồ, ngoại lệ kế thừa `QuantAutoMLError`, không dùng `try ... except Exception: pass`.
+- Phụ thuộc một chiều: `common` và `metrics` không import `models`; `models` chỉ import `common`, `metrics`, `numpy`, `scipy`, `lightgbm`, `xgboost`, `catboost`, `optuna`.
 
 ---
 
 ## Execution Order Overview
 
-- [x] **Task 1:** Dependencies (`scipy`, `scikit-learn`, `dcor`), exceptions & `FeaturesConfig`.
-- [x] **Task 2:** `metrics/ic.py` — Rank IC, Rolling IC, ICIR.
-- [x] **Task 3:** `metrics/fdr.py` — Benjamini-Hochberg.
-- [x] **Task 4:** `features/base.py` — `BaseFeatureFilter` & `FilterReport`.
-- [x] **Task 5:** F1 `triage.py` — NaN/Inf Triage & MI score.
-- [x] **Task 6:** F2 `variance.py` — Multi-Metric Variance.
-- [x] **Task 7:** F3+7 `ic_stability.py` — IC Stability + FDR + Term Structure.
-- [x] **Task 8:** F4 `collinearity.py` — Fast dCor.
-- [x] **Task 9:** F5 `clustering.py` — IC-Behavior Clustering.
-- [x] **Task 10:** F6 `regime_synergy.py` — Regime MI & Synergy.
-- [x] **Task 11:** F8 `jmi.py` — Joint Mutual Information.
-- [x] **Task 12:** `funnel.py` + wiring vào `pipeline.py` + integration test chống rò rỉ & scalability.
+- [ ] **Task 1: Dependencies, Exceptions & ModelsConfig** — Bổ sung thư viện GBDT/Optuna vào `pyproject.toml`, định nghĩa custom exceptions và Pydantic `ModelsConfig`.
+- [ ] **Task 2: Quantitative Metrics — IC Sharpe & Walk-Forward Validation Helper** — Hiện thực `calc_ic_sharpe()` và expanding window walk-forward fold splitter kèm purging/embargo.
+- [ ] **Task 3: Modern GBDT Trio Pool (Candidates Wrappers)** — Gói `LightGBM`, `CatBoost`, `XGBoost` theo giao diện chuẩn `BaseGBDCandidate`, hỗ trợ Binary/Multiclass/Continuous và hàm tính `complexity_score()`.
+- [ ] **Task 4: ModelTournament (30-Trial Walk-Forward Tournament)** — Cơ chế đấu loại 30 trials `RandomSampler` trên 5-fold Walk-Forward, xếp hạng bằng Out-of-Fold IC Sharpe.
+- [ ] **Task 5: ModelDecisionEngine (Single Model vs. Ensemble Gate)** — Thẩm định 3 điều kiện (Diversity < 0.88, Marginal Gain ≥ 1.5%, WF Consistency ≥ 60%) và chọn lọc Ensemble Pool ($K \le 3$) hoặc fallback về Single Best.
+- [ ] **Task 6: DeepOptunaTuner (Multivariate TPE + HyperbandPruner)** — Tối ưu hóa siêu tham số chuyên sâu với hàm mục tiêu $\text{IC Sharpe}_{WF} - 0.05 \times \text{Complexity\_Score}$ và cơ chế tỉa sớm Hyperband.
+- [ ] **Task 7: Pipeline Integration, Reporting & Zero Leakage Verification** — Nối `models` vào `PipelineResult` trong `pipeline.py`, xuất báo cáo `tournament_report.json`, `decision_report.json`, `tuning_report.json`, kiểm tra toàn diện Zero Leakage.
 
 ---
 
 ## Detailed Task Breakdown
 
-### [x] Task 1: Dependencies, Exceptions & FeaturesConfig
+### Task 1: Dependencies, Exceptions & ModelsConfig
 
 **Files:**
 - Modify: `pyproject.toml`, `src/quantautoml/common/exceptions.py`, `src/quantautoml/common/config.py`, `docs/CONFIGURATION.md`
-- Test: `tests/unit/test_config.py` (mở rộng)
-
-**Interfaces:**
-- Produces: `class FeatureSelectionError(QuantAutoMLError)`; `class FeaturesConfig(_Strict)` với các trường: `ic_horizons: dict[int, str]`, `target_horizon: int`, `icir_min: float = 0.30`, `fdr_alpha: float = 0.05`, `rolling_window: int = 63`, `dcor_threshold: float = 0.85`, `cluster_distance: float = 0.30`, `max_nan_ratio: float = 0.6`, `min_unique_ratio: float = 0.01`, `min_cv: float = 1e-6`, `max_peak_var_ratio: float = 50.0`, `max_features: int = 30`, `monotonic_tolerance: float = 0.05`; `PipelineConfig.features: FeaturesConfig | None = None`.
-
-**Action Steps:**
-1. Test thất bại trong `test_config.py`: (a) TOML có `[features]` hợp lệ parse đúng; (b) `target_horizon` không nằm trong `ic_horizons` → `ValidationError`; (c) thiếu `[features]` → `features is None` (tương thích ngược Phase 1); (d) `fdr_alpha` ngoài `(0, 0.05]` → `ValidationError` (RULE-08).
-2. Thêm vào `pyproject.toml`: `scipy>=1.13.0`, `scikit-learn>=1.4.0`, `dcor>=0.7`, rồi chạy `uv sync`.
-3. Hiện thực `FeatureSelectionError`, `FeaturesConfig` (validator `target_horizon in ic_horizons`), trường `features` của `PipelineConfig`.
-4. Cập nhật `docs/CONFIGURATION.md` thêm mục "Phase 2 — Feature Funnel" với ví dụ TOML.
-
-- **Verification Command:** `uv run pytest tests/unit/test_config.py -v` → PASS.
-- **Commit Message:** `chore(setup): add phase 2 dependencies and features config`
-
----
-
-### [x] Task 2: Rank IC, Rolling IC & ICIR
-
-**Files:**
-- Create: `src/quantautoml/metrics/__init__.py`, `src/quantautoml/metrics/ic.py`
-- Test: `tests/unit/test_metrics_ic.py`
+- Test: `tests/unit/test_models_config.py`
 
 **Interfaces:**
 - Produces:
-  - `calc_rank_ic(x: NDArray[np.float32], y: NDArray[np.float32 | np.int32], *, ignore_value: float | None = None) -> tuple[float, float]` → `(rho, p_value)`; bỏ cặp NaN và cặp `y == ignore_value`; < 3 cặp hợp lệ hoặc `x`/`y` hằng → `(0.0, 1.0)`.
-  - `calc_rolling_ic(x, y, window: int, *, ignore_value: float | None = None) -> NDArray[np.float64]` → IC trên cửa sổ không chồng lấp (bước = `window`), độ dài `n // window`; cửa sổ suy biến → `NaN`.
-  - `calc_icir(ic_series: NDArray[np.float64]) -> float` → `mean/std` (bỏ NaN, `ddof=1`); std = 0 hoặc < 2 điểm → `0.0`.
+  - Exceptions: `class ModelError(QuantAutoMLError)`, `class TournamentError(ModelError)`, `class TuningError(ModelError)`.
+  - Pydantic Schema: `class ModelsConfig(_Strict)`:
+    - `tournament_trials: int = 30` (ngân sách mỗi model)
+    - `tuning_trials: int = 50` (ngân sách Optuna tuning)
+    - `n_wf_folds: int = 5` (số fold Expanding Walk-Forward)
+    - `diversity_threshold: float = 0.88` (ngưỡng tương quan tối đa)
+    - `marginal_gain_threshold: float = 0.015` (ngưỡng tăng trưởng tối thiểu 1.5% Rank IC)
+    - `wf_consistency_threshold: float = 0.60` (ngưỡng nhất quán Walk-Forward 60%)
+    - `complexity_penalty: float = 0.05`
+    - `random_state: int = 42`
+    - `enabled_models: list[str] = ["lightgbm", "xgboost", "catboost"]`
+  - Modify `PipelineConfig`: thêm `models: ModelsConfig | None = None`.
 
 **Action Steps:**
-1. Test thất bại: `rho == 1.0` khi `y = x`; `rho == -1.0` khi `y = -x`; khớp `scipy.stats.spearmanr` trên dữ liệu ngẫu nhiên (`atol=1e-9`); `y=-1` bị loại (kết quả bằng kết quả khi cắt các dòng đó); cột hằng → `(0.0, 1.0)`; toàn NaN → `(0.0, 1.0)`; `calc_rolling_ic` trả đúng độ dài và NaN ở cửa sổ hằng; `calc_icir` của chuỗi hằng = `0.0`.
-2. Hiện thực bằng `scipy.stats.spearmanr` (kiểm tra suy biến trước khi gọi để tránh cảnh báo).
+1. Viết test thất bại `tests/unit/test_models_config.py`:
+   - Parse TOML có section `[models]` hợp lệ.
+   - Bắt lỗi khi `tournament_trials < 1`, `diversity_threshold <= 0` hoặc `> 1.0`.
+   - Bắt lỗi khi `enabled_models` chứa model không hợp lệ ngoài trio.
+2. Thêm vào `pyproject.toml`:
+   - `lightgbm>=4.3.0`
+   - `xgboost>=2.0.0`
+   - `catboost>=1.2.0`
+   - `optuna>=3.6.0`
+   Chạy `uv sync` để đồng bộ môi trường ảo.
+3. Hiện thực exceptions trong `exceptions.py` và `ModelsConfig` trong `config.py`.
+4. Cập nhật `docs/CONFIGURATION.md` phần `[models]`.
 
-- **Verification Command:** `uv run pytest tests/unit/test_metrics_ic.py -v`
-- **Commit Message:** `feat(metrics): implement rank IC, rolling IC and ICIR`
+- **Verification Command:** `uv run pytest tests/unit/test_models_config.py -v`
+- **Commit Message:** `chore(models): add gbdt dependencies and models config`
 
 ---
 
-### [x] Task 3: Benjamini-Hochberg FDR
+### Task 2: Quantitative Metrics — IC Sharpe & Walk-Forward Validation Helper
 
 **Files:**
-- Create: `src/quantautoml/metrics/fdr.py`
-- Test: `tests/unit/test_metrics_fdr.py`
-
-**Interfaces:**
-- Produces: `apply_fdr_correction(p_values: NDArray[np.float64], alpha: float = 0.05) -> NDArray[np.bool_]` → mặt nạ "được chấp nhận" theo công thức $k = \max\{i : p_{(i)} \le \frac{i}{M}\alpha\}$ (ARCHITECTURE §3.3).
-
-**Action Steps:**
-1. Test thất bại: ví dụ tay `p=[0.001, 0.008, 0.039, 0.041, 0.6]`, `alpha=0.05` → `[T, T, F, F, F]` (ngưỡng .01/.02/.03/.04/.05 ⇒ k=2); khớp `scipy.stats.false_discovery_control(p) <= alpha` trên 1,000 p-value ngẫu nhiên; mảng rỗng → mảng rỗng; p-value NaN hoặc ngoài [0,1] → `InvalidDataError`; 1,000 p-value đều U(0,1) thuần nhiễu → tỷ lệ chấp nhận ≤ 0.05 trên 200 lần lặp seed cố định (kiểm chứng chống data-snooping).
-2. Hiện thực thủ công theo công thức (sort, so ngưỡng `i/M·α`, lấy `k` lớn nhất, chấp nhận mọi p ≤ `p_(k)`), trả mặt nạ theo thứ tự gốc.
-
-- **Verification Command:** `uv run pytest tests/unit/test_metrics_fdr.py -v`
-- **Commit Message:** `feat(metrics): implement Benjamini-Hochberg FDR correction`
-
----
-
-### [x] Task 4: BaseFeatureFilter & FilterReport
-
-**Files:**
-- Create: `src/quantautoml/features/__init__.py`, `src/quantautoml/features/base.py`
-- Modify: `src/quantautoml/common/types.py` (thêm `FilterReport`)
-- Test: `tests/unit/test_features_base.py`
-
-**Interfaces:**
-- Produces:
-  - `@dataclass(frozen=True) FilterReport(stage: str, n_in: int, n_out: int, dropped: dict[str, str], notes: tuple[str, ...] = ())` — `dropped` ánh xạ tên feature → lý do.
-  - `@dataclass(frozen=True) FitContext(feature_names: tuple[str, ...], labels_aux: dict[str, NDArray[np.float32]], task_type: TaskType, discrete_features: tuple[str, ...] = ())`.
-  - `class BaseFeatureFilter(ABC)`: `name: ClassVar[str]`; `fit(self, X: NDArray[np.float32], y: NDArray[np.int32], ctx: FitContext) -> Self` (đặt `is_fitted_`, `output_names_`, `report_`); `transform(self, X: NDArray[np.float32]) -> NDArray[np.float32]` (ném `FeatureSelectionError` nếu chưa fit hoặc số cột ≠ lúc fit; không bao giờ cập nhật trạng thái đã fit); abstract `_fit(...)` và `_transform(...)`.
-  - `y` có thể `None`/`UNSUPERVISED` → `fit` ném `InvalidDataError` (phễu cần nhãn).
-
-**Action Steps:**
-1. Test thất bại bằng một filter giả: `transform` trước `fit` → `FeatureSelectionError`; `transform` sai số cột → lỗi; `transform` gọi 2 lần trên dữ liệu khác nhau không thay đổi `output_names_`; `fit` với `y=None` → `InvalidDataError`; `fit` trả `self`; đầu ra luôn `float32` (filter trả `float64` → bị ép/ném lỗi theo RULE-06).
-2. Hiện thực lớp cơ sở (template method: kiểm tra → `_fit`/`_transform` → kiểm tra dtype).
-
-- **Verification Command:** `uv run pytest tests/unit/test_features_base.py -v`
-- **Commit Message:** `feat(features): add BaseFeatureFilter contract and FilterReport`
-
----
-
-### [x] Task 5: F1 — NaN/Inf Triage & MI Score
-
-**Files:**
-- Create: `src/quantautoml/features/triage.py`
-- Test: `tests/unit/test_triage.py`
-
-**Interfaces:**
-- Consumes: `BaseFeatureFilter`, `FitContext`, `FeaturesConfig`.
-- Produces: `class NaNInfTriage(BaseFeatureFilter)` với `__init__(self, cfg: FeaturesConfig)`; sau `fit`: `scores_: dict[str, float]` = `MI(X, y) × (1 − nan_ratio)`, `missing_kind_: dict[str, Literal["none", "MCAR", "MAR", "MNAR"]]`. `transform` thay `±Inf` bằng `NaN`, loại cột đã bị Hard Gate, **thêm cột `is_nan_<tên>`** (float32, 0/1) cho cột `MAR`/`MNAR` (ngoại trừ cột bool dạng đơn giá trị + NaN để tránh sinh cột đối ngẫu dư thừa).
-
-**Action Steps:**
-1. Test thất bại: cột toàn NaN và cột NaN ratio 0.7 bị loại với lý do rõ (cho cả float, bool và categorical); `±Inf` → `NaN`; cột không NaN → `"none"` và không sinh indicator; NaN rải ngẫu nhiên độc lập với `y` → `"MCAR"`; NaN chỉ xuất hiện khi `y == 1` → `"MNAR"` và có cột `is_nan_*` (MI > 0); cột bool `{1, NaN}` không sinh cột `is_nan_*` mà được impute 0.0; `score` giảm khi NaN ratio tăng với cùng MI; `y = -1` bị mask trước khi tính MI; cột hằng → score `0.0`, không crash; `discrete_features` được truyền dưới dạng boolean mask vào `mutual_info_classif(..., discrete_features=...)`; `fit` hai lần với Val bị trộn vào thì `missing_kind_` không đổi khi chỉ `transform` Val (không fit lại).
-2. Hiện thực: impute trung vị (Train) chỉ để tính MI (với bool/categorical trung vị vẫn là giá trị hợp lệ), dùng `sklearn.feature_selection.mutual_info_classif` với `random_state=0` và `discrete_features` mask; phân loại theo quy ước ở mục "Quyết định thiết kế" #2.
-
-- **Verification Command:** `uv run pytest tests/unit/test_triage.py -v`
-- **Commit Message:** `feat(features): implement F1 NaN/Inf triage with MI scoring`
-
----
-
-### [x] Task 6: F2 — Multi-Metric Variance Filter
-
-**Files:**
-- Create: `src/quantautoml/features/variance.py`
-- Test: `tests/unit/test_variance.py`
-
-**Interfaces:**
-- Produces: `class MultiMetricVarianceFilter(BaseFeatureFilter)` với `__init__(self, cfg: FeaturesConfig)`; `metrics_: dict[str, tuple[float, float, float]]` = `(cv, peak_var_ratio, unique_ratio)`. Loại feature nếu `n_unique < 2` **hoặc** (`n_unique > 2` và `unique_ratio < min_unique_ratio`) **hoặc** `|cv| < min_cv` **hoặc** `peak_var_ratio > max_peak_var_ratio`, với `peak_var_ratio` = phân vị 90 của phương sai cuộn (w = `rolling_window`, bỏ NaN) / phương sai toàn Train.
-
-**Action Steps:**
-1. Test thất bại: cột hằng bị loại (`unique_ratio`); cột nhị phân 0/1 cân bằng được giữ (quy tắc `unique_ratio` chỉ áp khi `n_unique > 2`); feature có burst phương sai cục bộ lớn bị loại bởi `peak_var_ratio`; mean ≈ 0 không gây chia cho 0 (dùng `std/ max(|mean|, eps)`); Train ngắn hơn `rolling_window` → `InvalidDataError`; toàn NaN → bị loại, không crash.
-2. Hiện thực bằng `numpy.lib.stride_tricks.sliding_window_view` (không tạo bản sao lớn) hoặc tích lũy cumsum.
-
-- **Verification Command:** `uv run pytest tests/unit/test_variance.py -v`
-- **Commit Message:** `feat(features): implement F2 multi-metric variance filter`
-
----
-
-### [x] Task 7: F3+7 — IC Stability, FDR & Term Structure
-
-**Files:**
-- Create: `src/quantautoml/features/ic_stability.py`
-- Test: `tests/unit/test_ic_stability.py`
-
-**Interfaces:**
-- Consumes: `calc_rank_ic`, `calc_rolling_ic`, `calc_icir`, `apply_fdr_correction`, `FitContext.labels_aux`, `FeaturesConfig.ic_horizons / target_horizon`.
-- Produces: `class ICStabilityFilter(BaseFeatureFilter)`; sau `fit`: `icir_by_horizon_: dict[str, dict[int, float]]`, `p_values_: dict[str, float]` (p-value của Rank IC tại `h_target`). Một feature được giữ khi **đồng thời**: (1) `ICIR(h_target) > icir_min` (theo giá trị tuyệt đối; dấu IC phải nhất quán qua mọi horizon), (2) qua BH-FDR trên toàn bộ feature thử nghiệm, (3) đơn điệu kỳ hạn: `|ICIR(h_i)| ≥ |ICIR(h_{i+1})| − monotonic_tolerance` với các horizon sắp tăng dần.
-
-**Action Steps:**
-1. Test thất bại (dữ liệu tổng hợp seed cố định): feature có tín hiệu thật suy giảm mượt theo horizon → được giữ; feature nhiễu thuần (500 cột ngẫu nhiên) → **tỷ lệ giữ ≤ 5%** (kiểm chứng RULE-08 / TRADE-OFF §4); feature có IC `h=1` âm, `h=5` dương mạnh, `h=10` sụp đổ → bị loại vì vi phạm đơn điệu/đổi dấu; feature đạt ICIR nhưng p-value không qua BH → bị loại; thiếu cột nhãn của một horizon trong `labels_aux` → `InvalidDataError` nêu tên cột; Train < `2 × rolling_window` → `InvalidDataError`; nhãn aux chứa NaN đuôi không làm lệch IC (mask cặp NaN); `transform` chỉ chọn cột, không đọc `labels_aux`.
-2. Hiện thực: với mỗi horizon, `calc_rolling_ic` → `calc_icir`; p-value từ `calc_rank_ic` trên toàn Train tại `h_target`; gom p-value của mọi feature rồi gọi `apply_fdr_correction` một lần.
-
-- **Verification Command:** `uv run pytest tests/unit/test_ic_stability.py -v`
-- **Commit Message:** `feat(features): implement F3+7 IC stability with FDR and term-structure gate`
-
----
-
-### [x] Task 8: F4 — Fast Nonlinear Collinearity (dCor)
-
-**Files:**
-- Create: `src/quantautoml/features/collinearity.py`
-- Test: `tests/unit/test_collinearity.py`
-
-**Interfaces:**
-- Produces: `class FastNonlinearCollinearityFilter(BaseFeatureFilter)`; hàm công khai `fast_dcor(x: NDArray[np.float32], y: NDArray[np.float32]) -> float` (bỏ cặp NaN, cast `float64`, gọi `dcor.distance_correlation(x, y, method="AVL")`; < 3 cặp hoặc hằng → `0.0`). Cặp có `dCor > dcor_threshold` → loại feature có `|Rank IC(h_target)|` thấp hơn (hòa → giữ cột đứng trước).
-
-**Action Steps:**
-1. Test thất bại: `fast_dcor(x, x**2)` > 0.3 trong khi Pearson ≈ 0 (bắt được phụ thuộc phi tuyến); `fast_dcor(x, x) ≈ 1.0` (`atol=1e-6`); hai nhiễu độc lập < 0.1 (N = 5,000); cột hằng → `0.0`; không có cảnh báo `UserWarning` của `dcor` (test chạy với `pytest.warns` ngược/`-W error::UserWarning`, chứng minh đã cast `float64`); cặp `Y = X²` → giữ cột có IC cao hơn; **scalability:** N = 20,000 × 30 feature hoàn thành dưới 60 s và đỉnh bộ nhớ (`tracemalloc`) < 300 MB, chứng minh không có ma trận N×N; thứ tự loại xác định (chạy 2 lần cho cùng kết quả).
-2. Hiện thực: sắp feature theo `|IC|` giảm dần, duyệt tham lam, chỉ so mỗi feature với các feature đã được giữ (O(F·K) cặp).
-
-- **Verification Command:** `uv run pytest tests/unit/test_collinearity.py -v`
-- **Commit Message:** `feat(features): implement F4 fast distance-correlation collinearity filter`
-
----
-
-### [x] Task 9: F5 — IC-Behavior Hierarchical Clustering
-
-**Files:**
-- Create: `src/quantautoml/features/clustering.py`
-- Test: `tests/unit/test_clustering.py`
-
-**Interfaces:**
-- Produces: `class ICBehaviorClusterFilter(BaseFeatureFilter)`; sau `fit`: `clusters_: dict[int, tuple[str, ...]]`, `representatives_: dict[int, str]`. Ma trận đặc trưng = chuỗi rolling IC (w = `rolling_window`, theo `h_target`) của mỗi feature; khoảng cách `1 − |corr(IC_i, IC_j)|`; `scipy.cluster.hierarchy.linkage(method="average")` + `fcluster(criterion="distance", t=cluster_distance)`; đại diện = feature có MI cao nhất với `y` (hòa → `|Rank IC|` cao hơn).
-
-**Action Steps:**
-1. Test thất bại: 2 feature có chuỗi IC cùng dạng (một là bản nhân đôi có nhiễu nhỏ) → cùng cụm, chỉ 1 đại diện sống; 2 feature IC độc lập → khác cụm, đều giữ; 1 feature duy nhất → pass-through; chuỗi IC hằng (std = 0) → khoảng cách = 1 tới mọi feature, không sinh NaN/`ValueError` trong `linkage`; đại diện đúng là Max-MI; kết quả xác định giữa các lần chạy.
-2. Hiện thực; kiểm tra `np.isfinite` ma trận khoảng cách trước `squareform`.
-
-- **Verification Command:** `uv run pytest tests/unit/test_clustering.py -v`
-- **Commit Message:** `feat(features): implement F5 IC-behavior hierarchical clustering`
-
----
-
-### [x] Task 10: F6 — Regime-Aware MI & Synergy
-
-**Files:**
-- Create: `src/quantautoml/features/regime_synergy.py`
-- Test: `tests/unit/test_regime_synergy.py`
+- Modify: `src/quantautoml/metrics/ic.py`, `src/quantautoml/metrics/__init__.py`
+- Create: `src/quantautoml/models/validation.py`
+- Test: `tests/unit/test_metrics_ic_sharpe.py`, `tests/unit/test_walk_forward.py`
 
 **Interfaces:**
 - Produces:
-  - `def label_regimes(ret_h1: NDArray[np.float32], window: int = 63, band: float = 0.5) -> NDArray[np.int8]` → `{1: Bull, -1: Bear, 0: Sideways}`; regime tại t chỉ dùng `ret_h1[:t]` đã realized (dịch 1 nến), ngưỡng `±band·σ` tính trên Train.
-  - `class RegimeSynergyFilter(BaseFeatureFilter)` với `mi_by_regime_: dict[str, dict[int, float]]`, `synergy_pairs_: tuple[tuple[str, str], ...]`. Giữ feature nếu `max_regime MI ≥ mi_floor` **hoặc** thuộc cặp synergy: `I(Xi,Xj;Y) − I(Xi;Y) − I(Xj;Y) > synergy_delta` (rời rạc hóa 5 quantile bin, chỉ xét top-30 feature theo MI để giới hạn O(K²)).
+  - `def calc_ic_sharpe(ic_series: NDArray[np.float64], *, annualization_factor: float = 1.0) -> float`
+    - Tính $\frac{\text{mean}(\text{IC})}{\text{std}(\text{IC}, ddof=1)} \times \sqrt{\text{annualization\_factor}}$.
+    - Trả $0.0$ nếu $\text{std} == 0$, mảng có ít hơn 2 phần tử hợp lệ, hoặc toàn NaN.
+  - `class ExpandingWalkForwardSplitter`:
+    - `__init__(n_folds: int = 5, min_train_ratio: float = 0.5, embargo_bars: int = 0)`
+    - `split(n_samples: int) -> Iterator[tuple[NDArray[np.int32], NDArray[np.int32]]]`
+    - Tạo các fold expanding window theo thời gian: Train mở rộng dần, Test fold đi tiếp theo sau embargo, đảm bảo không có khoảng cách âm và không xáo trộn thứ tự thời gian.
 
 **Action Steps:**
-1. Test thất bại: `label_regimes(ret)[t]` **không đổi** khi sửa `ret[t:]` (kiểm chứng nhân quả — Review Focus #5); feature chỉ có tín hiệu trong Bear (nhiễu ở các regime khác) vẫn được giữ; cặp XOR (`y = sign(x1·x2)`, mỗi cột đơn lẻ MI ≈ 0) → cả hai được bảo vệ qua `synergy_pairs_`; feature nhiễu thuần bị loại; regime có < 50 mẫu bị bỏ qua (không tính MI) và ghi vào `report_.notes`; thiếu cột nhãn h=1 → filter pass-through + ghi chú, không crash.
-2. Hiện thực; MI rời rạc bằng `sklearn.metrics.mutual_info_score` trên nhãn bin kết hợp.
+1. Viết test thất bại `tests/unit/test_metrics_ic_sharpe.py`:
+   - Kiểm tra công thức chuẩn, kiểm tra mảng hằng số trả về 0.0, kiểm tra annualization.
+2. Viết test thất bại `tests/unit/test_walk_forward.py`:
+   - Kiểm tra 5 folds mở rộng liên tục: $\text{Train}_k \subset \text{Train}_{k+1}$.
+   - Kiểm tra `max(Train_k) + embargo < min(Test_k)`.
+   - Kiểm tra không chồng lấn giữa các tập test.
+3. Hiện thực mã nguồn trong `metrics/ic.py` và `models/validation.py`.
 
-- **Verification Command:** `uv run pytest tests/unit/test_regime_synergy.py -v`
-- **Commit Message:** `feat(features): implement F6 regime-aware MI and synergy gate`
+- **Verification Command:** `uv run pytest tests/unit/test_metrics_ic_sharpe.py tests/unit/test_walk_forward.py -v`
+- **Commit Message:** `feat(models): implement ic sharpe metric and expanding walk-forward splitter`
 
 ---
 
-### [x] Task 11: F8 — Joint Mutual Information Selector
+### Task 3: Modern GBDT Trio Pool (Candidates Wrappers)
 
 **Files:**
-- Create: `src/quantautoml/features/jmi.py`
-- Test: `tests/unit/test_jmi.py`
+- Create: `src/quantautoml/models/candidates.py`
+- Test: `tests/unit/test_candidates.py`
 
 **Interfaces:**
-- Produces: `class JMIFeatureSelector(BaseFeatureFilter)`; sau `fit`: `selected_order_: tuple[str, ...]`. Chọn tham lam: feature đầu = MI cao nhất; các feature tiếp theo tối đa hóa $J(f) = \sum_{s \in S} I(f, s; Y)$ (rời rạc hóa 10 quantile bin), dừng khi đạt `min(max_features, n_features)`.
+- Produces:
+  - `class BaseGBDCandidate(ABC)`:
+    - Giao diện thống nhất: `fit(X: NDArray[np.float32], y: NDArray[np.float32 | np.int32]) -> Self`, `predict(X: NDArray[np.float32]) -> NDArray[np.float32]`, `predict_proba(X: NDArray[np.float32]) -> NDArray[np.float32]`, `complexity_score() -> float`.
+  - `class LightGBMCandidate(BaseGBDCandidate)`
+  - `class CatBoostCandidate(BaseGBDCandidate)`
+  - `class XGBoostCandidate(BaseGBDCandidate)`
+  - `def create_candidate(name: str, task_type: TaskType, params: dict[str, Any] | None = None, random_state: int = 42) -> BaseGBDCandidate`
+  - `complexity_score()`:
+    - Chuẩn hóa thang điểm $[0, 1]$ dựa trên `n_estimators`, `max_depth` (hoặc `num_leaves`), `learning_rate` nhằm phạt mô hình quá phức tạp dễ overfit.
 
 **Action Steps:**
-1. Test thất bại: `max_features ≥ n_features` → giữ tất cả; feature thứ nhất luôn là Max-MI; bản sao (gần như trùng) của feature đã chọn được xếp sau một feature bổ sung thông tin mới (JMI phạt dư thừa); cặp XOR được chọn cùng nhau khi `max_features=2`; thứ tự `selected_order_` xác định; `transform` trả cột theo đúng thứ tự gốc của dữ liệu đầu vào (không đổi thứ tự cột).
-2. Hiện thực; cache nhãn bin theo cột để tránh tính lại.
+1. Viết test thất bại `tests/unit/test_candidates.py`:
+   - Cả 3 candidates khởi tạo đúng theo `TaskType.BINARY` và `TaskType.MULTICLASS`.
+   - Đầu vào nhận `float32`, trả dự đoán `float32`.
+   - Kiểm tra tính tái lập với cùng `random_state`.
+   - Tính toán `complexity_score()` trả về giá trị dương xác định.
+2. Hiện thực 3 wrappers trong `candidates.py`, cấu hình tham số mặc định tối ưu hiệu năng và tắt log console thừa (`verbose=-1`, `silent=True`).
 
-- **Verification Command:** `uv run pytest tests/unit/test_jmi.py -v`
-- **Commit Message:** `feat(features): implement F8 JMI feature selector`
+- **Verification Command:** `uv run pytest tests/unit/test_candidates.py -v`
+- **Commit Message:** `feat(models): implement modern gbdt trio wrappers with unified interface`
 
 ---
 
-### [x] Task 12: FeatureFunnel, Pipeline Wiring & Integration Tests
+### Task 4: ModelTournament (30-Trial Walk-Forward Tournament)
 
 **Files:**
-- Create: `src/quantautoml/features/funnel.py`, `tests/integration/test_zero_leakage_funnel.py`
-- Modify: `src/quantautoml/pipeline.py`, `src/quantautoml/features/__init__.py` (export), `tests/unit/test_pipeline.py`
-- Test: `tests/unit/test_funnel.py`
+- Create: `src/quantautoml/models/tournament.py`
+- Test: `tests/unit/test_tournament.py`
 
 **Interfaces:**
-- Consumes: 7 filter ở Task 5–11, `SplitResult`, `Dataset`, `FeaturesConfig`.
-- Produces: `class FeatureFunnel` với `__init__(self, cfg: FeaturesConfig)`; `fit(self, split: SplitResult, dataset: Dataset) -> Self` (**chỉ đọc `split.train`**); `transform(self, seg: Segment) -> Segment` (trả `Segment` mới với `X` đã lọc); thuộc tính `selected_features_: tuple[str, ...]`, `reports_: tuple[FilterReport, ...]`; `PipelineResult` thêm `funnel: FeatureFunnel | None`; `run_pipeline` ghi thêm `funnel_report.json` (và `selected_features.json`) chỉ khi `cfg.features is not None`.
+- Produces:
+  - `class TrialScore(BaseModel)`: `trial_id: int, model_name: str, params: dict, fold_ics: list[float], mean_ic: float, ic_sharpe: float`
+  - `class TournamentResult(BaseModel)`: `rankings: list[TrialScore], best_per_model: dict[str, TrialScore], oof_predictions: dict[str, list[float]]`
+  - `class ModelTournament`:
+    - `__init__(cfg: ModelsConfig, task_type: TaskType)`
+    - `run(X: NDArray[np.float32], y: NDArray[np.float32 | np.int32], embargo_bars: int = 0) -> TournamentResult`
+    - Cấp 30 trials `optuna.samplers.RandomSampler` cho mỗi candidate trong trio trên 5-fold Walk-Forward.
+    - Xếp hạng theo out-of-fold `ic_sharpe`.
 
 **Action Steps:**
-1. Test thất bại — `tests/unit/test_funnel.py`: thứ tự tầng đúng F1→F2→F3+7→F4→F5→F6→F8; số cột giảm đơn điệu qua các tầng (`n_out` của tầng k = `n_in` của tầng k+1, tính cả indicator do F1 sinh); báo cáo ghi đủ 7 tầng kèm lý do; một tầng loại hết feature → các tầng sau pass-through, `selected_features_ == ()`, không ném lỗi (Review Focus #4); `fit` với `UNSUPERVISED` → `InvalidDataError`; `transform` trên Val/OOS/Cal-A/Cal-B trả cùng danh sách cột, `float32`.
-2. Test thất bại — `tests/integration/test_zero_leakage_funnel.py` (dùng dữ liệu 15,000 dòng từ fixture Phase 1): (a) **Hành vi:** thay toàn bộ `Val`, `OOS`, `Cal-A`, `Cal-B` bằng nhiễu → `selected_features_` **giống hệt** (Review Focus #5); (b) **Spy:** bọc `fit` của từng filter, khẳng định độ dài `X` truyền vào bằng `len(split.train.X)` (RULE-01); (c) `FeatureFunnel.fit` ném `DataLeakageError` nếu `split.train.index` không đơn điệu hoặc giao với `index` của Val/OOS/Cal; (d) **BH end-to-end:** 300 feature nhiễu + 5 tín hiệu thật → số feature nhiễu sống sót ≤ 5% và ≥ 4/5 tín hiệu thật được giữ; (e) **Scalability:** N = 20,000, 60 feature chạy trọn funnel < 120 s.
-3. Hiện thực `FeatureFunnel` (khởi tạo filter từ `cfg`, truyền `FitContext` dựng từ `dataset.labels_aux` **cắt theo `split.train.index`**, `discrete_features` từ `dataset.report.bool_cols` và `dataset.report.string_maps.keys()`, không dùng nhãn ngoài Train); nối vào `run_pipeline` + `test_pipeline.py` kiểm tra file báo cáo.
-4. Chạy toàn bộ `uv run pytest tests/ -v` PASS 100%; kiểm tra RULE-06 (mọi mảng `float32`), cập nhật checkbox, bàn giao sang Phase 3.
+1. Viết test thất bại `tests/unit/test_tournament.py`:
+   - Chạy tournament giả lập (budget nhỏ trong test: 2 trials/model) trên dữ liệu mẫu.
+   - Kiểm tra tổng số trial khớp với cấu hình, ranking được sắp xếp giảm dần theo `ic_sharpe`.
+   - Kiểm tra OOF predictions được ghi nhận đầy đủ cho các fold test.
+2. Hiện thực `tournament.py` sử dụng `ExpandingWalkForwardSplitter` từ Task 2 và `create_candidate` từ Task 3.
+
+- **Verification Command:** `uv run pytest tests/unit/test_tournament.py -v`
+- **Commit Message:** `feat(models): implement walk-forward model tournament with random sampling`
+
+---
+
+### Task 5: ModelDecisionEngine (Single Model vs. Ensemble Gate)
+
+**Files:**
+- Create: `src/quantautoml/models/decision_engine.py`
+- Test: `tests/unit/test_decision_engine.py`
+
+**Interfaces:**
+- Produces:
+  - `class DecisionType(StrEnum)`: `SINGLE_MODEL = "single_model"`, `ENSEMBLE = "ensemble"`
+  - `class DecisionReport(BaseModel)`:
+    - `decision: DecisionType`
+    - `selected_models: list[str]` (tối đa $K \le 3$)
+    - `pairwise_correlations: dict[str, float]`
+    - `diversity_score: float` ($1 - \max(\rho)$)
+    - `marginal_gain: float` (Rank IC chênh lệch giữa Ensemble vs Best Single)
+    - `wf_consistency: float` (tỷ lệ fold ensemble vượt single best)
+    - `rationale: str`
+  - `class ModelDecisionEngine`:
+    - `__init__(cfg: ModelsConfig)`
+    - `evaluate(tournament_result: TournamentResult, y_true: NDArray[np.float32 | np.int32]) -> DecisionReport`
+    - Kiểm tra 3 điều kiện:
+      1. Tương quan cặp dự đoán $< 0.88$ (Diversity $> 0.12$).
+      2. Marginal Gain của Equal Weights ensemble $\ge 1.5\%$ Rank IC.
+      3. WF Consistency $\ge 60\%$.
+    - Nếu vi phạm bất kỳ điều kiện nào $\to$ fallback về `SINGLE_MODEL` với mô hình có IC Sharpe cao nhất.
+
+**Action Steps:**
+1. Viết test thất bại `tests/unit/test_decision_engine.py`:
+   - Test case 1: 3 mô hình tương quan cao ($> 0.88$) $\to$ fallback về `SINGLE_MODEL`.
+   - Test case 2: Đa dạng tốt nhưng marginal gain $< 1.5\%$ $\to$ fallback về `SINGLE_MODEL`.
+   - Test case 3: Cả 3 điều kiện thỏa mãn $\to$ chọn `ENSEMBLE` với $K \le 3$.
+2. Hiện thực logic kiểm tra nghiêm ngặt trong `decision_engine.py`.
+
+- **Verification Command:** `uv run pytest tests/unit/test_decision_engine.py -v`
+- **Commit Message:** `feat(models): implement model decision engine with hurdle ensemble conditions`
+
+---
+
+### Task 6: DeepOptunaTuner (Multivariate TPE + HyperbandPruner)
+
+**Files:**
+- Create: `src/quantautoml/models/tuner.py`
+- Test: `tests/unit/test_tuner.py`
+
+**Interfaces:**
+- Produces:
+  - `class TunedCandidate(BaseModel)`: `model_name: str, best_params: dict, best_score: float, fitted_model: Any`
+  - `class TuningResult(BaseModel)`: `tuned_candidates: list[TunedCandidate], study_summaries: dict[str, Any]`
+  - `class DeepOptunaTuner`:
+    - `__init__(cfg: ModelsConfig, task_type: TaskType)`
+    - `tune(models_to_tune: list[str], X: NDArray[np.float32], y: NDArray[np.float32 | np.int32], embargo_bars: int = 0) -> TuningResult`
+    - Sử dụng `optuna.samplers.TPESampler(multivariate=True)` kết hợp `optuna.pruners.HyperbandPruner`.
+    - Hàm mục tiêu: $\text{IC Sharpe}_{WF} - \text{complexity\_penalty} \times \text{Complexity\_Score}$.
+
+**Action Steps:**
+1. Viết test thất bại `tests/unit/test_tuner.py`:
+   - Chạy tuning với 3 trials trên model giả lập, kiểm tra hàm mục tiêu trừ điểm phạt complexity.
+   - Kiểm tra HyperbandPruner ngắt các trial kém hiệu quả.
+   - Kiểm tra mô hình cuối cùng được fit lại (refit) trên toàn bộ `split.train`.
+2. Hiện thực `DeepOptunaTuner` với không gian tham số phân bổ chuẩn xác cho từng họ GBDT.
+
+- **Verification Command:** `uv run pytest tests/unit/test_tuner.py -v`
+- **Commit Message:** `feat(models): implement deep optuna tuner with multivariate tpe and hyperband`
+
+---
+
+### Task 7: Pipeline Integration, Reporting & Zero Leakage Verification
+
+**Files:**
+- Create: `src/quantautoml/models/__init__.py`, `tests/integration/test_zero_leakage_models.py`
+- Modify: `src/quantautoml/pipeline.py`, `tests/unit/test_pipeline.py`
+
+**Interfaces:**
+- Consumes: `FeatureFunnel`, `TournamentResult`, `DecisionReport`, `TuningResult`.
+- Produces:
+  - `PipelineResult` mở rộng:
+    - `tournament_result: TournamentResult | None = None`
+    - `decision_report: DecisionReport | None = None`
+    - `tuning_result: TuningResult | None = None`
+  - Ghi các file báo cáo JSON khi `cfg.models is not None`:
+    - `tournament_report.json`
+    - `decision_report.json`
+    - `tuning_report.json`
+  - Xuất các class chính qua `quantautoml.models`.
+
+**Action Steps:**
+1. Viết test thất bại `tests/integration/test_zero_leakage_models.py`:
+   - Xác nhận mọi fold Walk-Forward, Tournament, và Optuna Tuning **chỉ đọc `split.train`**.
+   - Spy bọc dữ liệu: Nếu thay đổi giá trị trong `split.val`, `split.cal_a`, `split.oos`, kết quả Tournament & Tuning trên Train không đổi 1 bit.
+   - Kiểm tra kiểm soát kiểu `np.float32` trên mọi output dự đoán (RULE-06).
+2. Nối luồng huấn luyện vào `run_pipeline` trong `src/quantautoml/pipeline.py`.
+3. Chạy toàn bộ test suite `uv run pytest tests/ -v` xác nhận 100% PASS không hồi quy.
+4. Cập nhật checkbox checklist trong `docs/plan/PLAN.md`.
 
 - **Verification Command:** `uv run pytest tests/ -v`
-- **Commit Message:** `feat(features): implement FeatureFunnel and verify zero leakage end-to-end`
+- **Commit Message:** `feat(pipeline): wire gbdt tournament, decision engine and tuner into pipeline`
 
 ---
 
 ## Final Verification Checklist
-- [x] `uv run pytest tests/` đạt 100% PASS (gồm Phase 1 không hồi quy).
-- [x] Mọi `fit()` chỉ nhận dữ liệu Train (spy test PASS).
-- [x] BH-FDR: tỷ lệ nhiễu sống sót ≤ 5% (Task 3, 7, 12).
-- [x] dCor N = 20,000 chạy trong giới hạn thời gian/bộ nhớ, không ma trận N×N (Task 8, 12).
-- [x] Cấu trúc file đúng [`STRUCTURE.md`](STRUCTURE.md); không import ngược tầng.
-- [x] Sẵn sàng tích hợp sang Phase 3 (GBDT Tournament): `FeatureFunnel.transform` là đầu vào của `ModelTournament`.
+
+- [ ] `uv run pytest tests/` đạt 100% PASS (bao gồm cả Phase 1 và Phase 2).
+- [ ] Huấn luyện chỉ thực hiện trên `split.train` (Zero Leakage Test PASS).
+- [ ] GBDT Trio hỗ trợ đầy đủ LightGBM, CatBoost, XGBoost.
+- [ ] Tournament tôn trọng ngân sách 30 trials và xếp hạng bằng IC Sharpe.
+- [ ] Decision Engine fallback về Single Model khi Diversity $< 0.12$ (tương quan $> 0.88$).
+- [ ] Deep Optuna Tuner phạt độ phức tạp $\text{IC Sharpe} - 0.05 \times \text{Complexity}$.
+- [ ] Sẵn sàng tích hợp sang Phase 4: Output của Phase 3 (`TuningResult` và candidate models) là đầu vào trực tiếp cho SLSQP Convex Ensemble trên Cal-B và Temperature Calibration trên Cal-A.
