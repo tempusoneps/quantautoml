@@ -114,3 +114,32 @@ enabled_models = ["lightgbm", "xgboost", "catboost"]
 | `models.random_state` | `42` | int | Random seed đảm bảo tính tái lập kết quả. |
 | `models.enabled_models` | trio | subset | Danh sách model tham gia (LightGBM, XGBoost, CatBoost). |
 
+
+## Phase 4 — Convex Ensemble & Probability Calibration
+
+Mục `[ensemble]` là tùy chọn; thiếu mục này thì `PipelineConfig.ensemble is None`.
+
+```toml
+[ensemble]
+min_weight = 0.05               # Trọng số tối thiểu cho mỗi model trong ensemble
+max_weight = 0.60               # Trọng số tối đa cho mỗi model trong ensemble
+n_bootstrap = 200               # Số lần lấy mẫu bootstrap Cal-B
+bootstrap_sample_ratio = 0.80   # Tỷ lệ mẫu Cal-B cho mỗi lần bootstrap
+shrinkage_factor = 0.10         # Hệ số co cụm (shrinkage) về Equal Weights (1/K)
+hurdle_ratio = 0.05             # Ngưỡng vượt trội tối thiểu (+5% IC Sharpe) so với baseline
+max_ece_threshold = 0.05        # Ngưỡng sai số hiệu chuẩn tối đa (ECE < 0.05)
+random_state = 42               # Random seed tái lập
+```
+
+| Khóa | Mặc định | Ràng buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| `ensemble.min_weight` | `0.05` | `[0.0, 1.0]` | Cận dưới trọng số của mô hình trong SLSQP. |
+| `ensemble.max_weight` | `0.60` | `(0.0, 1.0]` | Cận trên trọng số của mô hình trong SLSQP. |
+| `ensemble.n_bootstrap` | `200` | `>= 10` | Số vòng lấy mẫu con Cal-B để ước lượng phân phối trọng số ổn định. |
+| `ensemble.bootstrap_sample_ratio` | `0.80` | `(0.0, 1.0]` | Tỷ lệ quan sát được chọn mỗi lần bootstrap. |
+| `ensemble.shrinkage_factor` | `0.10` | `[0.0, 1.0]` | Mức độ kéo trọng số trung vị về vector đẳng trọng $1/K$. |
+| `ensemble.hurdle_ratio` | `0.05` | `>= 0` | Mức tăng trưởng tối thiểu $+5\%$ IC Sharpe (RULE-05) để nhận ensemble. |
+| `ensemble.max_ece_threshold` | `0.05` | `(0.0, 1.0]` | Ngưỡng chấp nhận Expected Calibration Error sau Temperature Scaling. |
+| `ensemble.random_state` | `42` | int | Random seed tái lập. |
+
+

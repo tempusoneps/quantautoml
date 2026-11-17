@@ -25,7 +25,7 @@
 
 ## Execution Order Overview
 
-- [ ] **Task 1: Ensemble Config & Custom Exceptions** — Định nghĩa Pydantic `EnsembleConfig`, bổ sung vào `PipelineConfig`, định nghĩa custom exceptions (`EnsembleError`, `OptimizationConvergenceError`, `CalibrationError`).
+- [x] **Task 1: Ensemble Config & Custom Exceptions** — Định nghĩa Pydantic `EnsembleConfig`, bổ sung vào `PipelineConfig`, định nghĩa custom exceptions (`EnsembleError`, `OptimizationConvergenceError`, `CalibrationError`).
 - [ ] **Task 2: Quantitative Metrics — Expected Calibration Error (ECE)** — Hiện thực hàm đo lường `calc_ece()` chuẩn hóa tại `metrics/calibration.py` để lượng hóa sai số calibration cho binary & multiclass.
 - [ ] **Task 3: Smooth SLSQP Optimizer ($C^2$ Objective)** — Hiện thực `SmoothSLSQPOptimizer` trên `cal_b`: Rank-transform $\tilde{Y} \in [0, 1]$, tối ưu hàm Pearson tương quan khả vi $C^2$ với ràng buộc $0.05 \le w_i \le 0.60$ và $\sum w_i = 1$.
 - [ ] **Task 4: Bootstrap Shrinkage Engine & Hurdle Fallback (RULE-05)** — Hiện thực `BootstrapShrinkageEngine`: $N=200$ lần bootstrap (subsample $80\%$), tính vector trọng số trung vị, áp dụng Shrinkage về $1/K$, và thẩm định ngưỡng vượt trội $\ge 5\%$ IC Sharpe.
@@ -36,7 +36,7 @@
 
 ## Detailed Task Breakdown
 
-### [ ] Task 1: Ensemble Config & Custom Exceptions
+### [x] Task 1: Ensemble Config & Custom Exceptions
 
 **Files:**
 - Modify: `src/quantautoml/common/exceptions.py`, `src/quantautoml/common/config.py`, `docs/CONFIGURATION.md`

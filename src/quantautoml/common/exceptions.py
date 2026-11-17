@@ -31,3 +31,15 @@ class TournamentError(ModelError):
 
 class TuningError(ModelError):
     """Hyperparameter optimization failed or produced invalid results."""
+
+
+class EnsembleError(QuantAutoMLError):
+    """Base class for ensemble optimization and probability calibration failures."""
+
+
+class OptimizationConvergenceError(EnsembleError):
+    """SLSQP convex optimization failed to converge to a feasible solution."""
+
+
+class CalibrationError(EnsembleError):
+    """Probability calibration failed or violated rank-invariance."""

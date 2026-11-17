@@ -77,12 +77,30 @@ class ModelsConfig(_Strict):
         return v
 
 
+class EnsembleConfig(_Strict):
+    min_weight: float = Field(default=0.05, ge=0.0, le=1.0)
+    max_weight: float = Field(default=0.60, gt=0.0, le=1.0)
+    n_bootstrap: int = Field(default=200, ge=10)
+    bootstrap_sample_ratio: float = Field(default=0.80, gt=0.0, le=1.0)
+    shrinkage_factor: float = Field(default=0.10, ge=0.0, le=1.0)
+    hurdle_ratio: float = Field(default=0.05, ge=0.0)
+    max_ece_threshold: float = Field(default=0.05, gt=0.0, le=1.0)
+    random_state: int = Field(default=42)
+
+    @model_validator(mode="after")
+    def _weights_consistency(self) -> Self:
+        if self.min_weight >= self.max_weight:
+            raise ValueError("ensemble.min_weight must be strictly less than ensemble.max_weight")
+        return self
+
+
 class PipelineConfig(_Strict):
     data: DataConfig
     labels: LabelsConfig = LabelsConfig()
     split: SplitConfig
     features: FeaturesConfig | None = None
     models: ModelsConfig | None = None
+    ensemble: EnsembleConfig | None = None
 
     @model_validator(mode="after")
     def _labels_consistency(self) -> Self:
