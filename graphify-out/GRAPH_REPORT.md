@@ -1,12 +1,12 @@
 # Graph Report - quantautoml  (2026-11-17)
 
 ## Corpus Check
-- 60 files · ~148,818 words
+- 62 files · ~151,595 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 838 nodes · 2661 edges · 21 communities detected
-- Extraction: 50% EXTRACTED · 50% INFERRED · 0% AMBIGUOUS · INFERRED: 1318 edges (avg confidence: 0.65)
+- 857 nodes · 2750 edges · 21 communities detected
+- Extraction: 50% EXTRACTED · 50% INFERRED · 0% AMBIGUOUS · INFERRED: 1386 edges (avg confidence: 0.65)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -33,16 +33,16 @@
 - [[_COMMUNITY_Community 24|Community 24]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `InvalidDataError` - 133 edges
+1. `InvalidDataError` - 145 edges
 2. `FitContext` - 76 edges
-3. `FeaturesConfig` - 68 edges
-4. `TaskType` - 61 edges
+3. `TaskType` - 70 edges
+4. `FeaturesConfig` - 68 edges
 5. `BaseFeatureFilter` - 55 edges
 6. `FilterReport` - 53 edges
 7. `FeatureSelectionError` - 47 edges
 8. `FeatureFunnel` - 45 edges
-9. `make_frames()` - 33 edges
-10. `ModelsConfig` - 31 edges
+9. `ModelsConfig` - 44 edges
+10. `make_frames()` - 33 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Six-Layer Unidirectional Architecture` --semantically_similar_to--> `System Architecture`  [INFERRED] [semantically similar]
@@ -66,40 +66,40 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.06
-Nodes (73): BaseFeatureFilter, FitContext, Base contract for every feature filter (fit on Train only, transform anywhere)., Template-method base: validation lives here, logic in `_fit`/`_transform`., Set `output_names_` and `report_`., Apply the fitted selection without mutating state., BaseFeatureFilter, Fit model on training segment. Both X and y must be numpy arrays. (+65 more)
+Cohesion: 0.05
+Nodes (76): BaseModel, BaseGBDCandidate, CatBoostCandidate, create_candidate(), LightGBMCandidate, Modern GBDT Trio model wrappers (LightGBM, CatBoost, XGBoost) with unified contr, XGBoost candidate wrapper., Abstract base wrapper for GBDT candidate models. (+68 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.08
-Nodes (73): ic_behavior_distance(), FeatureFunnel, _cfg(), _ctx(), _fit(), _label(), _loading(), _noise() (+65 more)
+Cohesion: 0.07
+Nodes (65): ABC, BaseFeatureFilter, _fit(), FitContext, Base contract for every feature filter (fit on Train only, transform anywhere)., Template-method base: validation lives here, logic in `_fit`/`_transform`., Set `output_names_` and `report_`., Apply the fitted selection without mutating state. (+57 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.08
-Nodes (68): _build_parser(), main(), Command-line entrypoint: ``quantautoml run --config config.toml --out out/``., PipelineConfig, Enum, Exception, DataLeakageError, QuantAutoMLError (+60 more)
+Nodes (66): PipelineConfig, Exception, DataLeakageError, QuantAutoMLError, Custom exceptions shared across the quantautoml pipeline., Timestamps are non-monotonic, duplicated or cannot be aligned., A look-ahead leakage invariant was violated (RULE-01)., Tournament evaluation or candidate selection failed. (+58 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.06
-Nodes (56): AGENTS.md Agent Guide, System Architecture, Multi-Horizon Term Structure & FDR, Friction Cost Model & Net Sharpe, Non-Functional Requirements & Safety Guards, Smooth SLSQP Objective C2, Temperature Scaling Rank Invariance, Agent TDD Workflow & Session Onboarding (+48 more)
+Cohesion: 0.11
+Nodes (50): FeatureFunnel, test_label_shape_mismatch_raises(), test_missing_target_label_raises_naming_it(), test_refit_leaves_no_stale_state(), test_transform_selects_columns_in_original_order_without_reading_aux(), _y(), _ctx(), _data() (+42 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.08
-Nodes (39): BaseModel, DataConfig, LabelsConfig, ModelsConfig, Pipeline configuration loaded from a TOML file and validated with Pydantic., SplitConfig, _Strict, DecisionReport (+31 more)
+Cohesion: 0.06
+Nodes (56): AGENTS.md Agent Guide, System Architecture, Multi-Horizon Term Structure & FDR, Friction Cost Model & Net Sharpe, Non-Functional Requirements & Safety Guards, Smooth SLSQP Objective C2, Temperature Scaling Rank Invariance, Agent TDD Workflow & Session Onboarding (+48 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.08
 Nodes (48): calc_ic_sharpe(), calc_icir(), calc_rank_ic(), calc_rolling_ic(), calc_rolling_ic_matrix(), Spearman Rank IC, non-overlapping rolling IC (per column / matrix) and ICIR (RUL, Return mean/std (ddof=1, NaN ignored); 0.0 if std == 0 or < 2 points., Calculate IC Sharpe = ICIR * sqrt(annualization_factor).      Returns 0.0 if std (+40 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.08
-Nodes (26): ABC, _fit(), _transform(), BaseGBDCandidate, CatBoostCandidate, create_candidate(), LightGBMCandidate, Modern GBDT Trio model wrappers (LightGBM, CatBoost, XGBoost) with unified contr (+18 more)
+Cohesion: 0.12
+Nodes (42): _build_parser(), main(), Command-line entrypoint: ``quantautoml run --config config.toml --out out/``., build_config(), make_frames(), Shared pytest fixtures for the quantautoml test-suite., Build (features, labels) frames with forward-looking labels.      Labels: ``y_di, Write frames to disk and return a PipelineConfig pointing at them. (+34 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.13
 Nodes (37): build_config_content(), detect_file_info(), main(), _build_report(), _fmt(), _oof_folds(), _take(), verify_split() (+29 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.16
-Nodes (36): build_config(), make_frames(), Shared pytest fixtures for the quantautoml test-suite., Build (features, labels) frames with forward-looking labels.      Labels: ``y_di, Write frames to disk and return a PipelineConfig pointing at them., _load(), test_auxiliary_labels_keep_their_nan(), test_boolean_features_are_cast_to_float32() (+28 more)
+Cohesion: 0.11
+Nodes (31): DataConfig, LabelsConfig, load_config(), Pipeline configuration loaded from a TOML file and validated with Pydantic., SplitConfig, _Strict, write_toml(), test_cluster_distance_open_unit_interval() (+23 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.18
@@ -110,16 +110,16 @@ Cohesion: 0.06
 Nodes (34): AdaptiveTimeSeriesSplitter (Purging & Embargo), UD-02 Boolean to Float32 auto-cast, DataIngestion (UTC us, float32, inner join), horizon_h Purging for forward-looking labels, infer_task_type (Binary/Multiclass/Unsupervised), NEED_UPDATE: design corrections (timestamp precision, bool/string, mid-NaN labels), Adaptive OOF-Assisted Split (N<10000), PipelineConfig (Pydantic TOML) (+26 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.15
-Nodes (26): load_config(), write_toml(), test_cluster_distance_open_unit_interval(), test_defaults_are_applied(), test_f6_thresholds_defaults(), test_f6_thresholds_must_be_non_negative(), test_f6_thresholds_parse(), test_fdr_alpha_must_be_in_zero_to_005() (+18 more)
+Cohesion: 0.22
+Nodes (27): test_transform_all_segments_same_columns_float32(), test_transform_wrong_width_raises(), _cfg(), _ctx(), _fit(), _labels(), _signal(), test_all_columns_gated_yields_empty_output() (+19 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.15
-Nodes (26): fast_dcor(), F4: fast nonlinear collinearity filter based on distance correlation (dCor, AVL), _standardize(), _cfg(), _f32(), _fit(), test_constant_column_is_never_collinear(), test_default_threshold_drops_monotone_duplicate_tie_keeps_earlier() (+18 more)
+Cohesion: 0.26
+Nodes (25): ic_behavior_distance(), _cfg(), _ctx(), _fit(), _label(), _loading(), _noise(), test_constant_ic_series_distance_one_no_nan() (+17 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.25
-Nodes (25): _cfg(), _ctx(), _fit(), _labels(), _signal(), test_all_columns_gated_yields_empty_output(), test_all_nan_and_high_nan_ratio_columns_dropped(), test_bool_imputation_uses_train_state_only() (+17 more)
+Cohesion: 0.17
+Nodes (21): fast_dcor(), F4: fast nonlinear collinearity filter based on distance correlation (dCor, AVL), _standardize(), _cfg(), _f32(), _fit(), test_constant_column_is_never_collinear(), test_default_threshold_drops_monotone_duplicate_tie_keeps_earlier() (+13 more)
 
 ### Community 14 - "Community 14"
 Cohesion: 0.26
@@ -130,16 +130,16 @@ Cohesion: 0.25
 Nodes (19): _cfg(), _ctx(), _fit(), _normal(), test_all_nan_column_dropped_no_warning(), test_balanced_binary_kept(), test_constant_column_dropped_good_kept(), test_low_cv_dropped() (+11 more)
 
 ### Community 16 - "Community 16"
-Cohesion: 0.23
-Nodes (15): infer_task_type(), test_binary_minus_one_one_is_remapped_to_zero_one(), test_binary_string_labels(), test_binary_zero_one_float_labels(), test_empty_labels_are_rejected(), test_inf_labels_are_rejected(), test_more_than_ten_classes_is_rejected_as_regression(), test_multiclass_between_three_and_ten_integer_classes() (+7 more)
+Cohesion: 0.17
+Nodes (18): infer_task_type(), Infer the learning task (binary / multiclass / unsupervised) from the label vect, Infer the task. Missing labels (NaN / None) are unlabeled rows: they are     ign, TaskInference, test_binary_minus_one_one_is_remapped_to_zero_one(), test_binary_string_labels(), test_binary_zero_one_float_labels(), test_empty_labels_are_rejected() (+10 more)
 
 ### Community 17 - "Community 17"
-Cohesion: 0.19
-Nodes (10): contingency_mi(), quantile_bin_codes(), Private helpers shared by F6 and F8: quantile bin codes and contingency-table MI, Per-column ``n_bins``-quantile bin codes and the code range of each column., Plug-in MI (nats) of codes ``a`` in ``[0, na)`` vs class codes ``yc`` in ``[0, n, Shared quantile binning and contingency-table MI used by F6 and F8., test_contingency_mi_matches_sklearn(), test_contingency_mi_single_class_is_zero() (+2 more)
-
-### Community 18 - "Community 18"
 Cohesion: 0.22
 Nodes (10): apply_fdr_correction(), Benjamini-Hochberg FDR control (RULE-08)., Return a mask of accepted hypotheses, in the original order.      k = max{i : p_, Unit tests for quantautoml.metrics.fdr., test_empty(), test_hand_example(), test_invalid_p_values(), test_matches_scipy_reference() (+2 more)
+
+### Community 18 - "Community 18"
+Cohesion: 0.19
+Nodes (10): contingency_mi(), quantile_bin_codes(), Private helpers shared by F6 and F8: quantile bin codes and contingency-table MI, Per-column ``n_bins``-quantile bin codes and the code range of each column., Plug-in MI (nats) of codes ``a`` in ``[0, na)`` vs class codes ``yc`` in ``[0, n, Shared quantile binning and contingency-table MI used by F6 and F8., test_contingency_mi_matches_sklearn(), test_contingency_mi_single_class_is_zero() (+2 more)
 
 ### Community 19 - "Community 19"
 Cohesion: 0.17
@@ -158,17 +158,17 @@ Nodes (1): Git Conventions & Branching
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `InvalidDataError` connect `Community 0` to `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 9`, `Community 12`, `Community 16`, `Community 18`?**
-  _High betweenness centrality (0.301) - this node is a cross-community bridge._
-- **Why does `FeaturesConfig` connect `Community 0` to `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 8`, `Community 9`, `Community 12`, `Community 13`, `Community 14`, `Community 15`?**
-  _High betweenness centrality (0.056) - this node is a cross-community bridge._
-- **Why does `run_pipeline()` connect `Community 2` to `Community 8`, `Community 1`, `Community 11`, `Community 7`?**
-  _High betweenness centrality (0.055) - this node is a cross-community bridge._
-- **Are the 130 inferred relationships involving `InvalidDataError` (e.g. with `_SelectedLabel` and `DataIngestion`) actually correct?**
-  _`InvalidDataError` has 130 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `InvalidDataError` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 5`, `Community 7`, `Community 9`, `Community 13`, `Community 16`, `Community 17`?**
+  _High betweenness centrality (0.308) - this node is a cross-community bridge._
+- **Why does `FeaturesConfig` connect `Community 1` to `Community 2`, `Community 3`, `Community 5`, `Community 6`, `Community 8`, `Community 9`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`?**
+  _High betweenness centrality (0.053) - this node is a cross-community bridge._
+- **Why does `run_pipeline()` connect `Community 6` to `Community 8`, `Community 2`, `Community 3`, `Community 7`?**
+  _High betweenness centrality (0.052) - this node is a cross-community bridge._
+- **Are the 142 inferred relationships involving `InvalidDataError` (e.g. with `_SelectedLabel` and `DataIngestion`) actually correct?**
+  _`InvalidDataError` has 142 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 75 inferred relationships involving `FitContext` (e.g. with `RegimeSynergyFilter` and `F6: regime-aware mutual information and synergistic-pair protection.`) actually correct?**
   _`FitContext` has 75 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 67 inferred relationships involving `TaskType` (e.g. with `TaskInference` and `Infer the learning task (binary / multiclass / unsupervised) from the label vect`) actually correct?**
+  _`TaskType` has 67 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 66 inferred relationships involving `FeaturesConfig` (e.g. with `RegimeSynergyFilter` and `F6: regime-aware mutual information and synergistic-pair protection.`) actually correct?**
   _`FeaturesConfig` has 66 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 58 inferred relationships involving `TaskType` (e.g. with `TaskInference` and `Infer the learning task (binary / multiclass / unsupervised) from the label vect`) actually correct?**
-  _`TaskType` has 58 INFERRED edges - model-reasoned connections that need verification._
