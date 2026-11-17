@@ -13,6 +13,7 @@ from quantautoml.models.decision_engine import (
     ModelDecisionEngine,
 )
 from quantautoml.models.tournament import ModelTournament, TournamentResult, TrialScore
+from quantautoml.models.tuner import DeepOptunaTuner, TunedCandidate, TuningResult
 from quantautoml.models.validation import ExpandingWalkForwardSplitter
 
 __all__ = [
@@ -20,12 +21,15 @@ __all__ = [
     "CatBoostCandidate",
     "DecisionReport",
     "DecisionType",
+    "DeepOptunaTuner",
     "ExpandingWalkForwardSplitter",
     "LightGBMCandidate",
     "ModelDecisionEngine",
     "ModelTournament",
     "TournamentResult",
     "TrialScore",
+    "TunedCandidate",
+    "TuningResult",
     "XGBoostCandidate",
     "create_candidate",
 ]
