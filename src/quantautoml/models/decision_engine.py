@@ -96,16 +96,6 @@ class ModelDecisionEngine:
             for m in candidate_models
         }
 
-        # 1. Diversity Condition: Pairwise Spearman correlation
-        pairwise_corrs: dict[str, float] = {}
-        for m1, m2 in combinations(candidate_models, 2):
-            rho = calc_rank_ic(preds[m1], preds[m2])[0]
-            pairwise_corrs[f"{m1}_vs_{m2}"] = float(rho)
-
-        max_corr = max(pairwise_corrs.values()) if pairwise_corrs else 0.0
-        diversity_score = float(1.0 - max_corr)
-        cond_diversity = max_corr < self.cfg.diversity_threshold
-
         # Equal-weights ensemble, rank-normalised WITHIN each walk-forward fold so that
         # folds with different prediction scales are not mixed into one global ranking.
         fold_lens = tournament_result.fold_test_lens or [n_test]
@@ -118,6 +108,17 @@ class ModelDecisionEngine:
         for flen in fold_lens:
             fold_slices.append(slice(offset, offset + flen))
             offset += flen
+
+        # 1. Diversity Condition: pairwise per-fold Spearman correlation
+        pairwise_corrs: dict[str, float] = {}
+        for m1, m2 in combinations(candidate_models, 2):
+            # Mean of per-fold Spearman correlations: fold-level scale shifts cannot distort it.
+            fold_rhos = [calc_rank_ic(preds[m1][sl], preds[m2][sl])[0] for sl in fold_slices]
+            pairwise_corrs[f"{m1}_vs_{m2}"] = float(np.mean(fold_rhos))
+
+        max_corr = max(pairwise_corrs.values()) if pairwise_corrs else 0.0
+        diversity_score = float(1.0 - max_corr)
+        cond_diversity = max_corr < self.cfg.diversity_threshold
 
         ens_pred = np.empty(n_test, dtype=np.float64)
         for sl in fold_slices:

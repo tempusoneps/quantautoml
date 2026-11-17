@@ -173,3 +173,25 @@ def test_ensemble_ranks_are_normalised_per_fold() -> None:
     b = run(p2 + offset)
     assert a.wf_consistency == b.wf_consistency
     assert a.marginal_gain == pytest.approx(b.marginal_gain, abs=1e-12)
+
+
+def test_diversity_is_computed_per_fold() -> None:
+    """Fold-level scale offsets must not fake low (or high) correlation between models."""
+    cfg = ModelsConfig()
+    engine = ModelDecisionEngine(cfg=cfg)
+    n = 300
+    rng = np.random.default_rng(11)
+    y_true = rng.normal(size=n).astype(np.float32)
+    base = rng.normal(size=n)
+    p1 = base + rng.normal(size=n) * 0.01
+    p2 = base + rng.normal(size=n) * 0.01  # near-identical to p1
+    offset = np.repeat([0.0, 500.0, -500.0], 100)  # pooled correlation would be distorted
+    t_res = create_mock_tournament_result(
+        oof_preds={"lightgbm": p1.tolist(), "xgboost": (p2 + offset).tolist()},
+        test_indices=list(range(n)),
+        fold_test_lens=[100, 100, 100],
+        best_sharpes={"lightgbm": 1.5, "xgboost": 1.4},
+    )
+    report = engine.evaluate(t_res, y_true)
+    assert report.pairwise_correlations["lightgbm_vs_xgboost"] > 0.95
+    assert "Diversity too low" in report.rationale
