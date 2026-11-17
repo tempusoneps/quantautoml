@@ -7,7 +7,7 @@ from typing import Any
 import numpy as np
 import optuna
 from numpy.typing import NDArray
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from quantautoml.common.config import ModelsConfig
 from quantautoml.common.exceptions import InvalidDataError
@@ -41,6 +41,7 @@ class TournamentResult(BaseModel):
     best_per_model: dict[str, TrialScore]
     oof_predictions: dict[str, list[float]]
     test_indices: list[int]
+    fold_test_lens: list[int] = Field(default_factory=list)
 
 
 def _sample_params(trial: optuna.Trial, model_name: str) -> dict[str, Any]:
@@ -107,8 +108,9 @@ class ModelTournament:
         )
         folds = list(splitter.split(n_samples))
 
-        # Collect concatenated test indices
+        # Collect concatenated test indices and fold lengths
         test_indices = [int(idx) for _, t_idx in folds for idx in t_idx]
+        fold_test_lens = [len(t_idx) for _, t_idx in folds]
 
         rankings: list[TrialScore] = []
         best_per_model: dict[str, TrialScore] = {}
@@ -180,4 +182,5 @@ class ModelTournament:
             best_per_model=best_per_model,
             oof_predictions=oof_predictions,
             test_indices=test_indices,
+            fold_test_lens=fold_test_lens,
         )

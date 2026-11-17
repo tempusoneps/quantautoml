@@ -32,7 +32,7 @@
 - [x] **Task 2: Quantitative Metrics — IC Sharpe & Walk-Forward Validation Helper** — Hiện thực `calc_ic_sharpe()` và expanding window walk-forward fold splitter kèm purging/embargo.
 - [x] **Task 3: Modern GBDT Trio Pool (Candidates Wrappers)** — Gói `LightGBM`, `CatBoost`, `XGBoost` theo giao diện chuẩn `BaseGBDCandidate`, hỗ trợ Binary/Multiclass/Continuous và hàm tính `complexity_score()`.
 - [x] **Task 4: ModelTournament (30-Trial Walk-Forward Tournament)** — Cơ chế đấu loại 30 trials `RandomSampler` trên 5-fold Walk-Forward, xếp hạng bằng Out-of-Fold IC Sharpe.
-- [ ] **Task 5: ModelDecisionEngine (Single Model vs. Ensemble Gate)** — Thẩm định 3 điều kiện (Diversity < 0.88, Marginal Gain ≥ 1.5%, WF Consistency ≥ 60%) và chọn lọc Ensemble Pool ($K \le 3$) hoặc fallback về Single Best.
+- [x] **Task 5: ModelDecisionEngine (Single Model vs. Ensemble Gate)** — Thẩm định 3 điều kiện (Diversity < 0.88, Marginal Gain ≥ 1.5%, WF Consistency ≥ 60%) và chọn lọc Ensemble Pool ($K \le 3$) hoặc fallback về Single Best.
 - [ ] **Task 6: DeepOptunaTuner (Multivariate TPE + HyperbandPruner)** — Tối ưu hóa siêu tham số chuyên sâu với hàm mục tiêu $\text{IC Sharpe}_{WF} - 0.05 \times \text{Complexity\_Score}$ và cơ chế tỉa sớm Hyperband.
 - [ ] **Task 7: Pipeline Integration, Reporting & Zero Leakage Verification** — Nối `models` vào `PipelineResult` trong `pipeline.py`, xuất báo cáo `tournament_report.json`, `decision_report.json`, `tuning_report.json`, kiểm tra toàn diện Zero Leakage.
 
@@ -169,7 +169,7 @@
 
 ---
 
-### Task 5: ModelDecisionEngine (Single Model vs. Ensemble Gate)
+### [x] Task 5: ModelDecisionEngine (Single Model vs. Ensemble Gate)
 
 **Files:**
 - Create: `src/quantautoml/models/decision_engine.py`
