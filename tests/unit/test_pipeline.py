@@ -72,3 +72,42 @@ def test_run_pipeline_with_features_writes_funnel_reports(
     assert selected == {"selected_features": list(result.funnel.selected_features_)}
     assert "f_sig" in selected["selected_features"]
     assert result.funnel.transform(result.split.val).X.dtype == np.float32
+
+
+def test_run_pipeline_with_models_writes_reports(
+    tmp_path: Path, make_frames, build_config
+) -> None:
+    from quantautoml.common.config import ModelsConfig
+
+    feats, labels = make_frames(n=1000, n_features=4)
+    base = build_config(feats, labels, horizon_h=21)
+    cfg = base.model_copy(
+        update={
+            "models": ModelsConfig(
+                tournament_trials=2,
+                tuning_trials=2,
+                n_wf_folds=2,
+                enabled_models=["lightgbm"],
+                random_state=42,
+            )
+        }
+    )
+    out = tmp_path / "out"
+    result = run_pipeline(cfg, out)
+
+    assert result.tournament_result is not None
+    assert result.decision_report is not None
+    assert result.tuning_result is not None
+
+    assert (out / "tournament_report.json").is_file()
+    assert (out / "decision_report.json").is_file()
+    assert (out / "tuning_report.json").is_file()
+
+    t_rep = json.loads((out / "tournament_report.json").read_text())
+    assert len(t_rep["rankings"]) == 2
+
+    d_rep = json.loads((out / "decision_report.json").read_text())
+    assert d_rep["decision"] in ("single_model", "ensemble")
+
+    tune_rep = json.loads((out / "tuning_report.json").read_text())
+    assert len(tune_rep["tuned_candidates"]) == 1

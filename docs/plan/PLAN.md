@@ -34,7 +34,7 @@
 - [x] **Task 4: ModelTournament (30-Trial Walk-Forward Tournament)** — Cơ chế đấu loại 30 trials `RandomSampler` trên 5-fold Walk-Forward, xếp hạng bằng Out-of-Fold IC Sharpe.
 - [x] **Task 5: ModelDecisionEngine (Single Model vs. Ensemble Gate)** — Thẩm định 3 điều kiện (Diversity < 0.88, Marginal Gain ≥ 1.5%, WF Consistency ≥ 60%) và chọn lọc Ensemble Pool ($K \le 3$) hoặc fallback về Single Best.
 - [x] **Task 6: DeepOptunaTuner (Multivariate TPE + HyperbandPruner)** — Tối ưu hóa siêu tham số chuyên sâu với hàm mục tiêu $\text{IC Sharpe}_{WF} - 0.05 \times \text{Complexity\_Score}$ và cơ chế tỉa sớm Hyperband.
-- [ ] **Task 7: Pipeline Integration, Reporting & Zero Leakage Verification** — Nối `models` vào `PipelineResult` trong `pipeline.py`, xuất báo cáo `tournament_report.json`, `decision_report.json`, `tuning_report.json`, kiểm tra toàn diện Zero Leakage.
+- [x] **Task 7: Pipeline Integration, Reporting & Zero Leakage Verification** — Nối `models` vào `PipelineResult` trong `pipeline.py`, xuất báo cáo `tournament_report.json`, `decision_report.json`, `tuning_report.json`, kiểm tra toàn diện Zero Leakage.
 
 ---
 
@@ -235,7 +235,7 @@
 
 ---
 
-### Task 7: Pipeline Integration, Reporting & Zero Leakage Verification
+### [x] Task 7: Pipeline Integration, Reporting & Zero Leakage Verification
 
 **Files:**
 - Create: `src/quantautoml/models/__init__.py`, `tests/integration/test_zero_leakage_models.py`
@@ -270,10 +270,10 @@
 
 ## Final Verification Checklist
 
-- [ ] `uv run pytest tests/` đạt 100% PASS (bao gồm cả Phase 1 và Phase 2).
-- [ ] Huấn luyện chỉ thực hiện trên `split.train` (Zero Leakage Test PASS).
-- [ ] GBDT Trio hỗ trợ đầy đủ LightGBM, CatBoost, XGBoost.
-- [ ] Tournament tôn trọng ngân sách 30 trials và xếp hạng bằng IC Sharpe.
-- [ ] Decision Engine fallback về Single Model khi Diversity $< 0.12$ (tương quan $> 0.88$).
-- [ ] Deep Optuna Tuner phạt độ phức tạp $\text{IC Sharpe} - 0.05 \times \text{Complexity}$.
-- [ ] Sẵn sàng tích hợp sang Phase 4: Output của Phase 3 (`TuningResult` và candidate models) là đầu vào trực tiếp cho SLSQP Convex Ensemble trên Cal-B và Temperature Calibration trên Cal-A.
+- [x] `uv run pytest tests/` đạt 100% PASS (bao gồm cả Phase 1 và Phase 2).
+- [x] Huấn luyện chỉ thực hiện trên `split.train` (Zero Leakage Test PASS).
+- [x] GBDT Trio hỗ trợ đầy đủ LightGBM, CatBoost, XGBoost.
+- [x] Tournament tôn trọng ngân sách 30 trials và xếp hạng bằng IC Sharpe.
+- [x] Decision Engine fallback về Single Model khi Diversity $< 0.12$ (tương quan $> 0.88$).
+- [x] Deep Optuna Tuner phạt độ phức tạp $\text{IC Sharpe} - 0.05 \times \text{Complexity}$.
+- [x] Sẵn sàng tích hợp sang Phase 4: Output của Phase 3 (`TuningResult` và candidate models) là đầu vào trực tiếp cho SLSQP Convex Ensemble trên Cal-B và Temperature Calibration trên Cal-A.
