@@ -7,14 +7,22 @@ from quantautoml.models.candidates import (
     XGBoostCandidate,
     create_candidate,
 )
+from quantautoml.models.decision_engine import (
+    DecisionReport,
+    DecisionType,
+    ModelDecisionEngine,
+)
 from quantautoml.models.tournament import ModelTournament, TournamentResult, TrialScore
 from quantautoml.models.validation import ExpandingWalkForwardSplitter
 
 __all__ = [
     "BaseGBDCandidate",
     "CatBoostCandidate",
+    "DecisionReport",
+    "DecisionType",
     "ExpandingWalkForwardSplitter",
     "LightGBMCandidate",
+    "ModelDecisionEngine",
     "ModelTournament",
     "TournamentResult",
     "TrialScore",
