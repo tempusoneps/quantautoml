@@ -65,7 +65,7 @@ Quy ước mỗi task: Step 1 viết test (RED) → Step 2 chạy xác nhận FA
 
 ## Detailed Task Breakdown
 
-### [ ] Task 1: Dependencies, Config & Exceptions
+### Task 1: Dependencies, Config & Exceptions
 
 **Files:**
 - Modify: `pyproject.toml` (thêm `onnx`, `onnxruntime`, `onnxmltools`, `skl2onnx` — chạy `uv add ...`)
@@ -86,7 +86,7 @@ Quy ước mỗi task: Step 1 viết test (RED) → Step 2 chạy xác nhận FA
 
 ---
 
-### [ ] Task 2: `FeatureSchemaContract`
+### Task 2: `FeatureSchemaContract`
 
 **Files:** Create `src/quantautoml/packaging/__init__.py`, `src/quantautoml/packaging/schema.py`; Test `tests/unit/test_packaging_schema.py`.
 
@@ -112,7 +112,7 @@ class FeatureSchemaContract(BaseModel):   # frozen, extra="forbid"
 
 ---
 
-### [ ] Task 3: `PreprocessorSpec` + `preprocessor.onnx`
+### Task 3: `PreprocessorSpec` + `preprocessor.onnx`
 
 **Files:**
 - Modify: `src/quantautoml/common/types.py` — thêm `PreprocessorSpec`
@@ -140,7 +140,7 @@ Gộp F2..F8: mỗi stage chỉ là `X[:, keep_idx]`, nên `final_idx` là phép
 
 ---
 
-### [ ] Task 4: GBDT → ONNX converters
+### Task 4: GBDT → ONNX converters
 
 **Files:** Create `src/quantautoml/packaging/converters.py`; Test `tests/unit/test_packaging_converters.py`.
 
@@ -156,7 +156,7 @@ Dispatch theo `model.name` ∈ {`lightgbm`, `xgboost`, `catboost`}: LightGBM/XGB
 
 ---
 
-### [ ] Task 5: `validate_numerical_precision` (RULE-06)
+### Task 5: `validate_numerical_precision` (RULE-06)
 
 **Files:** Create `src/quantautoml/packaging/validator.py`; Test `tests/unit/test_packaging_validator.py`.
 
@@ -171,7 +171,7 @@ def validate_numerical_precision(y_py: NDArray[np.float32], y_onnx: NDArray[np.f
 
 ---
 
-### [ ] Task 6: Standalone `predictor_template.py`
+### Task 6: Standalone `predictor_template.py`
 
 **Files:** Create `src/quantautoml/packaging/templates/predictor_template.py`; Test `tests/unit/test_predictor_template.py`.
 
@@ -190,7 +190,7 @@ Luồng: kiểm tra schema (`ValueError` rõ ràng) → `preprocessor.onnx` → 
 
 ---
 
-### [ ] Task 7: `ONNXBundleExporter`
+### Task 7: `ONNXBundleExporter`
 
 **Files:** Create `src/quantautoml/packaging/bundle.py`; Modify `src/quantautoml/packaging/__init__.py` (export `ONNXBundleExporter`, `BundleManifest`, `FeatureSchemaContract`, `validate_numerical_precision`); Test `tests/unit/test_packaging_bundle.py`.
 
@@ -213,7 +213,7 @@ Quy trình: build preprocessor → thống kê z-score từ `X_train_raw` qua pr
 
 ---
 
-### [ ] Task 8: Pipeline integration — packaging
+### Task 8: Pipeline integration — packaging
 
 **Files:** Modify `src/quantautoml/pipeline.py` (thêm `bundle_manifest: BundleManifest | None = None` vào `PipelineResult`); Test `tests/unit/test_pipeline_packaging.py`.
 
@@ -224,7 +224,7 @@ Khi `cfg.packaging` được đặt **và** `ensemble_result`, `calibration_resu
 
 ---
 
-### [ ] Task 9: `FrictionCostModel`
+### Task 9: `FrictionCostModel`
 
 **Files:** Create `src/quantautoml/backtest/__init__.py`, `src/quantautoml/backtest/friction.py`; Test `tests/unit/test_friction.py`.
 
@@ -242,7 +242,7 @@ class FrictionCostModel:
 
 ---
 
-### [ ] Task 10: `HysteresisBuffer`
+### Task 10: `HysteresisBuffer`
 
 **Files:** Create `src/quantautoml/backtest/buffer.py`; Test `tests/unit/test_buffer.py`.
 
@@ -260,7 +260,7 @@ Luật (D2): vào Long khi pct ≥ `1-top_pct`, giữ tới khi pct < `1-exit_pc
 
 ---
 
-### [ ] Task 11: OOS Evaluator
+### Task 11: OOS Evaluator
 
 **Files:** Create `src/quantautoml/backtest/evaluator.py`; Test `tests/unit/test_evaluator.py`.
 
@@ -284,7 +284,7 @@ def evaluate_oos_performance(*, scores: NDArray[np.float32], y: NDArray[np.int32
 
 ---
 
-### [ ] Task 12: `OOSBacktestRunner`
+### Task 12: `OOSBacktestRunner`
 
 **Files:** Create `src/quantautoml/backtest/runner.py`; Modify `src/quantautoml/backtest/__init__.py` (export `FrictionCostModel`, `HysteresisBuffer`, `evaluate_oos_performance`, `OOSBacktestRunner`); Test `tests/unit/test_runner.py`.
 
@@ -302,7 +302,7 @@ Luồng: kiểm tra `oos.index` không giao `other_segments[*].index` (`DataLeak
 
 ---
 
-### [ ] Task 13: Pipeline integration (backtest), E2E & Zero-Leakage tests, docs, Phase handoff
+### Task 13: Pipeline integration (backtest), E2E & Zero-Leakage tests, docs, Phase handoff
 
 **Files:**
 - Modify: `src/quantautoml/pipeline.py` (`PipelineResult.backtest_metrics: OOSMetrics | None = None`; chạy `OOSBacktestRunner` khi `cfg.backtest` và `bundle_manifest` tồn tại, ghi `backtest_report.json`)
