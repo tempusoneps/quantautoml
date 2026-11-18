@@ -26,6 +26,7 @@ horizon_h = 21            # horizon (số nến) LỚN NHẤT của mọi cột 
 | `data.min_match_ratio` | Không (`0.95`) | Tỷ lệ timestamp khớp tối thiểu khi inner join |
 | `labels.selected` | Có nếu có labels | Cột nhãn dùng để suy luận task và huấn luyện |
 | `labels.ignore_other_columns` | Không (mặc định `false`) | `true`: ingestion chỉ giữ cột `labels.selected`, bỏ qua mọi cột nhãn khác (không kiểm tra kiểu, không đưa vào `labels_aux`, không tính vào trailing-NaN/`horizon_h`). Nhãn chọn dạng chuỗi tự được mã hóa số (UD-06). |
+| `labels.mapping` | Không | Bảng `[labels.mapping]` ánh xạ nhãn **chữ** → số có hướng, áp dụng ở ingestion trước khi suy luận task. Ví dụ `"Yes - Buy" = 1`, `"Yes - Sell" = -1`, `"No - None" = 0`, `"No - Sideway" = 0` (nhiều chữ cùng số thì gộp thành một lớp). Giá trị chữ không có trong bảng → `InvalidDataError`; nhãn số + mapping → lỗi; NaN giữa chuỗi vẫn là `-1` (mã chưa gán nhãn). `classes_` lưu các số đã map, sắp tăng dần. |
 | `split.horizon_h` | Có | Số dòng bị bỏ ở mỗi ranh giới giữa các segment |
 
 ### Vì sao cần `horizon_h`
@@ -179,3 +180,20 @@ min_downside_ic = 0.0
 - Chi phí: $R_{net}=R_{gross}-\text{Turnover}\times(\text{fee}+\text{slip})$, $\text{Turnover}=\tfrac12\sum|\Delta w|$ (đúng `ARCHITECTURE.md` §3.4); với 1 tài sản, đảo vị thế $-1\to+1$ tính turnover $=1$.
 - Annualization suy ra từ timestamp OOS (`số nến / số năm`).
 
+
+
+## Nhãn có hướng (`[labels.mapping]`)
+
+```toml
+[labels]
+selected = "allow_entry"
+ignore_other_columns = true
+
+[labels.mapping]
+"Yes - Buy"    = 1
+"Yes - Sell"   = -1
+"No - None"    = 0
+"No - Sideway" = 0
+```
+
+Mô hình huấn luyện trên mã 0..K−1 theo thứ tự tăng dần của số đã map (ở ví dụ: Sell=0, flat=1, Buy=2). Score của predictor/backtest cho multiclass là kỳ vọng mã `Σ c·p = 1 + P(Buy) − P(Sell)`, tức cùng thứ hạng với score có hướng `P(Buy) − P(Sell)` mà Hysteresis Buffer cần. Tính chất này đúng khi có **đúng một lớp trung tính ở giữa** (`-1 / 0 / +1`); với mapping khác (nhiều mức độ mạnh yếu) score là kỳ vọng của mã, không phải hiệu hai xác suất.

@@ -328,3 +328,46 @@ def test_derivation_without_price_column_is_rejected(make_frames, build_config) 
     l = l.select(["timestamp", "y_dir"])
     with pytest.raises(InvalidDataError, match="Close"):
         _load(build_config(f, l, ignore_other_columns=True, features_cfg=_FWD))
+
+
+_DIR = {"Yes - Buy": 1, "Yes - Sell": -1, "No - None": 0, "No - Sideway": 0}
+
+
+def _allow_entry_frames(make_frames, n: int = 100):
+    f, l = make_frames(n=n)
+    names = ["No - None", "No - Sideway", "Yes - Buy", "Yes - Sell"]
+    allow = [names[i % 4] for i in range(n)]
+    allow[7] = None
+    allow[-5:] = [None] * 5
+    return f, l.with_columns(pl.Series("allow_entry", allow)), allow
+
+
+def test_mapping_converts_text_label_to_directional_classes(make_frames, build_config) -> None:
+    f, l, allow = _allow_entry_frames(make_frames)
+    ds = _load(build_config(f, l, selected="allow_entry", ignore_other_columns=True, mapping=_DIR))
+    assert ds.task_type is TaskType.MULTICLASS_CLASSIFICATION
+    assert ds.classes_ is not None and ds.classes_.tolist() == [-1.0, 0.0, 1.0]  # many-to-one merged
+    assert ds.y is not None and ds.y.dtype == np.int32
+    # codes keep the numeric order Short < flat < Long, so E[code] - 1 = P(Long) - P(Short)
+    expect = {"Yes - Sell": 0, "No - None": 1, "No - Sideway": 1, "Yes - Buy": 2}
+    assert all(ds.y[i] == expect[allow[i]] for i in range(95) if allow[i] is not None)
+    assert ds.y[7] == -1 and ds.report.mid_nan_count == 1
+
+
+def test_mapping_rejects_unmapped_label_value(make_frames, build_config) -> None:
+    f, l, _ = _allow_entry_frames(make_frames)
+    partial = {"Yes - Buy": 1, "Yes - Sell": -1}
+    with pytest.raises(InvalidDataError, match="No - None"):
+        _load(build_config(f, l, selected="allow_entry", ignore_other_columns=True, mapping=partial))
+
+
+def test_mapping_on_numeric_label_is_rejected(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    with pytest.raises(InvalidDataError, match="mapping"):
+        _load(build_config(f, l, mapping={"1": 1}))
+
+
+def test_without_mapping_text_labels_keep_alphabetical_codes(make_frames, build_config) -> None:
+    f, l, _ = _allow_entry_frames(make_frames)
+    ds = _load(build_config(f, l, selected="allow_entry", ignore_other_columns=True))
+    assert ds.classes_ is not None and ds.classes_.tolist()[0] == "No - None"
