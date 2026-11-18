@@ -250,3 +250,34 @@ def test_report_describes_the_load(make_frames, build_config) -> None:
     assert r.t_max.startswith("2024-01-04T22:00:00")  # row 94 -> +94h
     assert r.n_unmatched_dropped == 0
     assert ds.report.to_dict()["n_joined_rows"] == 100
+
+
+def test_ignore_other_columns_keeps_only_selected_label(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    l = l.with_columns(pl.lit("x").alias("regime"))  # non-numeric aux column
+    ds = _load(build_config(f, l, ignore_other_columns=True))
+    assert ds.labels_aux == {}
+    assert ds.selected_label == "y_dir"
+    assert set(ds.report.label_nan_counts) == {"y_dir"}
+
+
+def test_ignore_other_columns_does_not_let_aux_trailing_nan_set_the_horizon(
+    make_frames, build_config
+) -> None:
+    f, l = make_frames(n=100)  # fwd_ret_21 has 21 trailing NaN, y_dir only 5
+    with pytest.raises(InvalidDataError, match="horizon_h"):
+        _load(build_config(f, l, horizon_h=5))
+    ds = _load(build_config(f, l, horizon_h=5, ignore_other_columns=True))
+    assert ds.X.shape[0] == 95
+
+
+def test_ignore_other_columns_encodes_string_selected_label(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    names = ["No - None", "No - Sideway", "Yes - Buy", "Yes - Sell"]
+    allow = [None if i == 7 else names[i % 4] for i in range(100)]
+    allow[-5:] = [None] * 5
+    l = l.with_columns(pl.Series("allow_entry", allow), pl.lit("x").alias("regime"))
+    ds = _load(build_config(f, l, selected="allow_entry", ignore_other_columns=True))
+    assert ds.task_type is TaskType.MULTICLASS_CLASSIFICATION
+    assert ds.y is not None and ds.y.dtype == np.int32 and ds.y[7] == -1
+    assert ds.labels_aux == {}

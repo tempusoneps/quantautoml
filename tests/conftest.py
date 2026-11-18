@@ -93,6 +93,7 @@ def build_config(tmp_path: Path) -> Callable[..., PipelineConfig]:
         selected: str | None = "y_dir",
         fmt: str = "parquet",
         min_match_ratio: float = 0.95,
+        ignore_other_columns: bool = False,
     ) -> PipelineConfig:
         def _write(df: pl.DataFrame, name: str) -> Path:
             path = tmp_path / f"{name}.{fmt}"
@@ -109,7 +110,7 @@ def build_config(tmp_path: Path) -> Callable[..., PipelineConfig]:
         raw: dict[str, object] = {"data": data, "split": {"horizon_h": horizon_h}}
         if labels is not None:
             data["labels_path"] = str(_write(labels, "labels"))
-            raw["labels"] = {"selected": selected}
+            raw["labels"] = {"selected": selected, "ignore_other_columns": ignore_other_columns}
         return PipelineConfig.model_validate(raw)
 
     return _build
