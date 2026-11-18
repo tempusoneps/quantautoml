@@ -143,3 +143,36 @@ random_state = 42               # Random seed tái lập
 | `ensemble.random_state` | `42` | int | Random seed tái lập. |
 
 
+## Phase 5 — ONNX Packaging & Friction-Aware Blind OOS Backtest
+
+Mục `[packaging]` và `[backtest]` đều tùy chọn. `[packaging]` chỉ chạy khi đã có ensemble + calibration (cần `[models]` và `[ensemble]`); `[backtest]` chỉ chạy khi bundle đã được tạo.
+
+```toml
+[packaging]
+precision_tol = 1e-4        # RULE-06: max|y_py - y_onnx| phải < ngưỡng này trên Val
+drift_z_threshold = 3.0     # DistributionShiftWarning khi |z| > 3.0 (bỏ qua cột 0/1)
+latency_budget_ms = 5.0
+std_floor = 1e-8            # Sàn std khi tính z-score (cột hằng)
+latency_repeats = 200
+
+[backtest]
+price_col = "Close"         # Cột giá trong X thô của OOS (không qua funnel)
+fee_bps = 4.0               # Taker fee
+slippage_bps = 1.0
+top_pct = 0.20              # Vào lệnh khi phân vị tín hiệu ở top/bottom 20%
+exit_pct = 0.30             # Chỉ thoát khi phân vị vượt 30% (Hysteresis Buffer), >= top_pct
+rank_window = 2000          # Cửa sổ nhân quả để tính phân vị tín hiệu
+ic_window = 500             # Cửa sổ Rank IC cuốn chiếu (ICIR) và kỳ sụt giảm
+min_rank_ic = 0.035
+min_icir = 0.40
+min_net_sharpe = 1.20       # Sau phí + slippage (RULE-09)
+max_mdd = 0.18
+downside_quantile = 0.20    # Nến "stress": lợi suất thị trường trượt ic_window nến thuộc 20% thấp nhất
+min_downside_ic = 0.0
+```
+
+- Đầu ra: `bundle/` (`preprocessor.onnx`, `model_*.onnx`, `ensemble_meta.json`, `features_schema.json`, `predictor.py`, `bundle_manifest.json`) và `backtest_report.json`.
+- `PrecisionValidationError` chặn xuất bundle. Trượt ngưỡng nghiệm thu OOS **không** ném lỗi: `backtest_report.json` ghi `accepted=false` và `failed_gates`.
+- Chi phí: $R_{net}=R_{gross}-\text{Turnover}\times(\text{fee}+\text{slip})$, $\text{Turnover}=\tfrac12\sum|\Delta w|$ (đúng `ARCHITECTURE.md` §3.4); với 1 tài sản, đảo vị thế $-1\to+1$ tính turnover $=1$.
+- Annualization suy ra từ timestamp OOS (`số nến / số năm`).
+

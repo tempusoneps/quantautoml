@@ -45,19 +45,19 @@
 
 ## Execution Order Overview
 
-- [ ] **Task 1: Dependencies, PackagingConfig/BacktestConfig & Exceptions**
-- [ ] **Task 2: `FeatureSchemaContract` (`packaging/schema.py`)**
-- [ ] **Task 3: `PreprocessorSpec` + `preprocessor.onnx` (`FeatureFunnel.preprocessor_spec()`, `packaging/preprocessor.py`)**
-- [ ] **Task 4: GBDT → ONNX converters (`packaging/converters.py`)**
-- [ ] **Task 5: `validate_numerical_precision` (`packaging/validator.py`, RULE-06)**
-- [ ] **Task 6: Standalone `predictor_template.py` (RULE-07, latency, DistributionShiftWarning)**
-- [ ] **Task 7: `ONNXBundleExporter` (`packaging/bundle.py`)**
-- [ ] **Task 8: Pipeline integration — packaging**
-- [ ] **Task 9: `FrictionCostModel` (`backtest/friction.py`)**
-- [ ] **Task 10: `HysteresisBuffer` (`backtest/buffer.py`)**
-- [ ] **Task 11: OOS Evaluator (`backtest/evaluator.py`)**
-- [ ] **Task 12: `OOSBacktestRunner` (`backtest/runner.py`)**
-- [ ] **Task 13: Pipeline integration — backtest, E2E & Zero-Leakage tests, docs, Phase handoff**
+- [x] **Task 1: Dependencies, PackagingConfig/BacktestConfig & Exceptions**
+- [x] **Task 2: `FeatureSchemaContract` (`packaging/schema.py`)**
+- [x] **Task 3: `PreprocessorSpec` + `preprocessor.onnx` (`FeatureFunnel.preprocessor_spec()`, `packaging/preprocessor.py`)**
+- [x] **Task 4: GBDT → ONNX converters (`packaging/converters.py`)**
+- [x] **Task 5: `validate_numerical_precision` (`packaging/validator.py`, RULE-06)**
+- [x] **Task 6: Standalone `predictor_template.py` (RULE-07, latency, DistributionShiftWarning)**
+- [x] **Task 7: `ONNXBundleExporter` (`packaging/bundle.py`)**
+- [x] **Task 8: Pipeline integration — packaging**
+- [x] **Task 9: `FrictionCostModel` (`backtest/friction.py`)**
+- [x] **Task 10: `HysteresisBuffer` (`backtest/buffer.py`)**
+- [x] **Task 11: OOS Evaluator (`backtest/evaluator.py`)**
+- [x] **Task 12: `OOSBacktestRunner` (`backtest/runner.py`)**
+- [x] **Task 13: Pipeline integration — backtest, E2E & Zero-Leakage tests, docs, Phase handoff**
 
 Quy ước mỗi task: Step 1 viết test (RED) → Step 2 chạy xác nhận FAIL → Step 3 hiện thực tối thiểu → Step 4 chạy PASS (+ `uv run pytest tests/` không hồi quy) → Step 5 commit (Conventional Commits, scope theo `GIT_CONVENTIONS`).
 
@@ -65,7 +65,7 @@ Quy ước mỗi task: Step 1 viết test (RED) → Step 2 chạy xác nhận FA
 
 ## Detailed Task Breakdown
 
-### Task 1: Dependencies, Config & Exceptions
+### [x] Task 1: Dependencies, Config & Exceptions
 
 **Files:**
 - Modify: `pyproject.toml` (thêm `onnx`, `onnxruntime`, `onnxmltools`, `skl2onnx` — chạy `uv add ...`)
@@ -78,15 +78,15 @@ Quy ước mỗi task: Step 1 viết test (RED) → Step 2 chạy xác nhận FA
 - `BacktestConfig(price_col: str = "Close", fee_bps: float = 4.0 (ge 0), slippage_bps: float = 1.0 (ge 0), top_pct: float = 0.20 (gt 0, lt 0.5), exit_pct: float = 0.30 (gt 0, lt 0.5), rank_window: int = 2000 (ge 20), ic_window: int = 500 (ge 20), min_rank_ic: float = 0.035, min_icir: float = 0.40, min_net_sharpe: float = 1.20, max_mdd: float = 0.18, downside_quantile: float = 0.20 (gt 0, lt 0.5), min_downside_ic: float = 0.0)`; validator: `exit_pct >= top_pct` (nếu không → `ValueError`).
 - `PackagingError(QuantAutoMLError)`, `PrecisionValidationError(PackagingError)`, `SchemaMismatchError(PackagingError)`, `BacktestError(QuantAutoMLError)`.
 
-- [ ] Step 1: Test: `test_defaults_match_spec` (tol `1e-4`, drift `3.0`, latency `5.0`, fee/slip/top/exit như trên, ngưỡng 0.035/0.40/1.20/0.18); `test_exit_pct_lt_top_pct_rejected` (`pytest.raises(ValueError)`); `test_extra_field_forbidden`; `test_pipeline_config_accepts_optional_sections` (TOML có `[packaging]`/`[backtest]`); `test_exception_hierarchy` (`issubclass(PrecisionValidationError, QuantAutoMLError)`).
-- [ ] Step 2: Chạy → FAIL (import error).
-- [ ] Step 3: `uv add onnx onnxruntime onnxmltools skl2onnx`; hiện thực config (kế thừa `_Strict`) + exceptions.
-- [ ] Step 4: `uv run pytest tests/unit/test_packaging_config.py tests/unit/test_backtest_config.py tests/unit/test_config.py -v` → PASS.
-- [ ] Step 5: Commit `feat(setup): add onnx deps, packaging/backtest config and exceptions`.
+- [x] Step 1: Test: `test_defaults_match_spec` (tol `1e-4`, drift `3.0`, latency `5.0`, fee/slip/top/exit như trên, ngưỡng 0.035/0.40/1.20/0.18); `test_exit_pct_lt_top_pct_rejected` (`pytest.raises(ValueError)`); `test_extra_field_forbidden`; `test_pipeline_config_accepts_optional_sections` (TOML có `[packaging]`/`[backtest]`); `test_exception_hierarchy` (`issubclass(PrecisionValidationError, QuantAutoMLError)`).
+- [x] Step 2: Chạy → FAIL (import error).
+- [x] Step 3: `uv add onnx onnxruntime onnxmltools skl2onnx`; hiện thực config (kế thừa `_Strict`) + exceptions.
+- [x] Step 4: `uv run pytest tests/unit/test_packaging_config.py tests/unit/test_backtest_config.py tests/unit/test_config.py -v` → PASS.
+- [x] Step 5: Commit `feat(setup): add onnx deps, packaging/backtest config and exceptions`.
 
 ---
 
-### Task 2: `FeatureSchemaContract`
+### [x] Task 2: `FeatureSchemaContract`
 
 **Files:** Create `src/quantautoml/packaging/__init__.py`, `src/quantautoml/packaging/schema.py`; Test `tests/unit/test_packaging_schema.py`.
 
@@ -107,12 +107,12 @@ class FeatureSchemaContract(BaseModel):   # frozen, extra="forbid"
     def to_json(self) -> str ;  @classmethod from_json(cls, s: str) -> Self
 ```
 
-- [ ] Step 1: Test: `test_from_train_uses_only_given_train_matrix` (mean/std khớp `np.nanmean/nanstd` của ma trận truyền vào); `test_zero_std_feature_floored` (cột hằng → `train_std == std_floor`, không 0); `test_check_input_wrong_width_raises` / `test_check_input_wrong_names_order_raises` (`SchemaMismatchError`); `test_check_input_wrong_dtype_raises` (float64); `test_json_roundtrip_equal`.
-- [ ] Step 2: FAIL. Step 3: hiện thực (thống kê bằng `nanmean/nanstd` float64 rồi cast list float). Step 4: PASS. Step 5: Commit `feat(packaging): add feature schema contract`.
+- [x] Step 1: Test: `test_from_train_uses_only_given_train_matrix` (mean/std khớp `np.nanmean/nanstd` của ma trận truyền vào); `test_zero_std_feature_floored` (cột hằng → `train_std == std_floor`, không 0); `test_check_input_wrong_width_raises` / `test_check_input_wrong_names_order_raises` (`SchemaMismatchError`); `test_check_input_wrong_dtype_raises` (float64); `test_json_roundtrip_equal`.
+- [x] Step 2: FAIL. Step 3: hiện thực (thống kê bằng `nanmean/nanstd` float64 rồi cast list float). Step 4: PASS. Step 5: Commit `feat(packaging): add feature schema contract`.
 
 ---
 
-### Task 3: `PreprocessorSpec` + `preprocessor.onnx`
+### [x] Task 3: `PreprocessorSpec` + `preprocessor.onnx`
 
 **Files:**
 - Modify: `src/quantautoml/common/types.py` — thêm `PreprocessorSpec`
@@ -135,12 +135,12 @@ def run_preprocessor_onnx(path: Path, X: NDArray[np.float32]) -> NDArray[np.floa
 ```
 Gộp F2..F8: mỗi stage chỉ là `X[:, keep_idx]`, nên `final_idx` là phép hợp thành các `keep_idx` (compose).
 
-- [ ] Step 1: Test: `test_spec_reproduces_funnel_transform` — fit funnel trên dữ liệu tổng hợp có NaN/±inf/cột bool/cột NaN-nhiều (dùng fixture `make_frames`), so `apply_spec_numpy(spec, X)` (hàm tham chiếu trong test) với `funnel.transform(seg).X` bằng `np.array_equal`; `test_onnx_matches_funnel_transform_with_inf_nan` (`max|Δ| == 0` trên cả hàng chứa ±inf/NaN); `test_empty_selection_gives_n_by_0` (funnel loại hết cột).
-- [ ] Step 2: FAIL. Step 3: hiện thực spec (compose) + dựng graph bằng `onnx.helper` (Where/IsInf/IsNaN/Gather/Concat/Cast; float32 xuyên suốt) và `onnx.checker.check_model`. Step 4: PASS. Step 5: Commit `feat(packaging): export funnel preprocessing as ONNX`.
+- [x] Step 1: Test: `test_spec_reproduces_funnel_transform` — fit funnel trên dữ liệu tổng hợp có NaN/±inf/cột bool/cột NaN-nhiều (dùng fixture `make_frames`), so `apply_spec_numpy(spec, X)` (hàm tham chiếu trong test) với `funnel.transform(seg).X` bằng `np.array_equal`; `test_onnx_matches_funnel_transform_with_inf_nan` (`max|Δ| == 0` trên cả hàng chứa ±inf/NaN); `test_empty_selection_gives_n_by_0` (funnel loại hết cột).
+- [x] Step 2: FAIL. Step 3: hiện thực spec (compose) + dựng graph bằng `onnx.helper` (Where/IsInf/IsNaN/Gather/Concat/Cast; float32 xuyên suốt) và `onnx.checker.check_model`. Step 4: PASS. Step 5: Commit `feat(packaging): export funnel preprocessing as ONNX`.
 
 ---
 
-### Task 4: GBDT → ONNX converters
+### [x] Task 4: GBDT → ONNX converters
 
 **Files:** Create `src/quantautoml/packaging/converters.py`; Test `tests/unit/test_packaging_converters.py`.
 
@@ -151,12 +151,12 @@ def export_candidate_onnx(model: BaseGBDCandidate, n_features: int, path: Path) 
 ```
 Dispatch theo `model.name` ∈ {`lightgbm`, `xgboost`, `catboost`}: LightGBM/XGBoost qua `onnxmltools.convert_*` (`zipmap` tắt / `target_opset` cố định, ghi trong code), CatBoost qua `estimator_.save_model(path, format="onnx")` + chuẩn hóa tên I/O. Tên không hỗ trợ → `PackagingError`.
 
-- [ ] Step 1: Test (tham số hóa 3 model, binary + multiclass 3 lớp, 300×8 dữ liệu tổng hợp): `test_onnx_probs_close_to_python_predict_proba` (`max|Δ| < 1e-4`); `test_output_shape_and_dtype` (`(N, C)`, float32); `test_unknown_model_name_raises`. **Nếu một cặp (model, task) không đạt < 1e-4, DỪNG và báo user** (rủi ro tương thích numpy 2.5/onnxmltools — xem Rủi ro).
-- [ ] Step 2: FAIL. Step 3: hiện thực. Step 4: PASS. Step 5: Commit `feat(packaging): convert GBDT trio to ONNX`.
+- [x] Step 1: Test (tham số hóa 3 model, binary + multiclass 3 lớp, 300×8 dữ liệu tổng hợp): `test_onnx_probs_close_to_python_predict_proba` (`max|Δ| < 1e-4`); `test_output_shape_and_dtype` (`(N, C)`, float32); `test_unknown_model_name_raises`. **Nếu một cặp (model, task) không đạt < 1e-4, DỪNG và báo user** (rủi ro tương thích numpy 2.5/onnxmltools — xem Rủi ro).
+- [x] Step 2: FAIL. Step 3: hiện thực. Step 4: PASS. Step 5: Commit `feat(packaging): convert GBDT trio to ONNX`.
 
 ---
 
-### Task 5: `validate_numerical_precision` (RULE-06)
+### [x] Task 5: `validate_numerical_precision` (RULE-06)
 
 **Files:** Create `src/quantautoml/packaging/validator.py`; Test `tests/unit/test_packaging_validator.py`.
 
@@ -166,12 +166,12 @@ def validate_numerical_precision(y_py: NDArray[np.float32], y_onnx: NDArray[np.f
 # trả max|Δ|; ném PrecisionValidationError nếu max|Δ| >= tol, shape khác, dtype != float32 hoặc có NaN/inf ở một bên
 ```
 
-- [ ] Step 1: Test: `test_pass_returns_max_abs_diff` (`Δ=5e-5` → trả `≈5e-5`); `test_at_tolerance_fails` (`Δ == 1e-4` → raise, vì điều kiện là `<`); `test_shape_mismatch_raises`; `test_float64_input_raises`; `test_nan_on_one_side_raises` (NaN so với số hữu hạn không được coi là "khớp").
-- [ ] Step 2–5: FAIL → hiện thực → PASS → Commit `feat(packaging): add float32 precision validator`.
+- [x] Step 1: Test: `test_pass_returns_max_abs_diff` (`Δ=5e-5` → trả `≈5e-5`); `test_at_tolerance_fails` (`Δ == 1e-4` → raise, vì điều kiện là `<`); `test_shape_mismatch_raises`; `test_float64_input_raises`; `test_nan_on_one_side_raises` (NaN so với số hữu hạn không được coi là "khớp").
+- [x] Step 2–5: FAIL → hiện thực → PASS → Commit `feat(packaging): add float32 precision validator`.
 
 ---
 
-### Task 6: Standalone `predictor_template.py`
+### [x] Task 6: Standalone `predictor_template.py`
 
 **Files:** Create `src/quantautoml/packaging/templates/predictor_template.py`; Test `tests/unit/test_predictor_template.py`.
 
@@ -185,12 +185,12 @@ class Predictor:
 ```
 Luồng: kiểm tra schema (`ValueError` rõ ràng) → `preprocessor.onnx` → mỗi `model_k.onnx` → trộn `Σ w_k·p_k` → Temperature (binary: `sigmoid(logit(clip(p,1e-7,1-1e-7))/T)`; multiclass: `softmax(log(clip(P,1e-7,1))/T)`, khớp `TemperatureCalibrator.calibrate`) → `warnings.warn(DistributionShiftWarning)` nếu có `|z| > drift_z_threshold` (z theo `train_mean/train_std` của `features_schema.json`, tính trên đầu ra preprocessor). Thân file ~50–80 dòng.
 
-- [ ] Step 1: Test dùng bundle tối thiểu dựng bằng helper trong test (preprocessor + 2 model ONNX nhỏ + meta): `test_imports_only_numpy_onnxruntime_stdlib` (parse `ast`, tập import ⊆ `{numpy, onnxruntime, json, warnings, pathlib, __future__}`); `test_runs_in_isolated_subprocess_without_quantautoml` (`python -I`, `sys.modules` không chứa `quantautoml`/`sklearn`/`lightgbm`/`xgboost`/`catboost`/`optuna`/`torch`); `test_matches_python_reference_pipeline` (sai số < 1e-4 so với funnel→models→weights→`TemperatureCalibrator.calibrate`); `test_nan_inf_input_never_returns_nan` (Review Focus 1); `test_drift_warning_when_z_gt_3` (`pytest.warns(DistributionShiftWarning)`) và `test_no_warning_in_distribution`; `test_wrong_column_count_raises_valueerror` (Review Focus 3); `test_single_row_latency_under_5ms` (median qua 200 lần gọi 1 dòng, < 5.0 ms).
-- [ ] Step 2: FAIL. Step 3: hiện thực template; `bundle.py` (Task 7) sẽ copy nguyên văn thành `predictor.py`. Step 4: PASS. Step 5: Commit `feat(packaging): add decoupled numpy/onnxruntime predictor template`.
+- [x] Step 1: Test dùng bundle tối thiểu dựng bằng helper trong test (preprocessor + 2 model ONNX nhỏ + meta): `test_imports_only_numpy_onnxruntime_stdlib` (parse `ast`, tập import ⊆ `{numpy, onnxruntime, json, warnings, pathlib, __future__}`); `test_runs_in_isolated_subprocess_without_quantautoml` (`python -I`, `sys.modules` không chứa `quantautoml`/`sklearn`/`lightgbm`/`xgboost`/`catboost`/`optuna`/`torch`); `test_matches_python_reference_pipeline` (sai số < 1e-4 so với funnel→models→weights→`TemperatureCalibrator.calibrate`); `test_nan_inf_input_never_returns_nan` (Review Focus 1); `test_drift_warning_when_z_gt_3` (`pytest.warns(DistributionShiftWarning)`) và `test_no_warning_in_distribution`; `test_wrong_column_count_raises_valueerror` (Review Focus 3); `test_single_row_latency_under_5ms` (median qua 200 lần gọi 1 dòng, < 5.0 ms).
+- [x] Step 2: FAIL. Step 3: hiện thực template; `bundle.py` (Task 7) sẽ copy nguyên văn thành `predictor.py`. Step 4: PASS. Step 5: Commit `feat(packaging): add decoupled numpy/onnxruntime predictor template`.
 
 ---
 
-### Task 7: `ONNXBundleExporter`
+### [x] Task 7: `ONNXBundleExporter`
 
 **Files:** Create `src/quantautoml/packaging/bundle.py`; Modify `src/quantautoml/packaging/__init__.py` (export `ONNXBundleExporter`, `BundleManifest`, `FeatureSchemaContract`, `validate_numerical_precision`); Test `tests/unit/test_packaging_bundle.py`.
 
@@ -208,23 +208,23 @@ class ONNXBundleExporter:
 ```
 Quy trình: build preprocessor → thống kê z-score từ `X_train_raw` qua preprocessor → export từng model → `ensemble_meta.json` (weights, temperature, classes, task_type, model files) → copy `predictor_template.py` → `predictor.py` → chạy `Predictor` trên `X_val_raw` và so với đường tham chiếu Python (`validate_numerical_precision`) → ghi `bundle_manifest.json`. **Nếu validator ném, dọn thư mục `out_dir` (không để bundle dở dang) rồi re-raise.**
 
-- [ ] Step 1: Test: `test_export_writes_required_files` (`preprocessor.onnx`, `model_0.onnx…`, `ensemble_meta.json`, `features_schema.json`, `predictor.py`, `bundle_manifest.json`); `test_manifest_max_abs_diff_below_tol`; `test_precision_failure_raises_and_leaves_no_bundle` (monkeypatch làm 1 model lệch > 1e-4 → `PrecisionValidationError`, `out_dir` không còn `predictor.py`); `test_exporter_never_calls_fit` (mock `fit` ném lỗi → không bị gọi); `test_schema_stats_use_train_only` (đổi `X_val_raw` không làm đổi `train_mean`); `test_fallback_weights_exported` (ensemble bị từ chối → `weights == [1/K,…]` vẫn được ghi đúng).
-- [ ] Step 2–5: FAIL → hiện thực → PASS → Commit `feat(packaging): implement ONNX model bundle exporter`.
+- [x] Step 1: Test: `test_export_writes_required_files` (`preprocessor.onnx`, `model_0.onnx…`, `ensemble_meta.json`, `features_schema.json`, `predictor.py`, `bundle_manifest.json`); `test_manifest_max_abs_diff_below_tol`; `test_precision_failure_raises_and_leaves_no_bundle` (monkeypatch làm 1 model lệch > 1e-4 → `PrecisionValidationError`, `out_dir` không còn `predictor.py`); `test_exporter_never_calls_fit` (mock `fit` ném lỗi → không bị gọi); `test_schema_stats_use_train_only` (đổi `X_val_raw` không làm đổi `train_mean`); `test_fallback_weights_exported` (ensemble bị từ chối → `weights == [1/K,…]` vẫn được ghi đúng).
+- [x] Step 2–5: FAIL → hiện thực → PASS → Commit `feat(packaging): implement ONNX model bundle exporter`.
 
 ---
 
-### Task 8: Pipeline integration — packaging
+### [x] Task 8: Pipeline integration — packaging
 
 **Files:** Modify `src/quantautoml/pipeline.py` (thêm `bundle_manifest: BundleManifest | None = None` vào `PipelineResult`); Test `tests/unit/test_pipeline_packaging.py`.
 
 Khi `cfg.packaging` được đặt **và** `ensemble_result`, `calibration_result`, `funnel`... đã có: gọi `ONNXBundleExporter.export(out_dir=out / "bundle", ..., X_val_raw=split.val.X)` (Val chỉ để **suy luận** đối chiếu, không fit). Khi thiếu thành phần tiên quyết → bỏ qua (giống các stage trước), không báo lỗi giả. Với OOF mode (không có `cal_a/cal_b` riêng) vẫn dùng `split.val`.
 
-- [ ] Step 1: Test: `test_pipeline_writes_bundle_when_packaging_configured`; `test_pipeline_skips_bundle_without_packaging_section`; `test_pipeline_bundle_precision_ok` (đọc `bundle_manifest.json`, `max_abs_diff < 1e-4`); `test_pipeline_does_not_touch_oos_for_packaging` (spy: `split.oos.X` không được truy cập trong stage này).
-- [ ] Step 2–5: FAIL → tích hợp → PASS (+ toàn bộ `tests/`) → Commit `feat(pipeline): wire ONNX bundle packaging into pipeline`.
+- [x] Step 1: Test: `test_pipeline_writes_bundle_when_packaging_configured`; `test_pipeline_skips_bundle_without_packaging_section`; `test_pipeline_bundle_precision_ok` (đọc `bundle_manifest.json`, `max_abs_diff < 1e-4`); `test_pipeline_does_not_touch_oos_for_packaging` (spy: `split.oos.X` không được truy cập trong stage này).
+- [x] Step 2–5: FAIL → tích hợp → PASS (+ toàn bộ `tests/`) → Commit `feat(pipeline): wire ONNX bundle packaging into pipeline`.
 
 ---
 
-### Task 9: `FrictionCostModel`
+### [x] Task 9: `FrictionCostModel`
 
 **Files:** Create `src/quantautoml/backtest/__init__.py`, `src/quantautoml/backtest/friction.py`; Test `tests/unit/test_friction.py`.
 
@@ -237,12 +237,12 @@ class FrictionCostModel:
     # R_net = gross - turnover * (fee_bps + slippage_bps) / 1e4
 ```
 
-- [ ] Step 1: Test: `test_zero_cost_equals_gross`; `test_known_turnover_and_net` (positions `[0,1,1,-1,0]`, fee 4 + slip 1 → turnover `[0.5,0,1,0.5,…]`, net đúng tới `1e-12`); `test_first_bar_entry_pays_cost`; `test_net_never_exceeds_gross_when_costs_positive` (property, vị thế ngẫu nhiên); `test_length_mismatch_raises`.
-- [ ] Step 2–5: FAIL → hiện thực → PASS → Commit `feat(backtest): add friction cost model`.
+- [x] Step 1: Test: `test_zero_cost_equals_gross`; `test_known_turnover_and_net` (positions `[0,1,1,-1,0]`, fee 4 + slip 1 → turnover `[0.5,0,1,0.5,…]`, net đúng tới `1e-12`); `test_first_bar_entry_pays_cost`; `test_net_never_exceeds_gross_when_costs_positive` (property, vị thế ngẫu nhiên); `test_length_mismatch_raises`.
+- [x] Step 2–5: FAIL → hiện thực → PASS → Commit `feat(backtest): add friction cost model`.
 
 ---
 
-### Task 10: `HysteresisBuffer`
+### [x] Task 10: `HysteresisBuffer`
 
 **Files:** Create `src/quantautoml/backtest/buffer.py`; Test `tests/unit/test_buffer.py`.
 
@@ -255,12 +255,12 @@ class HysteresisBuffer:
 ```
 Luật (D2): vào Long khi pct ≥ `1-top_pct`, giữ tới khi pct < `1-exit_pct`; vào Short khi pct ≤ `top_pct`, giữ tới khi pct > `exit_pct`; không bao giờ đảo trực tiếp mà không đi qua vùng thoát theo luật trên.
 
-- [ ] Step 1: Test: `test_percentile_is_causal` (đổi `scores[t+1:]` không làm đổi `percentile[:t+1]`); `test_nan_before_window_full`; `test_zero_position_before_window_full`; `test_hysteresis_holds_between_thresholds` (pct đi 0.85 → 0.75 → 0.65: vẫn Long ở 0.75, thoát ở 0.65); `test_buffer_reduces_trades_vs_no_buffer` (tín hiệu nhiễu quanh ngưỡng: số lần đổi vị thế khi `exit_pct=0.30` < khi `exit_pct==top_pct`, giảm ≥ 20%); `test_exit_equals_top_is_memoryless` ; `test_constant_scores_never_trade` (Review Focus 4: không NaN, vị thế toàn 0).
-- [ ] Step 2: FAIL. Step 3: percentile cuốn chiếu bằng `numpy.lib.stride_tricks.sliding_window_view` (rank của phần tử cuối trong cửa sổ, ties → mid-rank); vòng lặp trạng thái. Step 4: PASS. Step 5: Commit `feat(backtest): add hysteresis buffer bands`.
+- [x] Step 1: Test: `test_percentile_is_causal` (đổi `scores[t+1:]` không làm đổi `percentile[:t+1]`); `test_nan_before_window_full`; `test_zero_position_before_window_full`; `test_hysteresis_holds_between_thresholds` (pct đi 0.85 → 0.75 → 0.65: vẫn Long ở 0.75, thoát ở 0.65); `test_buffer_reduces_trades_vs_no_buffer` (tín hiệu nhiễu quanh ngưỡng: số lần đổi vị thế khi `exit_pct=0.30` < khi `exit_pct==top_pct`, giảm ≥ 20%); `test_exit_equals_top_is_memoryless` ; `test_constant_scores_never_trade` (Review Focus 4: không NaN, vị thế toàn 0).
+- [x] Step 2: FAIL. Step 3: percentile cuốn chiếu bằng `numpy.lib.stride_tricks.sliding_window_view` (rank của phần tử cuối trong cửa sổ, ties → mid-rank); vòng lặp trạng thái. Step 4: PASS. Step 5: Commit `feat(backtest): add hysteresis buffer bands`.
 
 ---
 
-### Task 11: OOS Evaluator
+### [x] Task 11: OOS Evaluator
 
 **Files:** Create `src/quantautoml/backtest/evaluator.py`; Test `tests/unit/test_evaluator.py`.
 
@@ -279,12 +279,12 @@ def evaluate_oos_performance(*, scores: NDArray[np.float32], y: NDArray[np.int32
 ```
 Định nghĩa: Sharpe = `mean/std(ddof=1)·sqrt(periods_per_year)` (std=0 hoặc <2 điểm → 0.0); MDD trên đường vốn cộng dồn `cumprod(1+r)` (dương, ví dụ 0.12); Rank IC = `calc_rank_ic(scores, y)`; ICIR = `calc_icir(calc_rolling_ic(scores, y, cfg.ic_window))`; **Downside IC** = Rank IC trên các nến có `gross_market_return` rơi vào `downside_quantile` thấp nhất của cửa sổ OOS — nếu không đủ cặp → `0.0` và gate `downside_ic` đánh trượt; gate `latency` = `latency_ms is not None and < 5.0`.
 
-- [ ] Step 1: Test: `test_sharpe_matches_manual` (chuỗi cố định); `test_mdd_known_curve` (`[+10%, -20%]` → `0.20`); `test_flat_returns_sharpe_zero_not_nan` (Review Focus 4); `test_gates_use_strict_inequality` (đúng bằng ngưỡng `0.035` → trượt); `test_accepted_only_if_all_gates_pass`; `test_failed_gates_listed`; `test_missing_latency_fails_latency_gate`; `test_net_sharpe_used_for_gate_not_gross` (gross > 1.2 nhưng net < 1.2 → `accepted=False`, RULE-09).
-- [ ] Step 2–5: FAIL → hiện thực → PASS → Commit `feat(backtest): add OOS acceptance evaluator`.
+- [x] Step 1: Test: `test_sharpe_matches_manual` (chuỗi cố định); `test_mdd_known_curve` (`[+10%, -20%]` → `0.20`); `test_flat_returns_sharpe_zero_not_nan` (Review Focus 4); `test_gates_use_strict_inequality` (đúng bằng ngưỡng `0.035` → trượt); `test_accepted_only_if_all_gates_pass`; `test_failed_gates_listed`; `test_missing_latency_fails_latency_gate`; `test_net_sharpe_used_for_gate_not_gross` (gross > 1.2 nhưng net < 1.2 → `accepted=False`, RULE-09).
+- [x] Step 2–5: FAIL → hiện thực → PASS → Commit `feat(backtest): add OOS acceptance evaluator`.
 
 ---
 
-### Task 12: `OOSBacktestRunner`
+### [x] Task 12: `OOSBacktestRunner`
 
 **Files:** Create `src/quantautoml/backtest/runner.py`; Modify `src/quantautoml/backtest/__init__.py` (export `FrictionCostModel`, `HysteresisBuffer`, `evaluate_oos_performance`, `OOSBacktestRunner`); Test `tests/unit/test_runner.py`.
 
@@ -297,23 +297,23 @@ class OOSBacktestRunner:
 ```
 Luồng: kiểm tra `oos.index` không giao `other_segments[*].index` (`DataLeakageError`) → lấy `Close` từ `oos.X[:, feature_names.index(cfg.price_col)]` (thiếu cột / NaN / ≤ 0 → `BacktestError`) → `scores = Predictor.predict(oos.X)` → đo latency batch 1 dòng (median) → `HysteresisBuffer.positions` → `gross_t = pos_t·(Close_{t+1}/Close_t − 1)` (bar cuối bỏ) → `FrictionCostModel.net_returns` → `periods_per_year = n_bars / năm(timestamps)` → `evaluate_oos_performance` → ghi `backtest_report.json` (kèm `n_overnight_gaps`: số khoảng cách timestamp > 3× median — Review Focus 5). `n_bars < rank_window + 2` → `BacktestError`.
 
-- [ ] Step 1: Test (bundle tổng hợp từ helper Task 6, tín hiệu nhân tạo có alpha rõ): `test_runner_end_to_end_accepts_strong_signal`; `test_runner_rejects_pure_noise_signal` (`accepted=False`, `failed_gates` không rỗng); `test_oos_overlap_raises_dataleakage` ; `test_missing_price_col_raises`; `test_nonpositive_close_raises`; `test_oos_shorter_than_window_raises`; `test_report_written_and_has_gates`; `test_gap_count_reported`; `test_runner_does_not_modify_bundle_files` (hash trước/sau bằng nhau — Blind: không fit/không ghi).
-- [ ] Step 2–5: FAIL → hiện thực → PASS → Commit `feat(backtest): add blind OOS backtest runner`.
+- [x] Step 1: Test (bundle tổng hợp từ helper Task 6, tín hiệu nhân tạo có alpha rõ): `test_runner_end_to_end_accepts_strong_signal`; `test_runner_rejects_pure_noise_signal` (`accepted=False`, `failed_gates` không rỗng); `test_oos_overlap_raises_dataleakage` ; `test_missing_price_col_raises`; `test_nonpositive_close_raises`; `test_oos_shorter_than_window_raises`; `test_report_written_and_has_gates`; `test_gap_count_reported`; `test_runner_does_not_modify_bundle_files` (hash trước/sau bằng nhau — Blind: không fit/không ghi).
+- [x] Step 2–5: FAIL → hiện thực → PASS → Commit `feat(backtest): add blind OOS backtest runner`.
 
 ---
 
-### Task 13: Pipeline integration (backtest), E2E & Zero-Leakage tests, docs, Phase handoff
+### [x] Task 13: Pipeline integration (backtest), E2E & Zero-Leakage tests, docs, Phase handoff
 
 **Files:**
 - Modify: `src/quantautoml/pipeline.py` (`PipelineResult.backtest_metrics: OOSMetrics | None = None`; chạy `OOSBacktestRunner` khi `cfg.backtest` và `bundle_manifest` tồn tại, ghi `backtest_report.json`)
 - Create: `tests/integration/test_end_to_end.py`, `tests/integration/test_friction_backtest.py`, `tests/integration/test_zero_leakage_packaging.py`
 - Modify: `docs/plan/STRUCTURE.md`, `docs/STRUCTURE.md` (thêm `converters.py`, `preprocessor.py`), `docs/CONFIGURATION.md` (`[packaging]`, `[backtest]`), `docs/plan/PHASES.md`, `docs/plan/PLAN.md`
 
-- [ ] Step 1: Test: `test_end_to_end_raw_data_to_bundle_and_report` (dữ liệu tổng hợp → `run_pipeline` → có `bundle/` + `backtest_report.json`); `test_friction_lowers_sharpe` (cùng tín hiệu: `net_sharpe < gross_sharpe` khi phí > 0; bằng nhau khi phí = 0); `test_buffer_lowers_turnover_in_pipeline`; `test_zero_leakage_packaging` (mock `fit` ở mọi filter/model/calibrator/optimizer trong giai đoạn packaging + backtest → không bị gọi; `split.oos` chỉ được đọc trong runner); `test_pipeline_without_backtest_section_still_ok`.
-- [ ] Step 2–4: FAIL → tích hợp → `uv run pytest tests/` PASS 100%.
-- [ ] Step 5: Chạy thử thật trên 1 mẫu con của `datasets/` (không commit dữ liệu/bundle): xác nhận bundle sinh ra, `max_abs_diff < 1e-4`, latency < 5 ms, đọc `backtest_report.json`, **báo cáo trung thực kết quả kể cả khi `accepted=false`**.
-- [ ] Step 6: Cập nhật docs; Phase Handoff theo CLAUDE.md §2.2: Phase 5 → `Status: Done` trong `PHASES.md`; vì đây là phase cuối của v1.0, **hỏi user trước khi** archive vào `docs/plan/archive/v1.0/` và chuyển sang `develop/v1.1`.
-- [ ] Step 7: Commit `feat(pipeline): wire friction-aware blind OOS backtest (Phase 5 Done)`.
+- [x] Step 1: Test: `test_end_to_end_raw_data_to_bundle_and_report` (dữ liệu tổng hợp → `run_pipeline` → có `bundle/` + `backtest_report.json`); `test_friction_lowers_sharpe` (cùng tín hiệu: `net_sharpe < gross_sharpe` khi phí > 0; bằng nhau khi phí = 0); `test_buffer_lowers_turnover_in_pipeline`; `test_zero_leakage_packaging` (mock `fit` ở mọi filter/model/calibrator/optimizer trong giai đoạn packaging + backtest → không bị gọi; `split.oos` chỉ được đọc trong runner); `test_pipeline_without_backtest_section_still_ok`.
+- [x] Step 2–4: FAIL → tích hợp → `uv run pytest tests/` PASS 100%.
+- [x] Step 5: Chạy thử thật trên 1 mẫu con của `datasets/` (không commit dữ liệu/bundle): xác nhận bundle sinh ra, `max_abs_diff < 1e-4`, latency < 5 ms, đọc `backtest_report.json`, **báo cáo trung thực kết quả kể cả khi `accepted=false`**.
+- [x] Step 6: Cập nhật docs; Phase Handoff theo CLAUDE.md §2.2: Phase 5 → `Status: Done` trong `PHASES.md`; vì đây là phase cuối của v1.0, **hỏi user trước khi** archive vào `docs/plan/archive/v1.0/` và chuyển sang `develop/v1.1`.
+- [x] Step 7: Commit `feat(pipeline): wire friction-aware blind OOS backtest (Phase 5 Done)`.
 
 ---
 
@@ -325,10 +325,10 @@ Luồng: kiểm tra `oos.index` không giao `other_segments[*].index` (`DataLeak
 
 ## Final Verification Checklist
 
-- [ ] `uv run pytest tests/` đạt 100% PASS (Phase 1–5).
-- [ ] `max|ŷ_py − ŷ_onnx| < 1e-4` trên Val, `PrecisionValidationError` chặn bundle khi vi phạm.
-- [ ] `predictor.py` chạy độc lập (`python -I`), import chỉ `numpy`/`onnxruntime`/stdlib; latency 1 dòng < 5 ms.
-- [ ] `DistributionShiftWarning` kích hoạt khi $|z|>3.0$.
-- [ ] Backtest báo cáo Net Sharpe sau phí + slippage, có Hysteresis Buffer, Downside IC.
-- [ ] Zero Leakage: không `fit()` ở packaging/backtest; OOS chỉ được đọc bởi runner.
-- [ ] `PHASES.md` Phase 5 → Done; xác nhận với user việc archive v1.0.
+- [x] `uv run pytest tests/` đạt 100% PASS (Phase 1–5).
+- [x] `max|ŷ_py − ŷ_onnx| < 1e-4` trên Val, `PrecisionValidationError` chặn bundle khi vi phạm.
+- [x] `predictor.py` chạy độc lập (`python -I`), import chỉ `numpy`/`onnxruntime`/stdlib; latency 1 dòng < 5 ms.
+- [x] `DistributionShiftWarning` kích hoạt khi $|z|>3.0$.
+- [x] Backtest báo cáo Net Sharpe sau phí + slippage, có Hysteresis Buffer, Downside IC.
+- [x] Zero Leakage: không `fit()` ở packaging/backtest; OOS chỉ được đọc bởi runner.
+- [x] `PHASES.md` Phase 5 → Done; xác nhận với user việc archive v1.0.

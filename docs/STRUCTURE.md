@@ -68,6 +68,9 @@ quantautoml/
 │       ├── packaging/                # Tầng đóng gói phân phối chuẩn ONNX Model Bundle
 │       │   ├── __init__.py
 │       │   ├── bundle.py             # Xuất gói Model Bundle (.onnx, meta, schema, predictor.py)
+│       │   ├── preprocessor.py       # Dựng preprocessor.onnx từ PreprocessorSpec của FeatureFunnel
+│       │   ├── converters.py         # Chuyển LightGBM/XGBoost/CatBoost sang ONNX (I/O thống nhất)
+│       │   ├── predictor_loader.py   # Nạp predictor.py của bundle (dùng bởi exporter & backtest runner)
 │       │   ├── schema.py             # Sinh và kiểm tra features_schema.json (Data Contract)
 │       │   ├── validator.py          # Kiểm tra sai số số học float32 (|y_py - y_onnx| < 10^-4)
 │       │   └── templates/
