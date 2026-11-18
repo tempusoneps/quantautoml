@@ -43,3 +43,19 @@ class OptimizationConvergenceError(EnsembleError):
 
 class CalibrationError(EnsembleError):
     """Probability calibration failed or violated rank-invariance."""
+
+
+class PackagingError(QuantAutoMLError):
+    """Base class for ONNX bundle packaging failures."""
+
+
+class PrecisionValidationError(PackagingError):
+    """Python vs ONNX outputs differ by >= the numerical precision tolerance (RULE-06)."""
+
+
+class SchemaMismatchError(PackagingError):
+    """Input columns/dtype do not match the features_schema.json data contract."""
+
+
+class BacktestError(QuantAutoMLError):
+    """Out-of-sample backtest cannot be run on the supplied data."""
