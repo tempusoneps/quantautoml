@@ -15,7 +15,7 @@ import numpy as np
 
 from quantautoml.common.config import PipelineConfig, load_config
 from quantautoml.common.exceptions import InvalidDataError
-from quantautoml.common.types import Dataset, Segment, SplitResult, TaskType
+from quantautoml.common.types import Dataset, PreprocessorSpec, Segment, SplitResult, TaskType
 from quantautoml.data.ingestion import DataIngestion
 from quantautoml.data.splitter import AdaptiveTimeSeriesSplitter
 from quantautoml.ensemble import (
@@ -28,6 +28,7 @@ from quantautoml.features.funnel import FeatureFunnel
 from quantautoml.models.decision_engine import DecisionReport, ModelDecisionEngine
 from quantautoml.models.tournament import ModelTournament, TournamentResult
 from quantautoml.models.tuner import DeepOptunaTuner, TunedCandidate, TuningResult
+from quantautoml.packaging import BundleManifest, ONNXBundleExporter
 
 
 @dataclass(frozen=True)
@@ -40,6 +41,7 @@ class PipelineResult:
     tuning_result: TuningResult | None = None
     ensemble_result: EnsembleWeightsResult | None = None
     calibration_result: CalibrationResult | None = None
+    bundle_manifest: BundleManifest | None = None
 
 
 def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> PipelineResult:
@@ -190,6 +192,32 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             calibration_result = calibrator.get_result()
             _dump_json(out / "calibration_report.json", calibration_result.model_dump())
 
+    bundle_manifest: BundleManifest | None = None
+    if (
+        cfg.packaging is not None
+        and tuning_result is not None
+        and ensemble_result is not None
+        and calibration_result is not None
+    ):
+        # Packaging only reads Train (statistics) and Val (precision check); it never fits.
+        bundle_manifest = ONNXBundleExporter(cfg.packaging).export(
+            out_dir=out / "bundle",
+            preprocessor_spec=(
+                funnel.preprocessor_spec()
+                if funnel is not None
+                else _identity_spec(dataset.feature_names)
+            ),
+            candidates=tuning_result.tuned_candidates,
+            ensemble=ensemble_result,
+            calibration=calibration_result,
+            task_type=dataset.task_type,
+            input_features=dataset.feature_names,
+            classes=_model_classes(tuning_result.tuned_candidates[0]),
+            X_train_raw=split.train.X,
+            X_val_raw=split.val.X,
+            X_val_model=funnel.transform(split.val).X if funnel is not None else split.val.X,
+        )
+
     return PipelineResult(
         dataset=dataset,
         split=split,
@@ -199,7 +227,22 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
         tuning_result=tuning_result,
         ensemble_result=ensemble_result,
         calibration_result=calibration_result,
+        bundle_manifest=bundle_manifest,
     )
+
+
+def _identity_spec(feature_names: tuple[str, ...]) -> PreprocessorSpec:
+    """Preprocessor for a pipeline without a feature funnel: models see every raw column."""
+    idx = tuple(range(len(feature_names)))
+    return PreprocessorSpec(
+        n_in=len(idx), bool_fill=(), indicator_idx=(), keep_idx=idx, final_idx=idx,
+        output_names=tuple(feature_names),
+    )
+
+
+def _model_classes(cand: TunedCandidate) -> list[int]:
+    classes = cand.fitted_model.classes_
+    return [] if classes is None else [int(c) for c in classes]
 
 
 def _get_candidate_scores(
