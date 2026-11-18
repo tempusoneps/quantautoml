@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quant AutoML Pipeline · System Architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper: #f5f5f5;
+      --color-paper-2: #ececec;
+      --color-ink: #2d3142;
+      --color-ink-strong: #111111;
+      --color-muted: #4f5d75;
+      --color-soft: #5a6580;
+      --color-rule: rgba(45, 49, 66, 0.12);
+      --color-rule-solid: #bfc0c0;
+      --color-accent: #bf4520;
+      --color-accent-tint: rgba(191, 69, 32, 0.08);
+      --color-link: #2e5aa8;
+      --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      padding: 2.5rem 1.5rem;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .header {
+      margin-bottom: 2rem;
+    }
+    .header-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header-eyebrow::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--color-accent);
+      border-radius: 50%;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 3.5vw + 1rem, 2.85rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.08;
+      color: var(--color-ink-strong);
+      margin-bottom: 0.6rem;
+    }
+    .subtitle {
+      font-size: 0.9375rem;
+      color: var(--color-muted);
+      max-width: 82ch;
+      line-height: 1.55;
+    }
+    .diagram-container {
+      background: var(--color-paper-2);
+      border-radius: 8px;
+      border: 1px solid var(--color-rule);
+      padding: 1.25rem;
+      overflow-x: auto;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+    svg {
+      width: 100%;
+      min-width: 1180px;
+      display: block;
+      user-select: none;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 0.85fr;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .cards { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1px solid var(--color-rule);
+      padding: 1.25rem;
+    }
+    .card .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.4rem;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(45, 49, 66, 0.08);
+    }
+    .card-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .card-dot.coral { background: var(--color-accent); }
+    .card-dot.ink { background: var(--color-ink); }
+    .card-dot.muted { background: var(--color-muted); }
+    .card h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-ink-strong);
+      letter-spacing: -0.01em;
+    }
+    .card ul {
+      list-style: none;
+    }
+    .card li {
+      font-size: 0.8125rem;
+      color: var(--color-muted);
+      line-height: 1.5;
+      margin-bottom: 0.35rem;
+      padding-left: 0.875rem;
+      position: relative;
+    }
+    .card li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: rgba(45, 49, 66, 0.3);
+      font-size: 0.75rem;
+    }
+    .card strong {
+      color: var(--color-ink);
+      font-weight: 600;
+    }
+    .footer {
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--color-rule);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: var(--color-soft);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .footer a {
+      color: var(--color-link);
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    @media print {
+      body { padding: 0; background: #fff; }
+      .diagram-container { overflow-x: visible; background: transparent; border: none; padding: 0; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <p class="header-eyebrow">Technical Architecture · Quant AutoML Pipeline</p>
+      <h1>End-to-End Autonomous Quantitative Pipeline</h1>
+      <p class="subtitle">Kiến trúc 5 giai đoạn tự động hóa Alpha: chống rò rỉ thời gian tuyệt đối (Zero Look-Ahead), kiểm soát đa giả thuyết FDR, tối ưu tổ hợp lồi SLSQP khả vi C² và đóng gói ONNX Decoupled Runtime (&lt; 5ms).</p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1240 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="diagram-title diagram-desc">
+        <title id="diagram-title">Quant AutoML Pipeline Architecture</title>
+        <desc id="diagram-desc">Detailed architecture showing data ingestion, adaptive temporal splitting with purging and embargo, 7-stage feature funnel, GBDT trio tournament, smooth SLSQP ensemble, temperature scaling, ONNX bundle packaging, and friction-aware OOS backtesting.</desc>
+
+        <defs>
+          <pattern id="grid-dots" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="0.8" fill="rgba(45, 49, 66, 0.08)"/>
+          </pattern>
+          <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/>
+          </marker>
+          <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#bf4520"/>
+          </marker>
+          <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/>
+          </marker>
+        </defs>
+
+        <!-- 1. Background -->
+        <rect width="100%" height="100%" fill="#f5f5f5"/>
+        <rect width="100%" height="100%" fill="url(#grid-dots)" opacity="0.6"/>
+
+        <!-- 2. Zones (drawn before arrows and nodes) -->
+        <!-- Zone 1: Data Ingestion & Isolation -->
+        <rect x="36" y="72" width="232" height="528" rx="8"
+              fill="rgba(45, 49, 66, 0.02)" stroke="rgba(45, 49, 66, 0.10)" stroke-width="0.8"/>
+        <rect x="52" y="76" width="200" height="14" rx="2" fill="#f5f5f5"/>
+        <text x="152" y="86" fill="#5a6580" font-size="7" font-family="'Geist Mono', monospace" font-weight="600"
+              text-anchor="middle" letter-spacing="0.14em">DATA INGESTION &amp; ISOLATION</text>
+
+        <!-- Zone 2: Alpha Modeling & Optimization -->
+        <rect x="312" y="72" width="560" height="528" rx="8"
+              fill="rgba(45, 49, 66, 0.02)" stroke="rgba(45, 49, 66, 0.10)" stroke-width="0.8"/>
+        <rect x="472" y="76" width="240" height="14" rx="2" fill="#f5f5f5"/>
+        <text x="592" y="86" fill="#5a6580" font-size="7" font-family="'Geist Mono', monospace" font-weight="600"
+              text-anchor="middle" letter-spacing="0.14em">ALPHA MODELING &amp; OPTIMIZATION</text>
+
+        <!-- Zone 3: Packaging & Production Runtime -->
+        <rect x="900" y="72" width="304" height="528" rx="8"
+              fill="rgba(45, 49, 66, 0.02)" stroke="rgba(45, 49, 66, 0.10)" stroke-width="0.8"/>
+        <rect x="948" y="76" width="208" height="14" rx="2" fill="#f5f5f5"/>
+        <text x="1052" y="86" fill="#5a6580" font-size="7" font-family="'Geist Mono', monospace" font-weight="600"
+              text-anchor="middle" letter-spacing="0.14em">PACKAGING &amp; PRODUCTION ACCEPTANCE</text>
+
+        <!-- 3. Connectors & Arrows (behind boxes) -->
+
+        <!-- C1: Raw Feeds -> Adaptive Splitter (Straight down) -->
+        <line x1="152" y1="216" x2="152" y2="336" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+        <!-- C2: Splitter -> Feature Funnel (Train split, elbow right+up) -->
+        <path d="M 248,368 H 280 Q 288,368 288,360 V 176 Q 288,168 296,168 H 336"
+              fill="none" stroke="#bf4520" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+
+        <!-- C3: Splitter -> SLSQP Cal-B (elbow right+up) -->
+        <path d="M 248,396 H 296 Q 304,396 304,388 V 336 Q 304,328 312,328 H 336"
+              fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+        <!-- C4: Splitter -> Temperature Calibrator Cal-A (elbow right+down) -->
+        <path d="M 248,424 H 296 Q 304,424 304,432 V 460 Q 304,468 312,468 H 336"
+              fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+        <!-- C5: Feature Funnel -> GBDT Tournament (Straight horizontal) -->
+        <line x1="548" y1="168" x2="636" y2="168" stroke="#bf4520" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+
+        <!-- C6: GBDT Tournament -> Decision & Tuner (Straight vertical) -->
+        <line x1="748" y1="216" x2="748" y2="280" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+        <!-- C7: Decision & Tuner -> Convex SLSQP (Straight horizontal, right to left) -->
+        <line x1="636" y1="328" x2="548" y2="328" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+        <!-- C8: Convex SLSQP -> Temperature Calibrator (Straight vertical down) -->
+        <line x1="442" y1="376" x2="442" y2="420" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+        <!-- C9: Temperature Calibrator -> ONNX Bundle (elbow right+up) -->
+        <path d="M 548,468 H 888 Q 896,468 896,460 V 236 Q 896,228 904,228 H 928"
+              fill="none" stroke="#bf4520" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+
+        <!-- C10: ONNX Bundle -> Friction Backtest (Straight vertical down) -->
+        <line x1="1052" y1="284" x2="1052" y2="396" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+        <!-- C11: Blind OOS split -> Friction Backtest (leaves bottom of Node 2, under-bus) -->
+        <path d="M 152,464 V 564 Q 152,572 160,572 H 1044 Q 1052,572 1052,564 V 508"
+              fill="none" stroke="#2e5aa8" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow-link)"/>
+
+        <!-- 4. Arrow Labels (mask + text) -->
+        <!-- Label C1 -->
+        <rect x="116" y="270" width="72" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="152" y="279" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">SYNC PARQUET</text>
+
+        <!-- Label C2 -->
+        <rect x="260" y="240" width="56" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="288" y="249" fill="#bf4520" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">TRAIN FIT</text>
+
+        <!-- Label C3 -->
+        <rect x="274" y="358" width="60" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="304" y="367" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">CAL-B DATA</text>
+
+        <!-- Label C4 -->
+        <rect x="274" y="442" width="60" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="304" y="451" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">CAL-A DATA</text>
+
+        <!-- Label C5 -->
+        <rect x="560" y="162" width="64" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="592" y="171" fill="#bf4520" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">FILTERED X</text>
+
+        <!-- Label C6 -->
+        <rect x="716" y="242" width="64" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="748" y="251" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">TOP K POOL</text>
+
+        <!-- Label C7 -->
+        <rect x="560" y="322" width="64" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="592" y="331" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GBDT PRED</text>
+
+        <!-- Label C8 -->
+        <rect x="412" y="392" width="60" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="442" y="401" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">WEIGHTS W</text>
+
+        <!-- Label C9 (placed on clear horizontal segment of C9) -->
+        <rect x="684" y="462" width="72" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="720" y="471" fill="#bf4520" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">SCALED PROBS</text>
+
+        <!-- Label C10 -->
+        <rect x="1012" y="334" width="80" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="1052" y="343" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">PREDICTOR.PY</text>
+
+        <!-- Label C11 -->
+        <rect x="548" y="566" width="96" height="12" rx="2" fill="#f5f5f5"/>
+        <text x="596" y="575" fill="#2e5aa8" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">BLIND OOS EVAL (10%)</text>
+
+
+        <!-- 5. Nodes (painted over arrows and labels) -->
+
+        <!-- Node 1: Raw Financial Feeds -->
+        <rect x="56" y="128" width="192" height="88" rx="6" fill="#ffffff" stroke="rgba(45, 49, 66, 0.16)" stroke-width="1.2"/>
+        <rect x="68" y="140" width="56" height="14" rx="2" fill="rgba(45, 49, 66, 0.08)"/>
+        <text x="96" y="150" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.1em">INGESTION</text>
+        <text x="68" y="174" fill="#2d3142" font-size="12" font-family="'Geist', sans-serif" font-weight="600">Raw Market Feeds</text>
+        <text x="68" y="194" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace">UTC ISO-8601 · np.float32</text>
+        <text x="68" y="206" fill="#5a6580" font-size="7.5" font-family="'Geist Mono', monospace">Monotonic time index (No shuffle)</text>
+
+        <!-- Node 2: Adaptive Temporal Splitter -->
+        <rect x="56" y="336" width="192" height="128" rx="6" fill="#ffffff" stroke="rgba(45, 49, 66, 0.16)" stroke-width="1.2"/>
+        <rect x="68" y="348" width="76" height="14" rx="2" fill="rgba(45, 49, 66, 0.08)"/>
+        <text x="106" y="358" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.1em">TIME ISOLATION</text>
+        <text x="68" y="380" fill="#2d3142" font-size="12" font-family="'Geist', sans-serif" font-weight="600">Adaptive Splitter</text>
+        <text x="68" y="398" fill="#bf4520" font-size="8.5" font-family="'Geist Mono', monospace" font-weight="600">Purging &amp; Embargo (h bars)</text>
+        <text x="68" y="414" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">N ≥ 10k: 5-Way Static Split</text>
+        <text x="68" y="428" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">N &lt; 5k: OOF Metadata Split</text>
+        <text x="68" y="448" fill="#5a6580" font-size="7.5" font-family="'Geist Mono', monospace">Train 60% · Cal 20% · Val/OOS 20%</text>
+
+        <!-- Node 3: 7-Stage Feature Funnel [FOCAL ACCENT 1] -->
+        <rect x="336" y="124" width="212" height="88" rx="6" fill="rgba(191, 69, 32, 0.05)" stroke="#bf4520" stroke-width="1.5"/>
+        <rect x="348" y="136" width="80" height="14" rx="2" fill="#bf4520"/>
+        <text x="388" y="146" fill="#ffffff" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.1em">RULE-01 · GATE</text>
+        <text x="348" y="168" fill="#111111" font-size="12" font-family="'Geist', sans-serif" font-weight="600">7-Stage Feature Funnel</text>
+        <text x="348" y="186" fill="#bf4520" font-size="8.5" font-family="'Geist Mono', monospace" font-weight="600">F1-F8: dCor &amp; BH FDR ≤ 0.05</text>
+        <text x="348" y="200" fill="#5a6580" font-size="7.5" font-family="'Geist Mono', monospace">Fit Train only · Transform all splits</text>
+
+        <!-- Node 4: GBDT Trio Tournament -->
+        <rect x="636" y="124" width="224" height="92" rx="6" fill="#ffffff" stroke="rgba(45, 49, 66, 0.16)" stroke-width="1.2"/>
+        <rect x="648" y="136" width="88" height="14" rx="2" fill="rgba(45, 49, 66, 0.08)"/>
+        <text x="692" y="146" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.1em">GBDT TOURNAMENT</text>
+        <text x="648" y="168" fill="#2d3142" font-size="12" font-family="'Geist', sans-serif" font-weight="600">GBDT Trio Tournament</text>
+        <text x="648" y="186" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace">LightGBM · CatBoost · XGBoost</text>
+        <text x="648" y="200" fill="#5a6580" font-size="7.5" font-family="'Geist Mono', monospace">30-Trial Budget · 5-Fold Walk-Forward</text>
+
+        <!-- Node 5: Ensemble Decision & Deep Tuner -->
+        <rect x="636" y="280" width="224" height="96" rx="6" fill="#ffffff" stroke="rgba(45, 49, 66, 0.16)" stroke-width="1.2"/>
+        <rect x="648" y="292" width="76" height="14" rx="2" fill="rgba(45, 49, 66, 0.08)"/>
+        <text x="686" y="302" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.1em">DECISION &amp; TPE</text>
+        <text x="648" y="324" fill="#2d3142" font-size="12" font-family="'Geist', sans-serif" font-weight="600">Decision &amp; Optuna Tuner</text>
+        <text x="648" y="342" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace">Diversity &lt; 0.88 · Gain ≥ 1.5%</text>
+        <text x="648" y="356" fill="#5a6580" font-size="7.5" font-family="'Geist Mono', monospace">TPE Multivariate + Hyperband Pruning</text>
+
+        <!-- Node 6: Convex SLSQP Optimizer -->
+        <rect x="336" y="280" width="212" height="96" rx="6" fill="#ffffff" stroke="rgba(45, 49, 66, 0.16)" stroke-width="1.2"/>
+        <rect x="348" y="292" width="72" height="14" rx="2" fill="rgba(45, 49, 66, 0.08)"/>
+        <text x="384" y="302" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.1em">RULE-04 &amp; 05</text>
+        <text x="348" y="324" fill="#2d3142" font-size="12" font-family="'Geist', sans-serif" font-weight="600">Smooth SLSQP Ensemble</text>
+        <text x="348" y="342" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace">C² Pearson on Rank(Y) · Cal-B</text>
+        <text x="348" y="356" fill="#5a6580" font-size="7.5" font-family="'Geist Mono', monospace">Bootstrap N=200 · Shrink 1/K · Hurdle 5%</text>
+
+        <!-- Node 7: Temperature Scaling Calibrator -->
+        <rect x="336" y="420" width="212" height="96" rx="6" fill="#ffffff" stroke="rgba(45, 49, 66, 0.16)" stroke-width="1.2"/>
+        <rect x="348" y="432" width="72" height="14" rx="2" fill="rgba(45, 49, 66, 0.08)"/>
+        <text x="384" y="442" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.1em">RULE-03 · CALIB</text>
+        <text x="348" y="464" fill="#2d3142" font-size="12" font-family="'Geist', sans-serif" font-weight="600">Temperature Calibrator</text>
+        <text x="348" y="482" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace">Scalar T &gt; 0 on Cal-A · ECE &lt; 0.05</text>
+        <text x="348" y="496" fill="#bf4520" font-size="7.5" font-family="'Geist Mono', monospace" font-weight="600">100% Rank Invariant (Zero ties)</text>
+
+        <!-- Node 8: Decoupled ONNX Bundle [FOCAL ACCENT 2] -->
+        <rect x="928" y="176" width="248" height="108" rx="6" fill="rgba(191, 69, 32, 0.05)" stroke="#bf4520" stroke-width="1.5"/>
+        <rect x="940" y="188" width="88" height="14" rx="2" fill="#bf4520"/>
+        <text x="984" y="198" fill="#ffffff" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.1em">RULE-06 &amp; 07</text>
+        <text x="940" y="222" fill="#111111" font-size="12" font-family="'Geist', sans-serif" font-weight="600">Decoupled ONNX Bundle</text>
+        <text x="940" y="240" fill="#bf4520" font-size="8.5" font-family="'Geist Mono', monospace" font-weight="600">|y_py - y_onnx| &lt; 1e-4 Contract</text>
+        <text x="940" y="254" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">predictor.py: numpy + onnxruntime</text>
+        <text x="940" y="268" fill="#5a6580" font-size="7.5" font-family="'Geist Mono', monospace">Zero heavy ML deps · &lt; 5.0ms/row</text>
+
+        <!-- Node 9: Friction-Aware OOS Backtest -->
+        <rect x="928" y="396" width="248" height="112" rx="6" fill="#ffffff" stroke="rgba(45, 49, 66, 0.16)" stroke-width="1.2"/>
+        <rect x="940" y="408" width="92" height="14" rx="2" fill="rgba(45, 49, 66, 0.08)"/>
+        <text x="986" y="418" fill="#2d3142" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle" letter-spacing="0.1em">RULE-09 · ACCEPT</text>
+        <text x="940" y="442" fill="#2d3142" font-size="12" font-family="'Geist', sans-serif" font-weight="600">Friction-Aware Backtest</text>
+        <text x="940" y="460" fill="#4f5d75" font-size="8.5" font-family="'Geist Mono', monospace">Fees + Slippage Friction Matrix</text>
+        <text x="940" y="474" fill="#2e5aa8" font-size="8" font-family="'Geist Mono', monospace" font-weight="600">Hysteresis Buffer (Turnover Cap)</text>
+        <text x="940" y="490" fill="#5a6580" font-size="7.5" font-family="'Geist Mono', monospace">Net Sharpe &gt; 1.2 · Downside IC Check</text>
+
+      </svg>
+    </div>
+
+    <!-- 3 Summary Cards with varied column widths -->
+    <div class="cards">
+      <div class="card">
+        <p class="eyebrow">Zero Look-Ahead Guarantee</p>
+        <div class="card-header">
+          <div class="card-dot coral"></div>
+          <h3>Temporal Isolation &amp; FDR Gate</h3>
+        </div>
+        <ul>
+          <li><strong>Adaptive Temporal Splitter:</strong> Cơ chế Purging &amp; Embargo ngăn cách các tập bằng <em>h</em> nến buffer, triệt tiêu hoàn toàn rò rỉ serial correlation.</li>
+          <li><strong>Strict Fit Contract:</strong> 100% các bộ biến đổi và bộ lọc 7 tầng (F1-F8) chỉ được gọi <code>fit()</code> trên tập Train; các tập Cal/Val/OOS chỉ <code>transform()</code>.</li>
+          <li><strong>Benjamini-Hochberg FDR:</strong> Kiểm soát tỷ lệ phát hiện sai (False Discovery Rate &le; 0.05) kết hợp kiểm định tính đơn điệu suy giảm của IC qua các kỳ hạn {1, 5, 10, 21}.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <p class="eyebrow">Mathematical Rigor</p>
+        <div class="card-header">
+          <div class="card-dot ink"></div>
+          <h3>Smooth C² SLSQP &amp; Rank Invariance</h3>
+        </div>
+        <ul>
+          <li><strong>Khả vi C² trong SLSQP:</strong> Rank-Transform ma trận dự đoán về &tilde;Y &isin; [0, 1] trước khi giải bài toán tối ưu Pearson Correlation, loại bỏ bế tắc đạo hàm zero-gradient.</li>
+          <li><strong>Bootstrap &amp; Hurdle Fallback:</strong> Lấy mẫu lại N=200 lần trên Cal-B, co cụm trọng số về 1/K và yêu cầu vượt trội &ge; 5% IC Sharpe so với baseline.</li>
+          <li><strong>Temperature Scaling:</strong> Hiệu chuẩn xác suất bằng scalar T &gt; 0 trên Cal-A đạt ECE &lt; 0.05 và bảo toàn chính xác 100% thứ tự Rank IC ban đầu.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <p class="eyebrow">Production Grade</p>
+        <div class="card-header">
+          <div class="card-dot muted"></div>
+          <h3>Decoupled Engine &amp; Friction Testing</h3>
+        </div>
+        <ul>
+          <li><strong>Decoupled Inference:</strong> Bundle xuất xưởng chỉ phụ thuộc duy nhất vào <code>numpy</code> và <code>onnxruntime</code>, độ trễ thực thi &lt; 5.0ms/hàng.</li>
+          <li><strong>Numerical Precision Contract:</strong> Xác nhận độ lệch số học tuyệt đối max |y<sub>py</sub> - y<sub>onnx</sub>| &lt; 10<sup>-4</sup> trên toàn bộ tập dữ liệu.</li>
+          <li><strong>Ma sát &amp; Hysteresis Band:</strong> Nghiệm thu mù trên OOS sau khi trừ phí giao dịch và trượt giá; cơ chế đệm trễ giảm 40-60% turnover danh mục.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>QUANT AUTOML PIPELINE · ARCHITECTURE v1.0.0-PROD-SPEC</span>
+      <span>BRANCH: develop/v1.0-phase4</span>
+      <span>RUNTIME: PYTHON 3.12+ · ONNX 1.16+ · LINUX x86_64</span>
+    </div>
+  </div>
+</body>
+</html>

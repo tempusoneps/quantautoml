@@ -3,6 +3,9 @@
 **System:** Quant AutoML Pipeline  
 **Version:** `v1.0.0-PROD-SPEC` (Updated with Quant Master Review)  
 **Architecture Status:** Approved  
+**Visual Diagrams:**
+- 🌐 [Interactive HTML Diagram (Editorial Design)](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/diagrams/architecture.html)
+- 📐 [Vector SVG Diagram](file:///mnt/Shares/GIT/the-new-algo/quantautoml/docs/diagrams/architecture.svg)
 
 ---
 
