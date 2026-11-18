@@ -94,4 +94,4 @@ flowchart LR
 - **Tiêu chí kiểm thử độc lập (Independent Verification):**
   - Chạy `predictor.py` không cần import bất kỳ module huấn luyện nào.
   - Báo cáo backtest phản ánh lợi nhuận thực tế sau chi phí giao dịch.
-- **Trạng thái:** In Progress
+- **Trạng thái:** Done
