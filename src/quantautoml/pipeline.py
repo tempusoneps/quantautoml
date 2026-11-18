@@ -15,13 +15,19 @@ import numpy as np
 
 from quantautoml.common.config import PipelineConfig, load_config
 from quantautoml.common.exceptions import InvalidDataError
-from quantautoml.common.types import Dataset, Segment, SplitResult
+from quantautoml.common.types import Dataset, Segment, SplitResult, TaskType
 from quantautoml.data.ingestion import DataIngestion
 from quantautoml.data.splitter import AdaptiveTimeSeriesSplitter
+from quantautoml.ensemble import (
+    BootstrapShrinkageEngine,
+    CalibrationResult,
+    EnsembleWeightsResult,
+    TemperatureCalibrator,
+)
 from quantautoml.features.funnel import FeatureFunnel
 from quantautoml.models.decision_engine import DecisionReport, ModelDecisionEngine
 from quantautoml.models.tournament import ModelTournament, TournamentResult
-from quantautoml.models.tuner import DeepOptunaTuner, TuningResult
+from quantautoml.models.tuner import DeepOptunaTuner, TunedCandidate, TuningResult
 
 
 @dataclass(frozen=True)
@@ -32,6 +38,8 @@ class PipelineResult:
     tournament_result: TournamentResult | None = None
     decision_report: DecisionReport | None = None
     tuning_result: TuningResult | None = None
+    ensemble_result: EnsembleWeightsResult | None = None
+    calibration_result: CalibrationResult | None = None
 
 
 def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> PipelineResult:
@@ -109,6 +117,79 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
         }
         _dump_json(out / "tuning_report.json", tuning_payload)
 
+    ensemble_result: EnsembleWeightsResult | None = None
+    calibration_result: CalibrationResult | None = None
+
+    if cfg.ensemble is not None and tuning_result is not None:
+        cal_b_seg: Segment | None = None
+        cal_a_seg: Segment | None = None
+
+        if split.cal_b is not None and split.cal_a is not None:
+            cal_b_seg = funnel.transform(split.cal_b) if funnel is not None else split.cal_b
+            cal_a_seg = funnel.transform(split.cal_a) if funnel is not None else split.cal_a
+        elif split.oof_folds is not None and len(split.oof_folds) >= 2:
+            cal_a_idx = split.oof_folds[-2][1]
+            cal_b_idx = split.oof_folds[-1][1]
+            raw_a = Segment(
+                X=split.train.X[cal_a_idx],
+                y=None if split.train.y is None else split.train.y[cal_a_idx],
+                labels_aux={k: v[cal_a_idx] for k, v in split.train.labels_aux.items()},
+                timestamps=split.train.timestamps[cal_a_idx],
+                index=split.train.index[cal_a_idx],
+            )
+            raw_b = Segment(
+                X=split.train.X[cal_b_idx],
+                y=None if split.train.y is None else split.train.y[cal_b_idx],
+                labels_aux={k: v[cal_b_idx] for k, v in split.train.labels_aux.items()},
+                timestamps=split.train.timestamps[cal_b_idx],
+                index=split.train.index[cal_b_idx],
+            )
+            cal_a_seg = funnel.transform(raw_a) if funnel is not None else raw_a
+            cal_b_seg = funnel.transform(raw_b) if funnel is not None else raw_b
+
+        if (
+            cal_b_seg is not None
+            and cal_b_seg.y is not None
+            and cal_a_seg is not None
+            and cal_a_seg.y is not None
+        ):
+            # 1. Collect candidate predictions on Cal-B
+            cal_b_preds = np.column_stack([
+                _get_candidate_scores(cand, cal_b_seg.X, dataset.task_type)
+                for cand in tuning_result.tuned_candidates
+            ])
+
+            # 2. Fit Bootstrap SLSQP Ensemble on Cal-B
+            ensemble_engine = BootstrapShrinkageEngine(cfg.ensemble)
+            ensemble_result = ensemble_engine.fit(cal_b_preds, cal_b_seg.y)
+            _dump_json(out / "ensemble_report.json", ensemble_result.model_dump())
+
+            # 3. Combine predictions on Cal-A using optimal weights
+            weights_arr = np.array(ensemble_result.weights, dtype=np.float32)
+            if dataset.task_type == TaskType.MULTICLASS_CLASSIFICATION:
+                all_probs = [
+                    _get_candidate_probs(cand, cal_a_seg.X, dataset.task_type)
+                    for cand in tuning_result.tuned_candidates
+                ]
+                cal_a_comb = np.zeros_like(all_probs[0], dtype=np.float32)
+                for w_k, p_k in zip(weights_arr, all_probs):
+                    cal_a_comb += w_k * p_k
+            else:
+                cal_a_preds = np.column_stack([
+                    _get_candidate_scores(cand, cal_a_seg.X, dataset.task_type)
+                    for cand in tuning_result.tuned_candidates
+                ])
+                cal_a_comb = (cal_a_preds @ weights_arr).astype(np.float32)
+
+            # 4. Temperature Calibration on Cal-A
+            calibrator = TemperatureCalibrator(
+                task_type=dataset.task_type,
+                random_state=cfg.ensemble.random_state,
+            )
+            calibrator.fit(cal_a_comb, cal_a_seg.y)
+            calibration_result = calibrator.get_result()
+            _dump_json(out / "calibration_report.json", calibration_result.model_dump())
+
     return PipelineResult(
         dataset=dataset,
         split=split,
@@ -116,7 +197,40 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
         tournament_result=tournament_result,
         decision_report=decision_report,
         tuning_result=tuning_result,
+        ensemble_result=ensemble_result,
+        calibration_result=calibration_result,
     )
+
+
+def _get_candidate_scores(
+    cand: TunedCandidate,
+    X: np.ndarray,
+    task_type: TaskType | None,
+) -> np.ndarray:
+    if task_type == TaskType.BINARY_CLASSIFICATION:
+        probs = cand.fitted_model.predict_proba(X)
+        if probs.ndim == 2 and probs.shape[1] >= 2:
+            return probs[:, 1].astype(np.float32)
+        return probs.ravel().astype(np.float32)
+    elif task_type == TaskType.MULTICLASS_CLASSIFICATION:
+        probs = cand.fitted_model.predict_proba(X)
+        classes = np.arange(probs.shape[1], dtype=np.float32)
+        return (probs @ classes).astype(np.float32)
+    else:
+        return cand.fitted_model.predict(X).astype(np.float32)
+
+
+def _get_candidate_probs(
+    cand: TunedCandidate,
+    X: np.ndarray,
+    task_type: TaskType | None,
+) -> np.ndarray:
+    if task_type in (TaskType.BINARY_CLASSIFICATION, TaskType.MULTICLASS_CLASSIFICATION):
+        probs = cand.fitted_model.predict_proba(X)
+        if task_type == TaskType.BINARY_CLASSIFICATION and probs.ndim == 2 and probs.shape[1] >= 2:
+            return probs[:, 1].astype(np.float32)
+        return probs.astype(np.float32)
+    return cand.fitted_model.predict(X).astype(np.float32)
 
 
 def _dump_json(path: Path, payload: dict[str, object] | list[dict[str, object]]) -> None:

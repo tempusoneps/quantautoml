@@ -1,66 +1,682 @@
 {
-  "src/quantautoml/__main__.py": 1794206791.3504345,
-  "src/quantautoml/pipeline.py": 1794365894.3948712,
-  "src/quantautoml/cli.py": 1794206791.3504345,
-  "src/quantautoml/__init__.py": 1794206791.3494346,
-  "src/quantautoml/common/types.py": 1794365838.4058301,
-  "src/quantautoml/common/config.py": 1794206791.3504345,
-  "src/quantautoml/common/exceptions.py": 1794206791.3504345,
-  "src/quantautoml/common/__init__.py": 1794206791.3504345,
-  "src/quantautoml/data/ingestion.py": 1794365884.8180816,
-  "src/quantautoml/data/splitter.py": 1794365890.607868,
-  "src/quantautoml/data/task_inference.py": 1794365860.730674,
-  "src/quantautoml/data/__init__.py": 1794206791.3504345,
-  "scripts/generate_config.py": 1794365718.8298,
-  "tests/conftest.py": 1794206791.3514345,
-  "tests/unit/test_cli.py": 1794206791.3514345,
-  "tests/unit/test_task_inference.py": 1794365853.7207165,
-  "tests/unit/test_pipeline.py": 1794206791.3514345,
-  "tests/unit/test_splitter.py": 1794365894.3948712,
-  "tests/unit/test_types.py": 1794365838.3857515,
-  "tests/unit/test_config.py": 1794206791.3514345,
-  "tests/unit/test_ingestion.py": 1794365853.7206094,
-  "tests/integration/test_zero_leakage.py": 1794206791.3514345,
-  "AGENTS.md": 1794206791.3384342,
-  "GEMINI.md": 1794206791.3384342,
-  "CLAUDE.md": 1794206791.3384342,
-  "README.md": 1793670637.56053,
-  "docs/FEATURES.md": 1793670637.5616796,
-  "docs/CONFIGURATION.md": 1794206791.3394341,
-  "docs/STRUCTURE.md": 1794206791.340434,
-  "docs/plan/PHASES.md": 1794206791.3494346,
-  "docs/plan/PLAN.md": 1794365718.8298,
-  "docs/plan/TRADE-OFF.md": 1794206791.3494346,
-  "docs/plan/README.md": 1794206791.3494346,
-  "docs/plan/REQUIREMENT.md": 1794206791.3494346,
-  "docs/plan/SCOPE.md": 1794206791.3494346,
-  "docs/plan/ARCHITECTURE.md": 1794206791.349242,
-  "docs/plan/STRUCTURE.md": 1794206791.3494346,
-  "docs/plan/05-ensemble-calibration/TRADE-OFF.md": 1794206791.3464344,
-  "docs/plan/05-ensemble-calibration/DESIGN.md": 1794206791.3454344,
-  "docs/plan/05-ensemble-calibration/PHASE.md": 1794206791.3454344,
-  "docs/plan/05-ensemble-calibration/SCOPE.md": 1794206791.3454344,
-  "docs/plan/06-packaging/DESIGN.md": 1794206791.3464344,
-  "docs/plan/06-packaging/PHASE.md": 1794206791.347694,
-  "docs/plan/06-packaging/SCOPE.md": 1794206791.3484344,
-  "docs/plan/02-feature-selection/TRADE-OFF.md": 1794206791.341937,
-  "docs/plan/02-feature-selection/DESIGN.md": 1794206791.3414342,
-  "docs/plan/02-feature-selection/PHASE.md": 1794206791.341937,
-  "docs/plan/02-feature-selection/SCOPE.md": 1794206791.341937,
-  "docs/plan/01-ingestion-split/TRADE-OFF.md": 1794206791.3414342,
-  "docs/plan/01-ingestion-split/DESIGN.md": 1794365718.8288,
-  "docs/plan/01-ingestion-split/PHASE.md": 1794206791.3412056,
-  "docs/plan/01-ingestion-split/SCOPE.md": 1794365718.8288,
-  "docs/plan/01-ingestion-split/NEED_UPDATE.md": 1794365898.1445584,
-  "docs/plan/03-model-selection/TRADE-OFF.md": 1794206791.3424342,
-  "docs/plan/03-model-selection/DESIGN.md": 1794206791.341937,
-  "docs/plan/03-model-selection/PHASE.md": 1794206791.3423882,
-  "docs/plan/03-model-selection/SCOPE.md": 1794206791.3423882,
-  "docs/plan/04-tuning/DESIGN.md": 1794206791.3434343,
-  "docs/plan/04-tuning/PHASE.md": 1794206791.3444343,
-  "docs/plan/04-tuning/SCOPE.md": 1794206791.3444343,
-  "docs/plan/07-backtest/TRADE-OFF.md": 1794206791.349242,
-  "docs/plan/07-backtest/DESIGN.md": 1794206791.3484344,
-  "docs/plan/07-backtest/PHASE.md": 1794206791.349242,
-  "docs/plan/07-backtest/SCOPE.md": 1794206791.349242
+  "src/quantautoml/__main__.py": {
+    "mtime": 1794097611.2911115,
+    "ast_hash": "dd9ef3cceb83d8f98c9f7696cd55e0bd",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/pipeline.py": {
+    "mtime": 1794960345.7689369,
+    "ast_hash": "c17474263df9d1b51d30603d5043faae",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/cli.py": {
+    "mtime": 1794097611.2914505,
+    "ast_hash": "11ac6faf82ad2f0e0f09f65a987af230",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/__init__.py": {
+    "mtime": 1794097611.2904348,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/common/types.py": {
+    "mtime": 1794958963.7179737,
+    "ast_hash": "d16360e810d3c94e535c2af065c4d889",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/common/config.py": {
+    "mtime": 1794959858.9495442,
+    "ast_hash": "952660f72cb1be82cf968055f0109b2c",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/common/exceptions.py": {
+    "mtime": 1794959851.3506742,
+    "ast_hash": "9f4a0ebaf49a683475cab3a9d2d83c27",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/common/__init__.py": {
+    "mtime": 1794097611.2919126,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/data/ingestion.py": {
+    "mtime": 1794433993.610268,
+    "ast_hash": "7182e8cadac192be24e76e2686b10785",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/data/splitter.py": {
+    "mtime": 1794433993.6117413,
+    "ast_hash": "65fa9df2bb2e22dace7e35da433729d8",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/data/task_inference.py": {
+    "mtime": 1794433993.624223,
+    "ast_hash": "e5bd4e02d8e84e77a4a501252f3907a9",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/data/__init__.py": {
+    "mtime": 1794097611.293959,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "scripts/generate_config.py": {
+    "mtime": 1794433993.6056187,
+    "ast_hash": "9eba4bcbe0bcf65c78e2536ce0f2b5e6",
+    "semantic_hash": ""
+  },
+  "tests/conftest.py": {
+    "mtime": 1794097611.2964647,
+    "ast_hash": "7c6997f89f41c419cbfb8213b73a4ae3",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_cli.py": {
+    "mtime": 1794097611.2977118,
+    "ast_hash": "e393369ec0a259f073e6c244ca91f088",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_task_inference.py": {
+    "mtime": 1794433993.6291401,
+    "ast_hash": "fbf11db7bba579ca4747e2325975a7b5",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_pipeline.py": {
+    "mtime": 1794958963.7497063,
+    "ast_hash": "fad9f718bc832bda5354922ab52b045b",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_splitter.py": {
+    "mtime": 1794433993.6282752,
+    "ast_hash": "c3c71ffe41090c66026282f7d0d3ad3f",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_types.py": {
+    "mtime": 1794433993.6300757,
+    "ast_hash": "8c8ab97608c76efc9d878618de76a4d6",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_config.py": {
+    "mtime": 1794958963.743867,
+    "ast_hash": "ae7b2db2973c847f3c9c25537d49d91b",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_ingestion.py": {
+    "mtime": 1794433993.6266239,
+    "ast_hash": "f4622181eaa21ea0fe8a3ce3642057b7",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_zero_leakage.py": {
+    "mtime": 1794097611.297155,
+    "ast_hash": "6118a19b7e1ffa2bf4805ac462af187f",
+    "semantic_hash": ""
+  },
+  "AGENTS.md": {
+    "mtime": 1793499996.4379377,
+    "ast_hash": "c46031daf2311f2f201c53826f937ada",
+    "semantic_hash": ""
+  },
+  "GEMINI.md": {
+    "mtime": 1793499996.4389133,
+    "ast_hash": "c46031daf2311f2f201c53826f937ada",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1793499996.4399002,
+    "ast_hash": "c46031daf2311f2f201c53826f937ada",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1793488001.344919,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "docs/FEATURES.md": {
+    "mtime": 1794958963.5208051,
+    "ast_hash": "0866a71eaef654eea7caa85f91530c2d",
+    "semantic_hash": ""
+  },
+  "docs/CONFIGURATION.md": {
+    "mtime": 1794959875.0276432,
+    "ast_hash": "84ac3cf2a216eb937c98d897b6559929",
+    "semantic_hash": ""
+  },
+  "docs/STRUCTURE.md": {
+    "mtime": 1793496490.8449721,
+    "ast_hash": "09886de497f189074c7ccff7f79dac23",
+    "semantic_hash": ""
+  },
+  "docs/plan/PHASES.md": {
+    "mtime": 1794960467.8197205,
+    "ast_hash": "16875cd09ab56de325b3bb3632fb3985",
+    "semantic_hash": ""
+  },
+  "docs/plan/PLAN.md": {
+    "mtime": 1794960452.981951,
+    "ast_hash": "e0b1352bf3a7b795f421ca3534828ff3",
+    "semantic_hash": ""
+  },
+  "docs/plan/TRADE-OFF.md": {
+    "mtime": 1794958963.5299265,
+    "ast_hash": "b0e0918dc0c4358d2c389f5ad532e761",
+    "semantic_hash": ""
+  },
+  "docs/plan/README.md": {
+    "mtime": 1794097611.2889197,
+    "ast_hash": "23612dafd0a30b115e3b0f507ee21c5a",
+    "semantic_hash": ""
+  },
+  "docs/plan/REQUIREMENT.md": {
+    "mtime": 1793493173.877903,
+    "ast_hash": "8284bb1fa6dc56778f53b89cca7e0fc9",
+    "semantic_hash": ""
+  },
+  "docs/plan/SCOPE.md": {
+    "mtime": 1794096723.5017543,
+    "ast_hash": "3f6c20f4b7a8430af84146c517078eec",
+    "semantic_hash": ""
+  },
+  "docs/plan/ARCHITECTURE.md": {
+    "mtime": 1794096726.569296,
+    "ast_hash": "034335faead574e333bb693354dcf076",
+    "semantic_hash": ""
+  },
+  "docs/plan/STRUCTURE.md": {
+    "mtime": 1794958963.5286305,
+    "ast_hash": "f2914efff9d112ca06475aa4fd7d1173",
+    "semantic_hash": ""
+  },
+  "docs/plan/05-ensemble-calibration/TRADE-OFF.md": {
+    "mtime": 1794097611.2845912,
+    "ast_hash": "09cee6ff8f7b6fc0e211e1423740c3d1",
+    "semantic_hash": ""
+  },
+  "docs/plan/05-ensemble-calibration/DESIGN.md": {
+    "mtime": 1794097611.2829902,
+    "ast_hash": "5dbb75f4436295f2af789f4888c459a8",
+    "semantic_hash": ""
+  },
+  "docs/plan/05-ensemble-calibration/PHASE.md": {
+    "mtime": 1794097611.283708,
+    "ast_hash": "c4f3d5339b349835b5e15967883e6ad4",
+    "semantic_hash": ""
+  },
+  "docs/plan/05-ensemble-calibration/SCOPE.md": {
+    "mtime": 1794097611.2841232,
+    "ast_hash": "d367d6156a6e6235037a6ad34afcc8cd",
+    "semantic_hash": ""
+  },
+  "docs/plan/06-packaging/DESIGN.md": {
+    "mtime": 1794097611.285333,
+    "ast_hash": "1c462bf09fe0406841afc6fa61917ec6",
+    "semantic_hash": ""
+  },
+  "docs/plan/06-packaging/PHASE.md": {
+    "mtime": 1794097611.285984,
+    "ast_hash": "f59252cbc36f4cf3c870984105fa46c2",
+    "semantic_hash": ""
+  },
+  "docs/plan/06-packaging/SCOPE.md": {
+    "mtime": 1794097611.2864313,
+    "ast_hash": "9bcd326f588c657143085ff11728fc14",
+    "semantic_hash": ""
+  },
+  "docs/plan/02-feature-selection/TRADE-OFF.md": {
+    "mtime": 1794097611.2754407,
+    "ast_hash": "bd420ce7c5dcc5c14559f86132067065",
+    "semantic_hash": ""
+  },
+  "docs/plan/02-feature-selection/DESIGN.md": {
+    "mtime": 1794097611.272726,
+    "ast_hash": "7e7376cb96dc77c9fc7142ec08d38ff7",
+    "semantic_hash": ""
+  },
+  "docs/plan/02-feature-selection/PHASE.md": {
+    "mtime": 1794097611.2737267,
+    "ast_hash": "a3dfb575f6f8da12ef3f0004713aaeb9",
+    "semantic_hash": ""
+  },
+  "docs/plan/02-feature-selection/SCOPE.md": {
+    "mtime": 1794097611.2746413,
+    "ast_hash": "ce082cf048d001a8c68596abf91c0376",
+    "semantic_hash": ""
+  },
+  "docs/plan/01-ingestion-split/TRADE-OFF.md": {
+    "mtime": 1794097611.271202,
+    "ast_hash": "97a559930073cbccbc3321cc00cfd766",
+    "semantic_hash": ""
+  },
+  "docs/plan/01-ingestion-split/DESIGN.md": {
+    "mtime": 1794433993.5995474,
+    "ast_hash": "4aef787becf07126759277a62477c565",
+    "semantic_hash": ""
+  },
+  "docs/plan/01-ingestion-split/PHASE.md": {
+    "mtime": 1794097611.269206,
+    "ast_hash": "14847d399422ce2f092f6d2e398eb94b",
+    "semantic_hash": ""
+  },
+  "docs/plan/01-ingestion-split/SCOPE.md": {
+    "mtime": 1794433993.6025226,
+    "ast_hash": "87fd0f454bb90f2133549510dcdc3eee",
+    "semantic_hash": ""
+  },
+  "docs/plan/01-ingestion-split/NEED_UPDATE.md": {
+    "mtime": 1794433993.6008725,
+    "ast_hash": "88d2219df83a213f764de3b450c3d6bd",
+    "semantic_hash": ""
+  },
+  "docs/plan/03-model-selection/TRADE-OFF.md": {
+    "mtime": 1794097611.2796254,
+    "ast_hash": "53571c57e863140e4790a3fef8d25924",
+    "semantic_hash": ""
+  },
+  "docs/plan/03-model-selection/DESIGN.md": {
+    "mtime": 1794097611.2773135,
+    "ast_hash": "0d2ed283a567e9df6e29e1129d7f411f",
+    "semantic_hash": ""
+  },
+  "docs/plan/03-model-selection/PHASE.md": {
+    "mtime": 1794097611.2783191,
+    "ast_hash": "32194334aa2d094668ce4f2a3240cfc1",
+    "semantic_hash": ""
+  },
+  "docs/plan/03-model-selection/SCOPE.md": {
+    "mtime": 1794097611.2790425,
+    "ast_hash": "e5143b0096501982f58c72171d9b40bf",
+    "semantic_hash": ""
+  },
+  "docs/plan/04-tuning/DESIGN.md": {
+    "mtime": 1794097611.2805963,
+    "ast_hash": "b301a6163401c23ca4b1faf2bfe4dd32",
+    "semantic_hash": ""
+  },
+  "docs/plan/04-tuning/PHASE.md": {
+    "mtime": 1794097611.281387,
+    "ast_hash": "31afe5a08e17100837877b65e083d3d4",
+    "semantic_hash": ""
+  },
+  "docs/plan/04-tuning/SCOPE.md": {
+    "mtime": 1794097611.2819445,
+    "ast_hash": "12fcc50de3ac7ecea5bcc623b481fa1c",
+    "semantic_hash": ""
+  },
+  "docs/plan/07-backtest/TRADE-OFF.md": {
+    "mtime": 1794097611.288538,
+    "ast_hash": "aff5f88f11088b62aa5b95b14a61eb3e",
+    "semantic_hash": ""
+  },
+  "docs/plan/07-backtest/DESIGN.md": {
+    "mtime": 1794097611.2871892,
+    "ast_hash": "d18304de73830d7fc341108287a4c693",
+    "semantic_hash": ""
+  },
+  "docs/plan/07-backtest/PHASE.md": {
+    "mtime": 1794097611.2877016,
+    "ast_hash": "d0a956792151d6f3f04a1f159438ea21",
+    "semantic_hash": ""
+  },
+  "docs/plan/07-backtest/SCOPE.md": {
+    "mtime": 1794097611.288122,
+    "ast_hash": "2a91c76194f6bb3fa3519de9c91531d3",
+    "semantic_hash": ""
+  },
+  "pyproject.toml": {
+    "mtime": 1794958963.7145588,
+    "ast_hash": "dbaa39dd9df2cd36b94aa292d0a5b5b6",
+    "semantic_hash": ""
+  },
+  "scripts/generate_agents_markdown.sh": {
+    "mtime": 1793497665.2996173,
+    "ast_hash": "3791327899126910bbff7cca4309b616",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/ensemble/__init__.py": {
+    "mtime": 1794960197.4846604,
+    "ast_hash": "09d3b948bcf190b4283628eb27266029",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/ensemble/bootstrap.py": {
+    "mtime": 1794960118.3652103,
+    "ast_hash": "1bc5e0a1da392ec108976b0ef158bbb7",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/ensemble/calibration.py": {
+    "mtime": 1794960236.970621,
+    "ast_hash": "2f26ae5de647c3cb2faa5a8a1c5c7556",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/ensemble/slsqp.py": {
+    "mtime": 1794960016.1367247,
+    "ast_hash": "9b9021027738cd9fd753be758b7003fa",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/__init__.py": {
+    "mtime": 1794958963.7193768,
+    "ast_hash": "391906e5abeb3dc40d5a4095fcf9870f",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/_binning.py": {
+    "mtime": 1794958963.7201464,
+    "ast_hash": "50db9604763275f3776d7e7ebce39986",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/base.py": {
+    "mtime": 1794958963.7211533,
+    "ast_hash": "5c87199192f4b5fb67a778d1ca7ad762",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/clustering.py": {
+    "mtime": 1794958963.7219357,
+    "ast_hash": "39b09b484fedbe57f8437ddcd5c94ed7",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/collinearity.py": {
+    "mtime": 1794958963.7227328,
+    "ast_hash": "6d2ff003a54764cc51bee71bc84b3c82",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/funnel.py": {
+    "mtime": 1794958963.7234468,
+    "ast_hash": "9cf619b06ea5a832105e6b3342f8fcf3",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/ic_stability.py": {
+    "mtime": 1794958963.7242732,
+    "ast_hash": "6197600ef8f758bd025618a3525788e3",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/jmi.py": {
+    "mtime": 1794958963.7251558,
+    "ast_hash": "02b09ab846202be3c41473ab1937dbb8",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/regime_synergy.py": {
+    "mtime": 1794958963.726262,
+    "ast_hash": "4a1f1ede43096934101f5fbd89667488",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/triage.py": {
+    "mtime": 1794958963.7279541,
+    "ast_hash": "a05cd74be76b3debf2e97ccff164043b",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/variance.py": {
+    "mtime": 1794958963.7293024,
+    "ast_hash": "3cfe1648a0696e88f61f3664750bdeb1",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/metrics/__init__.py": {
+    "mtime": 1794959952.8966994,
+    "ast_hash": "8201aa3608f5bb5ea39557b25ee5c8c0",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/metrics/calibration.py": {
+    "mtime": 1794959943.6925259,
+    "ast_hash": "16680f5d00cc8a2e3434a63945223611",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/metrics/fdr.py": {
+    "mtime": 1794958963.73132,
+    "ast_hash": "432bc68ab6770a6d7008ffafabd8ebbc",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/metrics/ic.py": {
+    "mtime": 1794958963.732244,
+    "ast_hash": "331b8c9623392b63e716ba404f8026e0",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/models/__init__.py": {
+    "mtime": 1794958963.7332902,
+    "ast_hash": "66b4934a9022063c3353720c3eb4a638",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/models/candidates.py": {
+    "mtime": 1794958963.7342153,
+    "ast_hash": "2acf81ef2758923ff4c92b78b55edd00",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/models/decision_engine.py": {
+    "mtime": 1794958963.7349453,
+    "ast_hash": "24483020e32e5623e08f4c67fb3e679c",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/models/tournament.py": {
+    "mtime": 1794958963.735653,
+    "ast_hash": "2fd623fb10e5ef2b251f8b79c7796235",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/models/tuner.py": {
+    "mtime": 1794958963.7364888,
+    "ast_hash": "9b7144af45d0276fcee2fb53ed1c91fc",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/models/validation.py": {
+    "mtime": 1794958963.7374325,
+    "ast_hash": "b0e612f9be8de4223b582d98366c6045",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_zero_leakage_ensemble.py": {
+    "mtime": 1794960303.0645022,
+    "ast_hash": "afd60ac0c3e8efb52b2381d6211818e5",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_zero_leakage_funnel.py": {
+    "mtime": 1794958963.739746,
+    "ast_hash": "0fdc0b678edc3980e78c6f8ad14d044e",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_zero_leakage_models.py": {
+    "mtime": 1794958963.740553,
+    "ast_hash": "7b4cea2c1183552da988ae5a43a751ed",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_binning.py": {
+    "mtime": 1794958963.7413087,
+    "ast_hash": "c12322879312832eebc91e583870b4e5",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_bootstrap_shrinkage.py": {
+    "mtime": 1794960131.971711,
+    "ast_hash": "6206d40d92e0f1ca56a7852a1f1be3c0",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_candidates.py": {
+    "mtime": 1794958963.741843,
+    "ast_hash": "d7cf2d85531296084507064b8e1224e4",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_clustering.py": {
+    "mtime": 1794958963.7424433,
+    "ast_hash": "b364aa09283039b0e45404427b7fb38c",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_collinearity.py": {
+    "mtime": 1794958963.743194,
+    "ast_hash": "18539bc909dc7a931759b7687cf47cfc",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_decision_engine.py": {
+    "mtime": 1794958963.744375,
+    "ast_hash": "2ac7c5d8653c97f772fbf89ff753c29d",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_ensemble_config.py": {
+    "mtime": 1794959842.32767,
+    "ast_hash": "c38b5e0c9a75854e25ee07175b06c9ba",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_features_base.py": {
+    "mtime": 1794958963.745017,
+    "ast_hash": "ab36ba56fda4c3dea6958514e73c7c6c",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_funnel.py": {
+    "mtime": 1794958963.7456298,
+    "ast_hash": "b1c236dbab281de206b9886c177a08c6",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_ic_stability.py": {
+    "mtime": 1794958963.7462611,
+    "ast_hash": "13905753d076f9e5a3f3fb602132ee90",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_jmi.py": {
+    "mtime": 1794958963.7469225,
+    "ast_hash": "ad09fb4e7a478e2935c728a18a503fa0",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_metrics_calibration.py": {
+    "mtime": 1794959927.2758715,
+    "ast_hash": "62f0055abcb729cdf9fc68d7f02c8552",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_metrics_fdr.py": {
+    "mtime": 1794958963.7473395,
+    "ast_hash": "c15a2c03c29bc2c95ee2af9051b278df",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_metrics_ic.py": {
+    "mtime": 1794958963.7478344,
+    "ast_hash": "65c6e590d03e2aa26b8d95f60be08d94",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_metrics_ic_sharpe.py": {
+    "mtime": 1794958963.7482367,
+    "ast_hash": "34309ece5cabb2761f055dc84501b1c8",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_metrics_icir.py": {
+    "mtime": 1794958963.7486458,
+    "ast_hash": "0c34fff1f8d76ea0aa720109f5a43ff1",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_models_config.py": {
+    "mtime": 1794958963.749056,
+    "ast_hash": "607daa62fd02a7bd68387b0814f9ebf9",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_regime_synergy.py": {
+    "mtime": 1794958963.7505636,
+    "ast_hash": "c0d8ca92a74d91f75694ae2d373cd1cb",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_slsqp_smooth.py": {
+    "mtime": 1794959989.1159756,
+    "ast_hash": "cced1b1c49a31dd8ae0c5e74bf7e2b00",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_temperature_calibration.py": {
+    "mtime": 1794960227.7094324,
+    "ast_hash": "6a027958f0b4b728cc1cca0bc6d1cf43",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_tournament.py": {
+    "mtime": 1794958963.7515967,
+    "ast_hash": "d46b1c75b66c019bd4f705fb3de88655",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_triage.py": {
+    "mtime": 1794958963.7524114,
+    "ast_hash": "d0691b2dffcdba6da867e20f2ee738a0",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_tuner.py": {
+    "mtime": 1794958963.7528732,
+    "ast_hash": "27ba10269463836d64f86ee6851e627e",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_variance.py": {
+    "mtime": 1794958963.7533867,
+    "ast_hash": "07bb3f880b338520faa29852acc50831",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_walk_forward.py": {
+    "mtime": 1794958963.7538342,
+    "ast_hash": "388028866579cc64ded40858be6fe283",
+    "semantic_hash": ""
+  },
+  ".agents/rules/graphify.md": {
+    "mtime": 1794958963.4978712,
+    "ast_hash": "f1e53ecc9194573d3c28fc116c743a2e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/graphify/SKILL.md": {
+    "mtime": 1794958963.5032122,
+    "ast_hash": "dfb0a6554c4af62df6effc61c6c7d245",
+    "semantic_hash": ""
+  },
+  ".agents/skills/graphify/references/add-watch.md": {
+    "mtime": 1794958963.506067,
+    "ast_hash": "d59d027fe449f06aa03905a01184e779",
+    "semantic_hash": ""
+  },
+  ".agents/skills/graphify/references/exports.md": {
+    "mtime": 1794958963.507273,
+    "ast_hash": "9da2a2152e60a22f07f05fed5158f287",
+    "semantic_hash": ""
+  },
+  ".agents/skills/graphify/references/extraction-spec.md": {
+    "mtime": 1794958963.508494,
+    "ast_hash": "42fef56a01698118f7fd722acdadea34",
+    "semantic_hash": ""
+  },
+  ".agents/skills/graphify/references/github-and-merge.md": {
+    "mtime": 1794958963.509481,
+    "ast_hash": "cde13df085e4c492aeb7ba298a996d0d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/graphify/references/hooks.md": {
+    "mtime": 1794958963.5108855,
+    "ast_hash": "3f545db6ce646650bb9de588f5512a27",
+    "semantic_hash": ""
+  },
+  ".agents/skills/graphify/references/query.md": {
+    "mtime": 1794958963.5124264,
+    "ast_hash": "3c46f8ad006874260614ed8657d02307",
+    "semantic_hash": ""
+  },
+  ".agents/skills/graphify/references/transcribe.md": {
+    "mtime": 1794958963.5135925,
+    "ast_hash": "67b6a5fa6c0974e18f60db9f8932fbd8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/graphify/references/update.md": {
+    "mtime": 1794958963.5151045,
+    "ast_hash": "9378bd03d56baaf78bd738ab3848f142",
+    "semantic_hash": ""
+  },
+  ".agents/workflows/graphify.md": {
+    "mtime": 1794958963.5171232,
+    "ast_hash": "0bc020d491fca99550c1ea3de0a5f862",
+    "semantic_hash": ""
+  },
+  "docs/.ai/AI_AGENT_GUIDELINE.md": {
+    "mtime": 1793499525.3398943,
+    "ast_hash": "fdd5cc2f79546c509610c838238cd76a",
+    "semantic_hash": ""
+  },
+  "docs/.ai/GIT_CONVENTIONS.md": {
+    "mtime": 1793497172.9591324,
+    "ast_hash": "55ed8c0c885fdea6d13068409eccc179",
+    "semantic_hash": ""
+  },
+  "docs/.ai/RULES.md": {
+    "mtime": 1793499539.858223,
+    "ast_hash": "de053c004ac7954144b0212346333261",
+    "semantic_hash": ""
+  },
+  "docs/plan/02-feature-selection/PLAN.md": {
+    "mtime": 1794958963.5230823,
+    "ast_hash": "b83eecee45ae644b3f8ccf0b3e4aa5fa",
+    "semantic_hash": ""
+  },
+  "docs/plan/03-model-selection/PLAN.md": {
+    "mtime": 1794959723.8918805,
+    "ast_hash": "3dd69dd7e94161217fc8d996412c5b69",
+    "semantic_hash": ""
+  },
+  "docs/plan/05-ensemble-calibration/PLAN.md": {
+    "mtime": 1794960455.9563205,
+    "ast_hash": "e0b1352bf3a7b795f421ca3534828ff3",
+    "semantic_hash": ""
+  }
 }

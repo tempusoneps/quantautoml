@@ -30,7 +30,7 @@
 - [x] **Task 3: Smooth SLSQP Optimizer ($C^2$ Objective)** — Hiện thực `SmoothSLSQPOptimizer` trên `cal_b`: Rank-transform $\tilde{Y} \in [0, 1]$, tối ưu hàm Pearson tương quan khả vi $C^2$ với ràng buộc $0.05 \le w_i \le 0.60$ và $\sum w_i = 1$.
 - [x] **Task 4: Bootstrap Shrinkage Engine & Hurdle Fallback (RULE-05)** — Hiện thực `BootstrapShrinkageEngine`: $N=200$ lần bootstrap (subsample $80\%$), tính vector trọng số trung vị, áp dụng Shrinkage về $1/K$, và thẩm định ngưỡng vượt trội $\ge 5\%$ IC Sharpe.
 - [x] **Task 5: Temperature Scaling Calibrator (RULE-03 Rank Invariance)** — Hiện thực `TemperatureCalibrator` trên `cal_a`: Tối ưu scalar $T > 0$ cực tiểu hóa Negative Log-Likelihood, đảm bảo $\text{ECE} < 0.05$ và bảo toàn $100\%$ Rank IC gốc.
-- [ ] **Task 6: Pipeline Integration, Reporting & Zero Leakage Verification** — Tích hợp module `ensemble` vào `run_pipeline()`, xuất báo cáo `ensemble_report.json` và `calibration_report.json`, kiểm tra toàn diện Zero Leakage.
+- [x] **Task 6: Pipeline Integration, Reporting & Zero Leakage Verification** — Tích hợp module `ensemble` vào `run_pipeline()`, xuất báo cáo `ensemble_report.json` và `calibration_report.json`, kiểm tra toàn diện Zero Leakage.
 
 ---
 
@@ -229,7 +229,7 @@
 
 ---
 
-### [ ] Task 6: Pipeline Integration, Reporting & Zero Leakage Verification
+### [x] Task 6: Pipeline Integration, Reporting & Zero Leakage Verification
 
 **Files:**
 - Create: `src/quantautoml/ensemble/__init__.py`, `tests/integration/test_zero_leakage_ensemble.py`
@@ -264,10 +264,10 @@
 
 ## Final Verification Checklist
 
-- [ ] `uv run pytest tests/` đạt 100% PASS (bao gồm Phase 1, Phase 2, Phase 3, Phase 4).
-- [ ] Ràng buộc trọng số SLSQP thỏa mãn: $\sum w_i = 1$ và $0.05 \le w_i \le 0.60$.
-- [ ] Bootstrap $N=200$ kết hợp co cụm Shrinkage về $1/K$ ổn định số học.
-- [ ] Hurdle Rule (RULE-05) tự động fallback khi không vượt trội $\ge 5\%$ IC Sharpe.
-- [ ] Temperature Scaling bảo toàn $100\%$ Rank IC gốc (RULE-03 Rank Invariance Test PASS) và đạt $\text{ECE} < 0.05$.
-- [ ] Zero Leakage Test PASS: Cal-B dùng cho ensemble, Cal-A dùng cho calibration, cấm chạm vào Val/OOS.
-- [ ] Sẵn sàng chuyển giao sang Phase 5: Gói gọn Ensemble weights và Calibrator vào ONNX Model Bundle và Friction Backtest.
+- [x] `uv run pytest tests/` đạt 100% PASS (bao gồm Phase 1, Phase 2, Phase 3, Phase 4).
+- [x] Ràng buộc trọng số SLSQP thỏa mãn: $\sum w_i = 1$ và $0.05 \le w_i \le 0.60$.
+- [x] Bootstrap $N=200$ kết hợp co cụm Shrinkage về $1/K$ ổn định số học.
+- [x] Hurdle Rule (RULE-05) tự động fallback khi không vượt trội $\ge 5\%$ IC Sharpe.
+- [x] Temperature Scaling bảo toàn $100\%$ Rank IC gốc (RULE-03 Rank Invariance Test PASS) và đạt $\text{ECE} < 0.05$.
+- [x] Zero Leakage Test PASS: Cal-B dùng cho ensemble, Cal-A dùng cho calibration, cấm chạm vào Val/OOS.
+- [x] Sẵn sàng chuyển giao sang Phase 5: Gói gọn Ensemble weights và Calibrator vào ONNX Model Bundle và Friction Backtest.
