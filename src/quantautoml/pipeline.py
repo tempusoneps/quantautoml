@@ -13,6 +13,7 @@ from pathlib import Path
 
 import numpy as np
 
+from quantautoml.backtest import OOSBacktestRunner, OOSMetrics
 from quantautoml.common.config import PipelineConfig, load_config
 from quantautoml.common.exceptions import InvalidDataError
 from quantautoml.common.types import Dataset, PreprocessorSpec, Segment, SplitResult, TaskType
@@ -42,6 +43,7 @@ class PipelineResult:
     ensemble_result: EnsembleWeightsResult | None = None
     calibration_result: CalibrationResult | None = None
     bundle_manifest: BundleManifest | None = None
+    backtest_metrics: OOSMetrics | None = None
 
 
 def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> PipelineResult:
@@ -218,6 +220,18 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             X_val_model=funnel.transform(split.val).X if funnel is not None else split.val.X,
         )
 
+    backtest_metrics: OOSMetrics | None = None
+    if cfg.backtest is not None and bundle_manifest is not None:
+        # Blind OOS acceptance: the only stage allowed to read split.oos for evaluation.
+        others = [split.train, split.val] + [s for s in (split.cal_a, split.cal_b) if s is not None]
+        backtest_metrics = OOSBacktestRunner(cfg.backtest).run(
+            bundle_dir=out / "bundle",
+            oos=split.oos,
+            feature_names=dataset.feature_names,
+            other_segments=others,
+            out_path=out / "backtest_report.json",
+        )
+
     return PipelineResult(
         dataset=dataset,
         split=split,
@@ -228,6 +242,7 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
         ensemble_result=ensemble_result,
         calibration_result=calibration_result,
         bundle_manifest=bundle_manifest,
+        backtest_metrics=backtest_metrics,
     )
 
 

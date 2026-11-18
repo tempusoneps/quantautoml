@@ -66,6 +66,8 @@ def test_pipeline_writes_bundle_when_packaging_configured(run) -> None:
     assert {"preprocessor.onnx", "model_0.onnx", "ensemble_meta.json", "features_schema.json",
             "predictor.py", "bundle_manifest.json"} <= names
     assert result.bundle_manifest is not None
+    assert result.backtest_metrics is None  # no [backtest] section -> no backtest stage
+    assert not (out / "backtest_report.json").exists()
 
 
 def test_pipeline_bundle_precision_ok(run) -> None:
