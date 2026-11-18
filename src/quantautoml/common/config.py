@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import tomllib
 from pathlib import Path
 from typing import Self
@@ -25,6 +26,20 @@ class LabelsConfig(_Strict):
     # True: ingestion keeps only the selected label column and ignores every other
     # label column (they are neither type-checked nor exposed as labels_aux).
     ignore_other_columns: bool = False
+    # Text label -> directional number (e.g. {"Long": 1, "Short": -1, "None": 0}).
+    # Several texts may share a number (they merge into one class). Applied in ingestion;
+    # `classes_` then holds the mapped numbers in ascending order.
+    mapping: dict[str, float] | None = None
+
+    @field_validator("mapping")
+    @classmethod
+    def _mapping_is_usable(cls, v: dict[str, float] | None) -> dict[str, float] | None:
+        if v is not None:
+            if not v:
+                raise ValueError("labels.mapping must not be empty")
+            if not all(math.isfinite(x) for x in v.values()):
+                raise ValueError("labels.mapping values must be finite numbers")
+        return v
 
 
 class SplitConfig(_Strict):

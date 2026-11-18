@@ -86,6 +86,8 @@ class DataIngestion:
         }
         if selected is not None:
             selected_values = self._extract_selected_label(joined, selected)
+            if cfg.labels.mapping is not None:
+                selected_values = self._apply_mapping(selected_values, cfg.labels.mapping, selected)
             # presence mask drives NaN counting / trailing-NaN detection for any label dtype
             label_arrays[selected] = np.where(selected_values.null_mask, np.nan, 0.0)
             if cfg.features is not None:
@@ -270,6 +272,25 @@ class DataIngestion:
         else:
             raise InvalidDataError(f"selected label {selected!r} has unsupported dtype {col.dtype}")
         return _SelectedLabel(values, null_mask)
+
+    @staticmethod
+    def _apply_mapping(
+        sel: _SelectedLabel, mapping: dict[str, float], name: str
+    ) -> _SelectedLabel:
+        """Text label -> mapped number; nulls stay null, unmapped texts are rejected."""
+        if sel.values.dtype.kind != "O":
+            raise InvalidDataError(
+                f"labels.mapping needs a text label but {name!r} is numeric; remove the mapping"
+            )
+        present = {v for v, isnull in zip(sel.values.tolist(), sel.null_mask.tolist()) if not isnull}
+        unmapped = sorted(present - mapping.keys())
+        if unmapped:
+            raise InvalidDataError(f"labels.mapping lacks values of {name!r}: {unmapped}")
+        out = np.array(
+            [np.nan if isnull else mapping[v] for v, isnull in zip(sel.values.tolist(), sel.null_mask.tolist())],
+            dtype=np.float64,
+        )
+        return _SelectedLabel(out, sel.null_mask)
 
     @staticmethod
     def _require_numeric(df: pl.DataFrame, cols: list[str], kind: str) -> None:
