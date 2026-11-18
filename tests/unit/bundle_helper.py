@@ -66,7 +66,7 @@ def make_bundle(tmp_path: Path, n_classes: int = 2, seed: int = 0) -> BundleFixt
     models = [LightGBMCandidate(task, params).fit(Xp, y), XGBoostCandidate(task, params).fit(Xp, y)]
 
     out = tmp_path / "bundle"
-    out.mkdir()
+    out.mkdir(parents=True)
     build_preprocessor_onnx(SPEC, out / "preprocessor.onnx")
     for k, m in enumerate(models):
         export_candidate_onnx(m, Xp.shape[1], out / f"model_{k}.onnx")
