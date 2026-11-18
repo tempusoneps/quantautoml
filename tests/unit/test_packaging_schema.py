@@ -63,3 +63,13 @@ def test_check_input_wrong_dtype_raises() -> None:
 def test_json_roundtrip_equal() -> None:
     c = _make(np.random.default_rng(2).normal(size=(30, 3)).astype(np.float32))
     assert FeatureSchemaContract.from_json(c.to_json()) == c
+
+
+def test_binary_columns_flagged_for_drift_exclusion() -> None:
+    rng = np.random.default_rng(3)
+    X = np.column_stack([
+        rng.normal(size=100),
+        (rng.random(100) < 0.05).astype(float),
+        np.where(rng.random(100) < 0.1, np.nan, (rng.random(100) < 0.5).astype(float)),
+    ]).astype(np.float32)
+    assert _make(X).is_binary == [False, True, True]

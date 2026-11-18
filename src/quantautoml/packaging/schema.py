@@ -27,6 +27,7 @@ class FeatureSchemaContract(BaseModel):
     dtype: Literal["float32"] = "float32"
     train_mean: list[float]
     train_std: list[float]
+    is_binary: list[bool]  # 0/1 columns (bool features, is_nan_* flags): excluded from drift check
     task_type: str
     classes: list[int] | None
 
@@ -52,11 +53,13 @@ class FeatureSchemaContract(BaseModel):
             mean = np.nan_to_num(np.nanmean(x, axis=0))
             std = np.nan_to_num(np.nanstd(x, axis=0))
         std = np.maximum(std, std_floor)
+        is_binary = [_is_binary(x[:, j]) for j in range(x.shape[1])]
         return cls(
             input_features=list(input_features),
             model_features=list(model_features),
             train_mean=[float(v) for v in mean],
             train_std=[float(v) for v in std],
+            is_binary=is_binary,
             task_type=task_type.value,
             classes=None if classes is None else [int(c) for c in classes],
         )
@@ -77,3 +80,8 @@ class FeatureSchemaContract(BaseModel):
     @classmethod
     def from_json(cls, s: str) -> Self:
         return cls.model_validate_json(s)
+
+
+def _is_binary(col: NDArray[np.float64]) -> bool:
+    v = col[~np.isnan(col)]
+    return v.size > 0 and bool(np.isin(v, (0.0, 1.0)).all())
