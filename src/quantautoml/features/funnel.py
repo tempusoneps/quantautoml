@@ -11,7 +11,14 @@ from numpy.typing import NDArray
 
 from quantautoml.common.config import FeaturesConfig
 from quantautoml.common.exceptions import DataLeakageError, FeatureSelectionError, InvalidDataError
-from quantautoml.common.types import Dataset, FilterReport, Segment, SplitResult, TaskType
+from quantautoml.common.types import (
+    Dataset,
+    FilterReport,
+    PreprocessorSpec,
+    Segment,
+    SplitResult,
+    TaskType,
+)
 from quantautoml.features.base import BaseFeatureFilter, FitContext
 from quantautoml.features.clustering import ICBehaviorClusterFilter
 from quantautoml.features.collinearity import FastNonlinearCollinearityFilter
@@ -124,6 +131,12 @@ class FeatureFunnel:
         self.is_fitted_ = True
         return self
 
+    def preprocessor_spec(self) -> PreprocessorSpec:
+        """Return the composed, ONNX-exportable description of ``transform``."""
+        if not self.is_fitted_:
+            raise FeatureSelectionError("FeatureFunnel: preprocessor_spec called before fit")
+        return _preprocessor_spec(self)
+
     def transform(self, seg: Segment) -> Segment:
         if not self.is_fitted_:
             raise FeatureSelectionError("FeatureFunnel: transform called before fit")
@@ -137,6 +150,29 @@ class FeatureFunnel:
         for stage in self._stages:
             X = stage.transform(X)
         return replace(seg, X=np.ascontiguousarray(X, dtype=np.float32))
+
+
+def _preprocessor_spec(funnel: FeatureFunnel) -> PreprocessorSpec:
+    stages = funnel._stages
+    if not stages:
+        return PreprocessorSpec(
+            n_in=funnel._n_features_in, bool_fill=(), indicator_idx=(), keep_idx=(),
+            final_idx=(), output_names=(),
+        )
+    triage = stages[0]
+    if not isinstance(triage, NaNInfTriage):
+        raise FeatureSelectionError("FeatureFunnel: first fitted stage must be F1 triage")
+    final = np.arange(len(triage.output_names_), dtype=np.intp)
+    for stage in stages[1:]:
+        final = final[stage.keep_idx_]
+    return PreprocessorSpec(
+        n_in=funnel._n_features_in,
+        bool_fill=tuple(sorted((int(j), float(v)) for j, v in triage.bool_fill_.items())),
+        indicator_idx=tuple(int(j) for j in triage.indicator_idx_),
+        keep_idx=tuple(int(j) for j in triage.keep_idx_),
+        final_idx=tuple(int(j) for j in final),
+        output_names=funnel.selected_features_,
+    )
 
 
 def _check_train_index(split: SplitResult) -> None:

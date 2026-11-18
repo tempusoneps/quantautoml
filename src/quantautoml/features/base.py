@@ -32,6 +32,11 @@ class BaseFeatureFilter(ABC):
         self.report_: FilterReport | None = None
         self._n_features_in: int = 0
 
+    @property
+    def keep_idx_(self) -> NDArray[np.intp]:
+        """Indices (into this stage's input columns) of the columns it keeps, in output order."""
+        return self._keep_idx  # type: ignore[attr-defined, no-any-return]
+
     def fit(self, X: NDArray[np.float32], y: NDArray[np.int32], ctx: FitContext) -> Self:
         if y is None or ctx.task_type == TaskType.UNSUPERVISED:
             raise InvalidDataError(f"{self.name}: feature funnel requires supervised labels")
