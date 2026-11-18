@@ -150,7 +150,10 @@ def _oof_folds(train_end: int, h: int) -> list[tuple[IndexArray, IndexArray]]:
 
 
 def _fmt(value: object) -> str:
-    f = float(value)  # type: ignore[arg-type]
+    try:
+        f = float(value)  # type: ignore[arg-type]
+    except ValueError:  # string class name (e.g. "Yes - Buy")
+        return str(value)
     return str(int(f)) if f.is_integer() else str(f)
 
 
