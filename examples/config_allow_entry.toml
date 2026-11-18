@@ -1,0 +1,35 @@
+# Quant AutoML pipeline - target: allow_entry (directional), single asset, 5-min bars.
+# Run:  uv run quantautoml run --config examples/config_allow_entry.toml --out runs/allow_entry
+
+[data]
+features_path = "datasets/feature.parquet"
+labels_path   = "datasets/label.csv"
+timestamp_col = "Date"
+
+[labels]
+selected = "allow_entry"
+ignore_other_columns = true        # keep only the selected label column
+
+[labels.mapping]                   # text -> directional number
+"Yes - Buy"    = 1
+"Yes - Sell"   = -1
+"No - None"    = 0
+"No - Sideway" = 0
+
+[split]
+horizon_h = 21                     # >= largest ic_horizon (purging/embargo)
+
+[features]                         # leakage-free funnel F1..F8; fwd_ret_* derived from Close
+ic_horizons    = { 1 = "fwd_ret_1", 5 = "fwd_ret_5", 10 = "fwd_ret_10", 21 = "fwd_ret_21" }
+target_horizon = 5
+price_col      = "Close"
+
+[models]                           # tournament + Optuna tuning (defaults: 30 / 50 trials)
+tournament_trials = 30
+tuning_trials     = 50
+
+[ensemble]                         # SLSQP + bootstrap + temperature calibration
+
+[packaging]                        # ONNX bundle, precision < 1e-4, latency < 5 ms
+
+[backtest]                         # friction-aware blind OOS (fee 4 bps + slippage 1 bps)
