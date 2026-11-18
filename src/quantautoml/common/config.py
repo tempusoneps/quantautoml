@@ -22,6 +22,9 @@ class DataConfig(_Strict):
 
 class LabelsConfig(_Strict):
     selected: str | None = None
+    # True: ingestion keeps only the selected label column and ignores every other
+    # label column (they are neither type-checked nor exposed as labels_aux).
+    ignore_other_columns: bool = False
 
 
 class SplitConfig(_Strict):

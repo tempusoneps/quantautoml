@@ -47,6 +47,9 @@ class DataIngestion:
             labels, l_tz, l_unit = self._read_frame(cfg.data.labels_path, ts_col)
             n_label_rows = labels.height
             label_cols = [c for c in labels.columns if c != ts_col]
+            if cfg.labels.ignore_other_columns and cfg.labels.selected in label_cols:
+                labels = labels.select([ts_col, cfg.labels.selected])
+                label_cols = [cfg.labels.selected]
             clash = sorted(set(label_cols) & set(feature_cols))
             if clash:
                 raise InvalidDataError(f"columns present in both files: {clash}")

@@ -25,6 +25,7 @@ horizon_h = 21            # horizon (số nến) LỚN NHẤT của mọi cột 
 | `data.timestamp_col` | Không (`timestamp`) | Tên cột timestamp ở cả hai file |
 | `data.min_match_ratio` | Không (`0.95`) | Tỷ lệ timestamp khớp tối thiểu khi inner join |
 | `labels.selected` | Có nếu có labels | Cột nhãn dùng để suy luận task và huấn luyện |
+| `labels.ignore_other_columns` | Không (mặc định `false`) | `true`: ingestion chỉ giữ cột `labels.selected`, bỏ qua mọi cột nhãn khác (không kiểm tra kiểu, không đưa vào `labels_aux`, không tính vào trailing-NaN/`horizon_h`). Nhãn chọn dạng chuỗi tự được mã hóa số (UD-06). Không dùng được cùng `[features]` vì funnel cần `labels_aux` (fwd_ret_*). |
 | `split.horizon_h` | Có | Số dòng bị bỏ ở mỗi ranh giới giữa các segment |
 
 ### Vì sao cần `horizon_h`
