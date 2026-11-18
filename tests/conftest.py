@@ -113,3 +113,9 @@ def build_config(tmp_path: Path) -> Callable[..., PipelineConfig]:
         return PipelineConfig.model_validate(raw)
 
     return _build
+
+
+# Integration tests reuse the test-only helpers that live in tests/unit (bundle_helper, ...).
+import sys  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).parent / "unit"))
