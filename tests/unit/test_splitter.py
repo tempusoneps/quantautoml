@@ -200,3 +200,13 @@ def test_unlabeled_minus_one_rows_are_excluded_from_class_counts() -> None:
     res = SPLITTER.split(make_dataset(1_000, y=y), horizon_h=5)
     counts = res.report.segments[0].class_counts
     assert counts is not None and sum(counts.values()) == 800 - 10
+
+
+def test_string_class_names_appear_in_class_counts() -> None:
+    names = ["No - None", "Yes - Buy", "Yes - Sell"]
+    y = (np.arange(1_000) % 3).astype(np.int32)
+    ds = dataclasses.replace(
+        make_dataset(1_000, y=y), classes_=np.array(names), task_type=TaskType.MULTICLASS_CLASSIFICATION
+    )
+    counts = SPLITTER.split(ds, horizon_h=5).report.segments[0].class_counts
+    assert counts is not None and set(counts) == set(names)
