@@ -12,7 +12,7 @@ from bundle_helper import make_bundle
 
 from quantautoml.backtest.runner import OOSBacktestRunner
 from quantautoml.common.config import BacktestConfig
-from quantautoml.common.exceptions import BacktestError, DataLeakageError
+from quantautoml.common.exceptions import BacktestError, DataLeakageError, SchemaMismatchError
 from quantautoml.common.types import Segment
 
 NAMES = ["x0", "x1", "x2", "x3", "x4", "Close"]
@@ -118,3 +118,29 @@ def test_runner_does_not_modify_bundle_files(bundle) -> None:
     before = snapshot()
     _run(bundle, _oos(signal=True))
     assert snapshot() == before
+
+
+def test_feature_name_order_mismatch_raises(bundle) -> None:
+    with pytest.raises(SchemaMismatchError):
+        _run(bundle, _oos(signal=True), names=["x1", "x0", "x2", "x3", "x4", "Close"])
+
+
+def test_latency_budget_is_configurable(bundle) -> None:
+    ok = _run(bundle, _oos(signal=True), latency_budget_ms=5.0)
+    tight = _run(bundle, _oos(signal=True), latency_budget_ms=1e-9)
+    assert ok.gates["latency"] and not tight.gates["latency"]
+
+
+def test_latency_repeats_is_configurable(bundle, monkeypatch) -> None:
+    calls = {"n": 0}
+    import quantautoml.backtest.runner as r
+
+    orig = r._latency_ms
+
+    def spy(predictor, row, repeats):  # type: ignore[no-untyped-def]
+        calls["n"] = repeats
+        return orig(predictor, row, repeats)
+
+    monkeypatch.setattr(r, "_latency_ms", spy)
+    _run(bundle, _oos(signal=True), latency_repeats=7)
+    assert calls["n"] == 7

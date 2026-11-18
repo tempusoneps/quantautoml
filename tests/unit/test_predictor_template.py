@@ -140,3 +140,13 @@ def test_rare_binary_indicator_does_not_trigger_drift_warning(tmp_path: Path) ->
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         p.predict(X)
+
+
+def test_wrong_column_names_raise_valueerror(tmp_path: Path) -> None:
+    fx = make_bundle(tmp_path)
+    p = _load(fx.dir).Predictor(fx.dir)
+    X = np.zeros((2, 6), dtype=np.float32)
+    ok = ["x0", "x1", "x2", "x3", "x4", "Close"]
+    p.predict(X, names=ok)  # matching names pass
+    with pytest.raises(ValueError, match="names"):
+        p.predict(X, names=["x1", "x0", "x2", "x3", "x4", "Close"])

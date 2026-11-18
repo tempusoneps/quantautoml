@@ -221,7 +221,7 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
         )
 
     backtest_metrics: OOSMetrics | None = None
-    if cfg.backtest is not None and bundle_manifest is not None:
+    if cfg.backtest is not None and cfg.packaging is not None and bundle_manifest is not None:
         # Blind OOS acceptance: the only stage allowed to read split.oos for evaluation.
         others = [split.train, split.val] + [s for s in (split.cal_a, split.cal_b) if s is not None]
         backtest_metrics = OOSBacktestRunner(cfg.backtest).run(
@@ -230,6 +230,8 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             feature_names=dataset.feature_names,
             other_segments=others,
             out_path=out / "backtest_report.json",
+            latency_repeats=cfg.packaging.latency_repeats,
+            latency_budget_ms=cfg.packaging.latency_budget_ms,
         )
 
     return PipelineResult(

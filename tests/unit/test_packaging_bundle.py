@@ -129,3 +129,27 @@ def test_float64_val_input_rejected(tmp_path: Path, fx) -> None:
 
     with pytest.raises(PackagingError):
         _export(tmp_path, fx, X_val_raw=fx.X_raw[:200].astype(np.float64))
+
+
+def test_failed_reexport_leaves_previous_bundle_untouched(tmp_path: Path, fx) -> None:
+    _export(tmp_path, fx)
+    out = tmp_path / "out"
+    before = {p.name: p.read_bytes() for p in out.iterdir()}
+    bad = fx.models[0]
+    orig = bad.predict_proba
+    bad.predict_proba = lambda X: np.clip(orig(X) + 0.01, 0, 1).astype(np.float32)  # type: ignore[method-assign]
+    with pytest.raises(PrecisionValidationError):
+        _export(tmp_path, fx)
+    assert {p.name: p.read_bytes() for p in out.iterdir()} == before
+    assert [p.name for p in tmp_path.iterdir()] == ["out", "ref"] or {
+        p.name for p in tmp_path.iterdir()
+    } == {"out", "ref"}  # no leftover temp build dirs
+
+
+def test_failed_first_export_leaves_nothing_behind(tmp_path: Path, fx) -> None:
+    bad = fx.models[0]
+    orig = bad.predict_proba
+    bad.predict_proba = lambda X: np.clip(orig(X) + 0.01, 0, 1).astype(np.float32)  # type: ignore[method-assign]
+    with pytest.raises(PrecisionValidationError):
+        _export(tmp_path, fx)
+    assert {p.name for p in tmp_path.iterdir()} == {"ref"}

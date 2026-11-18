@@ -20,6 +20,7 @@ from quantautoml.common.config import BacktestConfig
 from quantautoml.common.exceptions import BacktestError, DataLeakageError
 from quantautoml.common.types import Segment
 from quantautoml.packaging.predictor_loader import load_predictor
+from quantautoml.packaging.schema import FeatureSchemaContract
 
 _SECONDS_PER_YEAR = 365.25 * 86400.0
 _GAP_FACTOR = 3.0  # a timestamp step > 3x the median step counts as a session gap
@@ -38,6 +39,7 @@ class OOSBacktestRunner:
         other_segments: Sequence[Segment],
         out_path: Path | None = None,
         latency_repeats: int = 200,
+        latency_budget_ms: float = 5.0,
     ) -> OOSMetrics:
         cfg = self.cfg
         for seg in other_segments:
@@ -49,6 +51,10 @@ class OOSBacktestRunner:
         if n < cfg.rank_window + 2:
             raise BacktestError(f"OOS has {n} bars, need >= rank_window + 2 = {cfg.rank_window + 2}")
         close = self._close(oos.X, feature_names)
+        schema = FeatureSchemaContract.from_json(
+            (Path(bundle_dir) / "features_schema.json").read_text(encoding="utf-8")
+        )
+        schema.check_input(oos.X, names=feature_names)  # SchemaMismatchError on wrong order/width
 
         predictor = load_predictor(Path(bundle_dir) / "predictor.py").Predictor(bundle_dir)
         scores = np.asarray(predictor.predict(oos.X), dtype=np.float32)
@@ -64,7 +70,7 @@ class OOSBacktestRunner:
             scores=scores[:-1], y=oos.y[:-1], gross_returns=gross,
             net_returns=friction.net_returns(gross, pos), turnover=friction.turnover(pos),
             market_returns=market, periods_per_year=_periods_per_year(oos.timestamps),
-            latency_ms=latency_ms, cfg=cfg,
+            latency_ms=latency_ms, cfg=cfg, latency_budget_ms=latency_budget_ms,
         )
         if out_path is not None:
             report = metrics.model_dump()

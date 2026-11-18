@@ -46,7 +46,8 @@ def evaluate_oos_performance(
     """Compute OOS metrics and the acceptance gates (all strict inequalities).
 
     Downside IC is the Rank IC on *stress bars*: bars whose trailing ``cfg.ic_window`` market
-    return lies in the lowest ``cfg.downside_quantile``; it needs >= 30 such bars to count.
+    return lies in the lowest ``cfg.downside_quantile``; it needs >= 30 such bars with
+    non-constant scores and labels to count, else its gate fails. Its gate is ``>=`` (not strict).
     """
     n = len(scores)
     if periods_per_year <= 0:
@@ -58,7 +59,13 @@ def evaluate_oos_performance(
     icir = calc_icir(calc_rolling_ic(scores, y, cfg.ic_window))
     stress = _stress_mask(market_returns, cfg.ic_window, cfg.downside_quantile)
     n_stress = int(stress.sum())
-    downside_ic = calc_rank_ic(scores[stress], y[stress])[0] if n_stress >= _MIN_STRESS_BARS else 0.0
+    # An undefined IC (too few bars, or constant scores/labels on the stress bars) is no evidence.
+    downside_defined = (
+        n_stress >= _MIN_STRESS_BARS
+        and np.ptp(scores[stress]) > 0
+        and np.ptp(y[stress]) > 0
+    )
+    downside_ic = calc_rank_ic(scores[stress], y[stress])[0] if downside_defined else 0.0
     net_sharpe = _sharpe(net_returns, periods_per_year)
     mdd = _max_drawdown(net_returns)
 
@@ -68,7 +75,7 @@ def evaluate_oos_performance(
         "net_sharpe": net_sharpe > cfg.min_net_sharpe,
         "mdd": mdd < cfg.max_mdd,
         "latency": latency_ms is not None and latency_ms < latency_budget_ms,
-        "downside_ic": n_stress >= _MIN_STRESS_BARS and downside_ic >= cfg.min_downside_ic,
+        "downside_ic": downside_defined and downside_ic >= cfg.min_downside_ic,
     }
     failed = [k for k, ok in gates.items() if not ok]
     return OOSMetrics(

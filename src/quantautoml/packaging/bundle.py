@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
+import tempfile
 import warnings
 from collections.abc import Sequence
 from pathlib import Path
@@ -62,24 +64,25 @@ class ONNXBundleExporter:
             raise PackagingError(
                 f"{len(candidates)} candidates but {len(ensemble.weights)} ensemble weights"
             )
-        out_dir.mkdir(parents=True, exist_ok=True)
-        written: list[Path] = []
+        # Build in a private sibling directory and move files in only on success, so a failed
+        # export never touches (or half-overwrites) an existing bundle in ``out_dir``.
+        out_dir.parent.mkdir(parents=True, exist_ok=True)
+        build = Path(tempfile.mkdtemp(prefix=".bundle-build-", dir=out_dir.parent))
         try:
-            return self._export(
-                out_dir, written, preprocessor_spec, candidates, ensemble, calibration,
+            manifest = self._export(
+                build, preprocessor_spec, candidates, ensemble, calibration,
                 task_type, input_features, classes, X_train_raw, X_val_raw, X_val_model,
             )
-        except BaseException:
-            for path in written:
-                path.unlink(missing_ok=True)
-            if not any(out_dir.iterdir()):
-                out_dir.rmdir()
-            raise
+            out_dir.mkdir(exist_ok=True)
+            for built in sorted(build.iterdir()):
+                os.replace(built, out_dir / built.name)
+            return manifest
+        finally:
+            shutil.rmtree(build, ignore_errors=True)
 
     def _export(
         self,
         out_dir: Path,
-        written: list[Path],
         spec: PreprocessorSpec,
         candidates: Sequence[TunedCandidate],
         ensemble: EnsembleWeightsResult,
@@ -92,9 +95,7 @@ class ONNXBundleExporter:
         X_val_model: NDArray[np.float32],
     ) -> BundleManifest:
         def put(name: str) -> Path:
-            path = out_dir / name
-            written.append(path)
-            return path
+            return out_dir / name
 
         pre_path = put("preprocessor.onnx")
         build_preprocessor_onnx(spec, pre_path)
@@ -130,7 +131,7 @@ class ONNXBundleExporter:
         max_diff = validate_numerical_precision(reference, got, tol=self.cfg.precision_tol)
 
         manifest = BundleManifest(
-            files=[p.name for p in written], max_abs_diff=max_diff,
+            files=sorted(p.name for p in out_dir.iterdir()), max_abs_diff=max_diff,
             n_models=len(candidates), task_type=task_type.value,
         )
         put("bundle_manifest.json").write_text(manifest.model_dump_json(indent=2), encoding="utf-8")
