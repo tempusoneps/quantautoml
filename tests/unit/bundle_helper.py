@@ -25,6 +25,7 @@ SPEC = PreprocessorSpec(
     final_idx=(0, 1, 2, 3, 4, 5),
     output_names=("f0", "f1", "f2", "f3", "f4", "is_nan_f2"),
 )
+INPUT_NAMES = ["x0", "x1", "x2", "x3", "x4", "Close"]
 WEIGHTS = (0.6, 0.4)
 TEMPERATURE = 1.7
 
@@ -72,7 +73,7 @@ def make_bundle(tmp_path: Path, n_classes: int = 2, seed: int = 0) -> BundleFixt
         export_candidate_onnx(m, Xp.shape[1], out / f"model_{k}.onnx")
     classes = list(range(n_classes))
     schema = FeatureSchemaContract.from_train(
-        [f"x{i}" for i in range(6)], list(SPEC.output_names), Xp, task, classes, 1e-8
+        INPUT_NAMES, list(SPEC.output_names), Xp, task, classes, 1e-8
     )
     (out / "features_schema.json").write_text(schema.to_json())
     (out / "ensemble_meta.json").write_text(json.dumps({

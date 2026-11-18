@@ -137,3 +137,10 @@ def test_non_positive_periods_per_year_raises() -> None:
     kw["periods_per_year"] = 0.0
     with pytest.raises(ValueError):
         evaluate_oos_performance(**kw)
+
+
+def test_degenerate_downside_ic_fails_gate() -> None:
+    kw = _good()
+    kw["y"] = np.zeros(4000, dtype=np.int32)  # constant labels: IC is undefined, not "stable"
+    m = evaluate_oos_performance(**kw)
+    assert m.n_stress_bars >= 30 and not m.gates["downside_ic"]

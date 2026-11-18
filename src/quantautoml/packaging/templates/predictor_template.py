@@ -26,7 +26,8 @@ class Predictor:
         d = Path(bundle_dir)
         meta = json.loads((d / "ensemble_meta.json").read_text())
         schema = json.loads((d / "features_schema.json").read_text())
-        self._n_in = len(schema["input_features"])
+        self._names = list(schema["input_features"])
+        self._n_in = len(self._names)
         self._mean = np.asarray(schema["train_mean"], dtype=np.float32)
         self._std = np.asarray(schema["train_std"], dtype=np.float32)
         self._drift_cols = ~np.asarray(schema["is_binary"], dtype=bool)
@@ -38,8 +39,13 @@ class Predictor:
         self._pre = _session(d / "preprocessor.onnx")
         self._models = [_session(d / name) for name in meta["models"]]
 
-    def predict_proba(self, X: np.ndarray) -> np.ndarray:
-        """Calibrated probabilities ``[N, C]`` (binary: ``[1 - p, p]``), float32."""
+    def predict_proba(self, X: np.ndarray, names: list[str] | None = None) -> np.ndarray:
+        """Calibrated probabilities ``[N, C]`` (binary: ``[1 - p, p]``), float32.
+
+        Pass ``names`` (the caller's column names) to verify order against the schema.
+        """
+        if names is not None and list(names) != self._names:
+            raise ValueError("input column names/order differ from features_schema.json")
         if X.ndim != 2 or X.shape[1] != self._n_in:
             raise ValueError(f"expected 2-D input with {self._n_in} columns, got shape {X.shape}")
         if X.dtype != np.float32:
@@ -57,9 +63,9 @@ class Predictor:
         e = np.exp(z - z.max(axis=1, keepdims=True))
         return (e / e.sum(axis=1, keepdims=True)).astype(np.float32)
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, X: np.ndarray, names: list[str] | None = None) -> np.ndarray:
         """Ranking score ``[N]``: P(y=1) for binary, expected class value for multiclass."""
-        proba = self.predict_proba(X)
+        proba = self.predict_proba(X, names)
         return proba[:, 1] if self._binary else (proba @ self._classes).astype(np.float32)
 
     def _check_drift(self, xp: np.ndarray) -> None:

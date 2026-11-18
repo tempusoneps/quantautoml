@@ -106,3 +106,23 @@ def test_packaging_and_backtest_never_call_fit(tmp_path: Path, monkeypatch) -> N
     OOSBacktestRunner(BacktestConfig(rank_window=100, ic_window=300)).run(
         bundle_dir=fx.dir, oos=_wobbly_oos(), feature_names=NAMES, other_segments=[]
     )
+
+
+def test_pipeline_passes_packaging_latency_knobs_to_runner(tmp_path: Path, monkeypatch) -> None:
+    feat, lab = _write(tmp_path)
+    cfg = tmp_path / "cfg.toml"
+    cfg.write_text(
+        TOML.format(feat=feat, lab=lab).replace(
+            "[packaging]", "[packaging]\nlatency_budget_ms = 2.5\nlatency_repeats = 7"
+        )
+    )
+    seen: dict = {}
+    orig = OOSBacktestRunner.run
+
+    def spy(self, **kw):  # type: ignore[no-untyped-def]
+        seen.update(kw)
+        return orig(self, **kw)
+
+    monkeypatch.setattr(OOSBacktestRunner, "run", spy)
+    run_pipeline(cfg, tmp_path / "out")
+    assert seen["latency_budget_ms"] == 2.5 and seen["latency_repeats"] == 7
