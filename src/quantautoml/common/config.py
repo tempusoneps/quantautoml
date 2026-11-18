@@ -94,6 +94,36 @@ class EnsembleConfig(_Strict):
         return self
 
 
+class PackagingConfig(_Strict):
+    precision_tol: float = Field(default=1e-4, gt=0.0)
+    drift_z_threshold: float = Field(default=3.0, gt=0.0)
+    latency_budget_ms: float = Field(default=5.0, gt=0.0)
+    std_floor: float = Field(default=1e-8, gt=0.0)
+    latency_repeats: int = Field(default=200, ge=1)
+
+
+class BacktestConfig(_Strict):
+    price_col: str = "Close"
+    fee_bps: float = Field(default=4.0, ge=0.0)
+    slippage_bps: float = Field(default=1.0, ge=0.0)
+    top_pct: float = Field(default=0.20, gt=0.0, lt=0.5)
+    exit_pct: float = Field(default=0.30, gt=0.0, lt=0.5)
+    rank_window: int = Field(default=2000, ge=20)
+    ic_window: int = Field(default=500, ge=20)
+    min_rank_ic: float = 0.035
+    min_icir: float = 0.40
+    min_net_sharpe: float = 1.20
+    max_mdd: float = Field(default=0.18, gt=0.0)
+    downside_quantile: float = Field(default=0.20, gt=0.0, lt=0.5)
+    min_downside_ic: float = 0.0
+
+    @model_validator(mode="after")
+    def _exit_not_tighter_than_entry(self) -> Self:
+        if self.exit_pct < self.top_pct:
+            raise ValueError("backtest.exit_pct must be >= backtest.top_pct")
+        return self
+
+
 class PipelineConfig(_Strict):
     data: DataConfig
     labels: LabelsConfig = LabelsConfig()
@@ -101,6 +131,8 @@ class PipelineConfig(_Strict):
     features: FeaturesConfig | None = None
     models: ModelsConfig | None = None
     ensemble: EnsembleConfig | None = None
+    packaging: PackagingConfig | None = None
+    backtest: BacktestConfig | None = None
 
     @model_validator(mode="after")
     def _labels_consistency(self) -> Self:
