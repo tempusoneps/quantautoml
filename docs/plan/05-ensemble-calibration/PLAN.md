@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: dùng `superpowers:subagent-driven-development` (khuyến nghị) hoặc `superpowers:executing-plans` để thực thi plan theo từng task. Quy trình TDD bắt buộc (RED → GREEN → REFACTOR), cập nhật `- [x]` sau mỗi task theo RULE-10.
 
 **Active Phase:** Phase 4 — Convex Ensemble Optimization ($C^2$ Objective) & Temperature Calibration  
-**Branch:** `develop/v1.0`  
+**Branch:** `develop/v1.0-phase4`  
 **Goal:** Tối ưu hóa trọng số kết hợp mô hình theo phương pháp quy hoạch phi tuyến SLSQP có hàm mục tiêu khả vi bậc hai liên tục ($C^2$) trên tập Cal-B, kiểm soát tính vững bằng Bootstrap Shrinkage về $1/K$ (kèm 5% Hurdle Rule), và hiệu chuẩn xác suất bằng Temperature Scaling trên tập Cal-A đảm bảo bảo toàn 100% Rank IC và $\text{ECE} < 0.05$.  
 **Architecture:** `ensemble/` là module độc lập tiếp nhận đầu ra của Phase 3 (`TuningResult` hoặc `DecisionReport` với $K \le 3$ models). `slsqp.py` giải bài toán tối ưu với hàm mục tiêu Pearson trên ma trận dự đoán đã Rank-Transform ($\tilde{Y} \in [0, 1]$), ràng buộc $0.05 \le w_i \le 0.60, \sum w_i = 1$. `bootstrap.py` lấy mẫu $80\%$ Cal-B ($N=200$), tính median weight, co cụm shrinkage về $1/K$ và áp dụng hurdle threshold $+5\%$ IC Sharpe. `calibration.py` tối ưu scalar $T > 0$ trên Cal-A để cực tiểu hóa NLL/ECE mà không làm thay đổi thứ tự phân hạng. Metric $\text{ECE}$ nằm tại `metrics/calibration.py`.  
 **Tech Stack:** `scipy.optimize`, `numpy`, `pydantic` v2, `pytest`.  
@@ -25,18 +25,18 @@
 
 ## Execution Order Overview
 
-- [ ] **Task 1: Ensemble Config & Custom Exceptions** — Định nghĩa Pydantic `EnsembleConfig`, bổ sung vào `PipelineConfig`, định nghĩa custom exceptions (`EnsembleError`, `OptimizationConvergenceError`, `CalibrationError`).
-- [ ] **Task 2: Quantitative Metrics — Expected Calibration Error (ECE)** — Hiện thực hàm đo lường `calc_ece()` chuẩn hóa tại `metrics/calibration.py` để lượng hóa sai số calibration cho binary & multiclass.
-- [ ] **Task 3: Smooth SLSQP Optimizer ($C^2$ Objective)** — Hiện thực `SmoothSLSQPOptimizer` trên `cal_b`: Rank-transform $\tilde{Y} \in [0, 1]$, tối ưu hàm Pearson tương quan khả vi $C^2$ với ràng buộc $0.05 \le w_i \le 0.60$ và $\sum w_i = 1$.
-- [ ] **Task 4: Bootstrap Shrinkage Engine & Hurdle Fallback (RULE-05)** — Hiện thực `BootstrapShrinkageEngine`: $N=200$ lần bootstrap (subsample $80\%$), tính vector trọng số trung vị, áp dụng Shrinkage về $1/K$, và thẩm định ngưỡng vượt trội $\ge 5\%$ IC Sharpe.
-- [ ] **Task 5: Temperature Scaling Calibrator (RULE-03 Rank Invariance)** — Hiện thực `TemperatureCalibrator` trên `cal_a`: Tối ưu scalar $T > 0$ cực tiểu hóa Negative Log-Likelihood, đảm bảo $\text{ECE} < 0.05$ và bảo toàn $100\%$ Rank IC gốc.
-- [ ] **Task 6: Pipeline Integration, Reporting & Zero Leakage Verification** — Tích hợp module `ensemble` vào `run_pipeline()`, xuất báo cáo `ensemble_report.json` và `calibration_report.json`, kiểm tra toàn diện Zero Leakage.
+- [x] **Task 1: Ensemble Config & Custom Exceptions** — Định nghĩa Pydantic `EnsembleConfig`, bổ sung vào `PipelineConfig`, định nghĩa custom exceptions (`EnsembleError`, `OptimizationConvergenceError`, `CalibrationError`).
+- [x] **Task 2: Quantitative Metrics — Expected Calibration Error (ECE)** — Hiện thực hàm đo lường `calc_ece()` chuẩn hóa tại `metrics/calibration.py` để lượng hóa sai số calibration cho binary & multiclass.
+- [x] **Task 3: Smooth SLSQP Optimizer ($C^2$ Objective)** — Hiện thực `SmoothSLSQPOptimizer` trên `cal_b`: Rank-transform $\tilde{Y} \in [0, 1]$, tối ưu hàm Pearson tương quan khả vi $C^2$ với ràng buộc $0.05 \le w_i \le 0.60$ và $\sum w_i = 1$.
+- [x] **Task 4: Bootstrap Shrinkage Engine & Hurdle Fallback (RULE-05)** — Hiện thực `BootstrapShrinkageEngine`: $N=200$ lần bootstrap (subsample $80\%$), tính vector trọng số trung vị, áp dụng Shrinkage về $1/K$, và thẩm định ngưỡng vượt trội $\ge 5\%$ IC Sharpe.
+- [x] **Task 5: Temperature Scaling Calibrator (RULE-03 Rank Invariance)** — Hiện thực `TemperatureCalibrator` trên `cal_a`: Tối ưu scalar $T > 0$ cực tiểu hóa Negative Log-Likelihood, đảm bảo $\text{ECE} < 0.05$ và bảo toàn $100\%$ Rank IC gốc.
+- [x] **Task 6: Pipeline Integration, Reporting & Zero Leakage Verification** — Tích hợp module `ensemble` vào `run_pipeline()`, xuất báo cáo `ensemble_report.json` và `calibration_report.json`, kiểm tra toàn diện Zero Leakage.
 
 ---
 
 ## Detailed Task Breakdown
 
-### [ ] Task 1: Ensemble Config & Custom Exceptions
+### [x] Task 1: Ensemble Config & Custom Exceptions
 
 **Files:**
 - Modify: `src/quantautoml/common/exceptions.py`, `src/quantautoml/common/config.py`, `docs/CONFIGURATION.md`
@@ -77,7 +77,7 @@
 
 ---
 
-### [ ] Task 2: Quantitative Metrics — Expected Calibration Error (ECE)
+### [x] Task 2: Quantitative Metrics — Expected Calibration Error (ECE)
 
 **Files:**
 - Create: `src/quantautoml/metrics/calibration.py`
@@ -106,7 +106,7 @@
 
 ---
 
-### [ ] Task 3: Smooth SLSQP Optimizer ($C^2$ Objective)
+### [x] Task 3: Smooth SLSQP Optimizer ($C^2$ Objective)
 
 **Files:**
 - Create: `src/quantautoml/ensemble/slsqp.py`
@@ -143,7 +143,7 @@
 
 ---
 
-### [ ] Task 4: Bootstrap Shrinkage Engine & Hurdle Fallback (RULE-05)
+### [x] Task 4: Bootstrap Shrinkage Engine & Hurdle Fallback (RULE-05)
 
 **Files:**
 - Create: `src/quantautoml/ensemble/bootstrap.py`
@@ -191,7 +191,7 @@
 
 ---
 
-### [ ] Task 5: Temperature Scaling Calibrator (RULE-03 Rank Invariance)
+### [x] Task 5: Temperature Scaling Calibrator (RULE-03 Rank Invariance)
 
 **Files:**
 - Create: `src/quantautoml/ensemble/calibration.py`
@@ -229,7 +229,7 @@
 
 ---
 
-### [ ] Task 6: Pipeline Integration, Reporting & Zero Leakage Verification
+### [x] Task 6: Pipeline Integration, Reporting & Zero Leakage Verification
 
 **Files:**
 - Create: `src/quantautoml/ensemble/__init__.py`, `tests/integration/test_zero_leakage_ensemble.py`
@@ -264,10 +264,10 @@
 
 ## Final Verification Checklist
 
-- [ ] `uv run pytest tests/` đạt 100% PASS (bao gồm Phase 1, Phase 2, Phase 3, Phase 4).
-- [ ] Ràng buộc trọng số SLSQP thỏa mãn: $\sum w_i = 1$ và $0.05 \le w_i \le 0.60$.
-- [ ] Bootstrap $N=200$ kết hợp co cụm Shrinkage về $1/K$ ổn định số học.
-- [ ] Hurdle Rule (RULE-05) tự động fallback khi không vượt trội $\ge 5\%$ IC Sharpe.
-- [ ] Temperature Scaling bảo toàn $100\%$ Rank IC gốc (RULE-03 Rank Invariance Test PASS) và đạt $\text{ECE} < 0.05$.
-- [ ] Zero Leakage Test PASS: Cal-B dùng cho ensemble, Cal-A dùng cho calibration, cấm chạm vào Val/OOS.
-- [ ] Sẵn sàng chuyển giao sang Phase 5: Gói gọn Ensemble weights và Calibrator vào ONNX Model Bundle và Friction Backtest.
+- [x] `uv run pytest tests/` đạt 100% PASS (bao gồm Phase 1, Phase 2, Phase 3, Phase 4).
+- [x] Ràng buộc trọng số SLSQP thỏa mãn: $\sum w_i = 1$ và $0.05 \le w_i \le 0.60$.
+- [x] Bootstrap $N=200$ kết hợp co cụm Shrinkage về $1/K$ ổn định số học.
+- [x] Hurdle Rule (RULE-05) tự động fallback khi không vượt trội $\ge 5\%$ IC Sharpe.
+- [x] Temperature Scaling bảo toàn $100\%$ Rank IC gốc (RULE-03 Rank Invariance Test PASS) và đạt $\text{ECE} < 0.05$.
+- [x] Zero Leakage Test PASS: Cal-B dùng cho ensemble, Cal-A dùng cho calibration, cấm chạm vào Val/OOS.
+- [x] Sẵn sàng chuyển giao sang Phase 5: Gói gọn Ensemble weights và Calibrator vào ONNX Model Bundle và Friction Backtest.
