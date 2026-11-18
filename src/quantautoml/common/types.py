@@ -118,3 +118,20 @@ class FilterReport:
     n_out: int
     dropped: dict[str, str]
     notes: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class PreprocessorSpec:
+    """Composed description of ``FeatureFunnel.transform`` for ONNX export.
+
+    Semantics: ``Xc = inf -> NaN``; ``indicators = isnan(Xc[:, indicator_idx])``;
+    NaNs in ``bool_fill`` columns are replaced by their fill value; the intermediate matrix is
+    ``[Xc[:, keep_idx] | indicators]`` and the output is that matrix at ``final_idx``.
+    """
+
+    n_in: int
+    bool_fill: tuple[tuple[int, float], ...]
+    indicator_idx: tuple[int, ...]
+    keep_idx: tuple[int, ...]
+    final_idx: tuple[int, ...]
+    output_names: tuple[str, ...]

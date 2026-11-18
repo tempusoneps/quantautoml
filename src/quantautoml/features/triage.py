@@ -179,6 +179,14 @@ class NaNInfTriage(BaseFeatureFilter):
                 return "MAR"
         return "MCAR"
 
+    @property
+    def indicator_idx_(self) -> NDArray[np.intp]:
+        return self._indicator_idx
+
+    @property
+    def bool_fill_(self) -> dict[int, float]:
+        return dict(self._bool_fill)
+
     def _transform(self, X: NDArray[np.float32]) -> NDArray[np.float32]:
         Xc = np.where(np.isinf(X), np.nan, X).astype(np.float32)
         indicators = np.isnan(Xc[:, self._indicator_idx]).astype(np.float32)
