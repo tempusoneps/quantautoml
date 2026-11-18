@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import shutil
-import sys
 import warnings
 from collections.abc import Sequence
 from pathlib import Path
@@ -20,6 +18,7 @@ from quantautoml.common.types import PreprocessorSpec, TaskType
 from quantautoml.ensemble import CalibrationResult, EnsembleWeightsResult, TemperatureCalibrator
 from quantautoml.models.tuner import TunedCandidate
 from quantautoml.packaging.converters import export_candidate_onnx
+from quantautoml.packaging.predictor_loader import load_predictor
 from quantautoml.packaging.preprocessor import build_preprocessor_onnx, run_preprocessor_onnx
 from quantautoml.packaging.schema import FeatureSchemaContract
 from quantautoml.packaging.validator import validate_numerical_precision
@@ -124,7 +123,7 @@ class ONNXBundleExporter:
         shutil.copyfile(_TEMPLATE, put("predictor.py"))
 
         reference = _python_reference(candidates, ensemble, calibration, task_type, X_val_model)
-        predictor = _load_predictor(out_dir / "predictor.py").Predictor(out_dir)
+        predictor = load_predictor(out_dir / "predictor.py").Predictor(out_dir)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")  # drift on Val is irrelevant to the precision check
             got = predictor.predict_proba(X_val_raw)
@@ -156,17 +155,3 @@ def _python_reference(
         return np.column_stack([1.0 - p1, p1]).astype(np.float32)
     combined = sum(w * p for w, p in zip(weights, probs))
     return calibrator.calibrate(np.asarray(combined, dtype=np.float32))
-
-
-def _load_predictor(path: Path):  # type: ignore[no-untyped-def]
-    spec = importlib.util.spec_from_file_location(f"_bundle_predictor_{id(path)}", path)
-    if spec is None or spec.loader is None:
-        raise PackagingError(f"cannot load predictor at {path}")
-    module = importlib.util.module_from_spec(spec)
-    previous = sys.dont_write_bytecode
-    sys.dont_write_bytecode = True  # never leave __pycache__ inside the bundle
-    try:
-        spec.loader.exec_module(module)
-    finally:
-        sys.dont_write_bytecode = previous
-    return module
