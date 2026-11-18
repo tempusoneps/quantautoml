@@ -94,6 +94,7 @@ def build_config(tmp_path: Path) -> Callable[..., PipelineConfig]:
         fmt: str = "parquet",
         min_match_ratio: float = 0.95,
         ignore_other_columns: bool = False,
+        features_cfg: dict[str, object] | None = None,
     ) -> PipelineConfig:
         def _write(df: pl.DataFrame, name: str) -> Path:
             path = tmp_path / f"{name}.{fmt}"
@@ -111,6 +112,8 @@ def build_config(tmp_path: Path) -> Callable[..., PipelineConfig]:
         if labels is not None:
             data["labels_path"] = str(_write(labels, "labels"))
             raw["labels"] = {"selected": selected, "ignore_other_columns": ignore_other_columns}
+        if features_cfg is not None:
+            raw["features"] = features_cfg
         return PipelineConfig.model_validate(raw)
 
     return _build

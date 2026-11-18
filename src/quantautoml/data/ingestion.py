@@ -9,7 +9,7 @@ import numpy as np
 import polars as pl
 from numpy.typing import NDArray
 
-from quantautoml.common.config import PipelineConfig
+from quantautoml.common.config import FeaturesConfig, PipelineConfig
 from quantautoml.common.exceptions import InvalidDataError, TimestampAlignmentError
 from quantautoml.common.types import Dataset, IngestionReport
 from quantautoml.data.task_inference import infer_task_type
@@ -88,6 +88,10 @@ class DataIngestion:
             selected_values = self._extract_selected_label(joined, selected)
             # presence mask drives NaN counting / trailing-NaN detection for any label dtype
             label_arrays[selected] = np.where(selected_values.null_mask, np.nan, 0.0)
+            if cfg.features is not None:
+                label_arrays.update(
+                    self._derive_forward_returns(cfg.features, x64, feature_cols, label_arrays, selected)
+                )
         label_nan_counts = {c: int(np.isnan(a).sum()) for c, a in label_arrays.items()}
         trailing = {c: self._trailing_nan(a) for c, a in label_arrays.items()}
         max_trailing = max(trailing.values(), default=0)
@@ -158,6 +162,38 @@ class DataIngestion:
         )
 
     # ------------------------------------------------------------------ #
+    @staticmethod
+    def _derive_forward_returns(
+        fcfg: FeaturesConfig,
+        x64: NDArray[np.float64],
+        feature_cols: list[str],
+        existing: dict[str, NDArray[np.float64]],
+        selected: str,
+    ) -> dict[str, NDArray[np.float64]]:
+        """fwd_ret_h = price[t+h]/price[t] - 1 for ic_horizons columns absent from the labels."""
+        missing = {
+            h: name for h, name in fcfg.ic_horizons.items() if name not in existing and name != selected
+        }
+        if not missing:
+            return {}
+        if fcfg.price_col not in feature_cols:
+            raise InvalidDataError(
+                f"cannot derive forward returns {sorted(missing.values())}: "
+                f"price column {fcfg.price_col!r} not found in features"
+            )
+        price = x64[:, feature_cols.index(fcfg.price_col)]
+        n = price.shape[0]
+        derived: dict[str, NDArray[np.float64]] = {}
+        for h, name in missing.items():
+            out = np.full(n, np.nan)
+            if h < n:
+                with np.errstate(divide="ignore", invalid="ignore"):
+                    ratio = price[h:] / price[: n - h] - 1.0
+                valid = (price[h:] > 0) & (price[: n - h] > 0)
+                out[: n - h] = np.where(valid, ratio, np.nan)
+            derived[name] = out
+        return derived
+
     @staticmethod
     def _read_frame(path: Path, ts_col: str) -> tuple[pl.DataFrame, str, str]:
         suffix = path.suffix.lower()

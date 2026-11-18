@@ -34,6 +34,9 @@ class SplitConfig(_Strict):
 class FeaturesConfig(_Strict):
     ic_horizons: dict[int, str]
     target_horizon: int
+    # Ingestion derives any ic_horizons column missing from the labels file as
+    # fwd_ret_h = price[t+h] / price[t] - 1 using this feature column.
+    price_col: str = "Close"
     icir_min: float = 0.30
     fdr_alpha: float = Field(default=0.05, gt=0.0, le=0.05)
     rolling_window: int = Field(default=63, ge=2)

@@ -281,3 +281,50 @@ def test_ignore_other_columns_encodes_string_selected_label(make_frames, build_c
     assert ds.task_type is TaskType.MULTICLASS_CLASSIFICATION
     assert ds.y is not None and ds.y.dtype == np.int32 and ds.y[7] == -1
     assert ds.labels_aux == {}
+
+
+_FWD = {"ic_horizons": {1: "fwd_ret_1", 5: "fwd_ret_5"}, "target_horizon": 5}
+
+
+def _with_close(f: pl.DataFrame) -> pl.DataFrame:
+    close = 100.0 * np.exp(np.cumsum(np.random.default_rng(1).normal(0, 0.01, f.height)))
+    return f.with_columns(pl.Series("Close", close))
+
+
+def test_missing_forward_returns_are_derived_from_close(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    f = _with_close(f)
+    l = l.select(["timestamp", "y_dir"])  # no fwd_ret_* in the labels file
+    ds = _load(build_config(f, l, ignore_other_columns=True, features_cfg=_FWD))
+    assert set(ds.labels_aux) == {"fwd_ret_1", "fwd_ret_5"}
+    close = f["Close"].to_numpy()
+    np.testing.assert_allclose(ds.labels_aux["fwd_ret_5"], close[5:] / close[:95] - 1, rtol=1e-4)
+    assert ds.labels_aux["fwd_ret_5"].dtype == np.float32
+    assert np.isnan(ds.labels_aux["fwd_ret_1"]).sum() == 0
+    assert all(v.shape[0] == ds.X.shape[0] for v in ds.labels_aux.values())
+
+
+def test_existing_forward_return_columns_are_not_overwritten(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    f = _with_close(f)
+    ds = _load(build_config(f, l, features_cfg=_FWD))
+    expected = l["fwd_ret_5"].to_numpy()[:95]
+    np.testing.assert_allclose(ds.labels_aux["fwd_ret_5"], expected, equal_nan=True, rtol=1e-5)
+
+
+def test_derived_forward_returns_still_respect_horizon_h(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    f = _with_close(f)
+    l = l.select(["timestamp", "y_dir"])
+    with pytest.raises(InvalidDataError, match="horizon_h"):
+        _load(build_config(
+            f, l, horizon_h=5, ignore_other_columns=True,  # y_dir trails 5 NaN, fwd_ret_10 trails 10
+            features_cfg={"ic_horizons": {1: "fwd_ret_1", 10: "fwd_ret_10"}, "target_horizon": 10},
+        ))
+
+
+def test_derivation_without_price_column_is_rejected(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)  # no Close column
+    l = l.select(["timestamp", "y_dir"])
+    with pytest.raises(InvalidDataError, match="Close"):
+        _load(build_config(f, l, ignore_other_columns=True, features_cfg=_FWD))

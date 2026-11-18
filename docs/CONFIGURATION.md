@@ -25,7 +25,7 @@ horizon_h = 21            # horizon (số nến) LỚN NHẤT của mọi cột 
 | `data.timestamp_col` | Không (`timestamp`) | Tên cột timestamp ở cả hai file |
 | `data.min_match_ratio` | Không (`0.95`) | Tỷ lệ timestamp khớp tối thiểu khi inner join |
 | `labels.selected` | Có nếu có labels | Cột nhãn dùng để suy luận task và huấn luyện |
-| `labels.ignore_other_columns` | Không (mặc định `false`) | `true`: ingestion chỉ giữ cột `labels.selected`, bỏ qua mọi cột nhãn khác (không kiểm tra kiểu, không đưa vào `labels_aux`, không tính vào trailing-NaN/`horizon_h`). Nhãn chọn dạng chuỗi tự được mã hóa số (UD-06). Không dùng được cùng `[features]` vì funnel cần `labels_aux` (fwd_ret_*). |
+| `labels.ignore_other_columns` | Không (mặc định `false`) | `true`: ingestion chỉ giữ cột `labels.selected`, bỏ qua mọi cột nhãn khác (không kiểm tra kiểu, không đưa vào `labels_aux`, không tính vào trailing-NaN/`horizon_h`). Nhãn chọn dạng chuỗi tự được mã hóa số (UD-06). |
 | `split.horizon_h` | Có | Số dòng bị bỏ ở mỗi ranh giới giữa các segment |
 
 ### Vì sao cần `horizon_h`
@@ -43,6 +43,8 @@ Pipeline kiểm tra an toàn: nếu một cột nhãn có số NaN ở cuối l�
 
 Mục `[features]` là tùy chọn; thiếu mục này thì `PipelineConfig.features is None` (tương thích Phase 1).
 `ic_horizons` ánh xạ kỳ hạn -> cột forward-return trong `labels_aux`; `target_horizon` phải là một khóa của `ic_horizons`.
+
+> **Tự suy `fwd_ret_*`:** nếu một cột trong `ic_horizons` không có trong file labels (hoặc bị bỏ qua bởi `labels.ignore_other_columns`), ingestion tính `fwd_ret_h = price[t+h]/price[t] − 1` từ cột `features.price_col` (mặc định `Close`) và đưa vào `labels_aux` *trước khi split*; dòng cuối thiếu `Close[t+h]` là NaN. Cột đã có sẵn trong file labels không bị ghi đè. Thiếu cột giá → `InvalidDataError`. `split.horizon_h` vẫn phải ≥ kỳ hạn lớn nhất (purging), nếu không ingestion báo lỗi.
 
 > **Lưu ý:** ingestion loại cột `labels.selected` khỏi `labels_aux`, nên mọi cột trong `ic_horizons` phải là cột forward-return phụ **khác** `labels.selected` (ví dụ `selected = "y_dir"` như ví dụ Phase 1, còn `fwd_ret_1..21` nằm trong file labels). Nếu đặt `selected = "fwd_ret_5"` đồng thời ánh xạ `5 = "fwd_ret_5"`, F3+7 báo `labels_aux is missing column 'fwd_ret_5'`.
 
