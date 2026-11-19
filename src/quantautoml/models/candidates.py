@@ -215,6 +215,9 @@ class CatBoostCandidate(BaseGBDCandidate):
                 default_kwargs["iterations"] = v
             else:
                 default_kwargs[k] = v
+        if "subsample" in default_kwargs:
+            # CatBoost's default bootstrap (Bayesian) rejects `subsample`; Bernoulli supports it.
+            default_kwargs.setdefault("bootstrap_type", "Bernoulli")
 
         if self.task_type == TaskType.BINARY_CLASSIFICATION:
             default_kwargs["loss_function"] = "Logloss"
