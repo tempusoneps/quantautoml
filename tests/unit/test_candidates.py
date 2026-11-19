@@ -157,3 +157,26 @@ def test_single_class_train_raises_model_error(model_name: str) -> None:
     m = create_candidate(model_name, TaskType.BINARY_CLASSIFICATION, params={"n_estimators": 5})
     with pytest.raises(ModelError):
         m.fit(X, np.ones(50, dtype=np.int32))
+
+
+@pytest.mark.parametrize("model_name", ["lightgbm", "xgboost", "catboost"])
+def test_candidates_accept_subsample_param(model_name: str, binary_data) -> None:
+    """Tournament/tuner search spaces pass `subsample` to every GBDT (CatBoost needs Bernoulli bootstrap)."""
+    X, y = binary_data
+    m = create_candidate(
+        model_name, TaskType.BINARY_CLASSIFICATION,
+        params={"n_estimators": 10, "subsample": 0.8}, random_state=42,
+    )
+    m.fit(X, y)
+    assert m.predict_proba(X).shape == (200, 2)
+
+
+@pytest.mark.parametrize("model_name", ["lightgbm", "xgboost", "catboost"])
+def test_candidates_accept_subsample_param_multiclass(model_name: str, multiclass_data) -> None:
+    X, y = multiclass_data
+    m = create_candidate(
+        model_name, TaskType.MULTICLASS_CLASSIFICATION,
+        params={"n_estimators": 10, "subsample": 0.8}, random_state=42,
+    )
+    m.fit(X, y)
+    assert m.predict_proba(X).shape == (200, 3)
