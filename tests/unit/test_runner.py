@@ -44,10 +44,11 @@ def bundle(tmp_path_factory):
 
 
 def _run(bundle, oos: Segment, cfg: BacktestConfig = CFG, out: Path | None = None, **kw):
-    return OOSBacktestRunner(cfg).run(
+    metrics, _ = OOSBacktestRunner(cfg).run(
         bundle_dir=bundle.dir, oos=oos, feature_names=kw.pop("names", NAMES),
         other_segments=kw.pop("others", [_other()]), out_path=out, **kw,
     )
+    return metrics
 
 
 def test_runner_accepts_strong_signal(bundle, tmp_path: Path) -> None:

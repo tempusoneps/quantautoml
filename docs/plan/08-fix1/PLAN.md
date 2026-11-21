@@ -35,7 +35,7 @@
 - [x] **Task 1: `uv add backtesting` (dev) + `RealWorldConfig`**
 - [x] **Task 2: `BacktestingPyStrategy` (`backtest/strategy.py`)**
 - [x] **Task 3: `RealWorldMetrics` + `RealWorldBacktestRunner` (`backtest/realworld_runner.py`)**
-- [ ] **Task 4: Mở rộng `OOSBacktestRunner.run()` — Tier 2 integration**
+- [x] **Task 4: Mở rộng `OOSBacktestRunner.run()` — Tier 2 integration**
 - [ ] **Task 5: Integration test + docs + commit tổng**
 
 ---
@@ -180,7 +180,7 @@ class RealWorldBacktestRunner:
 
 ---
 
-### [ ] Task 4: Mở Rộng `OOSBacktestRunner.run()` — Tier 2 Integration
+### [x] Task 4: Mở Rộng `OOSBacktestRunner.run()` — Tier 2 Integration
 
 **Files:**
 - Modify: `src/quantautoml/backtest/runner.py` — mở rộng signature `run()`, tích hợp Tier 2
@@ -219,15 +219,15 @@ return metrics, rw_metrics
 > **Lưu ý:** `positions` ở đây là **toàn bộ** mảng vị thế (len = `n`), **không** phải `pos = positions[:-1]`. `RealWorldBacktestRunner` cần aligned đúng với `ohlcv_df` đầy đủ.
 
 **Action Steps:**
-- [ ] Step 1: Viết test:
+- [x] Step 1: Viết test:
   - `test_run_without_ohlcv_returns_none_rw`: Caller không truyền `ohlcv_df` → `rw_metrics is None`.
   - `test_run_with_ohlcv_accepted_returns_rw_metrics`: Bundle hợp lệ + `ohlcv_df` đủ chuẩn → `rw_metrics is not None` và `isinstance(rw_metrics, RealWorldMetrics)`.
   - `test_run_with_ohlcv_rejected_skips_tier2`: Tier 1 `accepted=False` (ví dụ: Sharpe quá thấp do config ngưỡng cao) → `rw_metrics is None` dù `ohlcv_df` được truyền.
   - `test_backward_compat_old_caller`: Caller cũ chỉ nhận `OOSMetrics` từ tuple → `oos_metrics, _ = runner.run(...)` vẫn hoạt động.
-- [ ] Step 2: Chạy → **FAIL**.
-- [ ] Step 3: Hiện thực mở rộng `runner.py`.
-- [ ] Step 4: `uv run pytest tests/unit/test_runner_tier2_integration.py -v` → **PASS**. Full suite → no regression.
-- [ ] Step 5: Commit `feat(backtest): extend OOSBacktestRunner with Tier 2 realworld simulation`.
+- [x] Step 2: Chạy → **FAIL**.
+- [x] Step 3: Hiện thực mở rộng `runner.py`.
+- [x] Step 4: `uv run pytest tests/unit/test_runner_tier2_integration.py -v` → **PASS**. Full suite → no regression.
+- [x] Step 5: Commit `feat(backtest): extend OOSBacktestRunner with Tier 2 realworld simulation`.
 
 ---
 
