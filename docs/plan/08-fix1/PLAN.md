@@ -36,7 +36,7 @@
 - [x] **Task 2: `BacktestingPyStrategy` (`backtest/strategy.py`)**
 - [x] **Task 3: `RealWorldMetrics` + `RealWorldBacktestRunner` (`backtest/realworld_runner.py`)**
 - [x] **Task 4: Mở rộng `OOSBacktestRunner.run()` — Tier 2 integration**
-- [ ] **Task 5: Integration test + docs + commit tổng**
+- [x] **Task 5: Integration test + docs + commit tổng**
 
 ---
 
@@ -231,7 +231,7 @@ return metrics, rw_metrics
 
 ---
 
-### [ ] Task 5: Integration Test + Docs + Phase Handoff
+### [x] Task 5: Integration Test + Docs + Phase Handoff
 
 **Files:**
 - Create: `tests/integration/test_realworld_backtest.py`
@@ -254,20 +254,20 @@ test_tier2_skipped_when_tier1_rejected:
 ```
 
 **Action Steps:**
-- [ ] Step 1: Viết integration tests.
-- [ ] Step 2: Chạy → **FAIL** (Tier 2 chưa kết nối).
-- [ ] Step 3: Chạy toàn bộ implementation từ Task 1-4 → integration test **PASS**.
-- [ ] Step 4: `uv run pytest tests/ -v` → **100% PASS, 0 regression**.
-- [ ] Step 5: Cập nhật tất cả checkbox `[x]` trong file này. Cập nhật `SCOPE.md` → `Status: Completed`. Commit `feat(backtest): full Tier 2 realistic backtest integration with backtesting.py + tests`.
+- [x] Step 1: Viết integration tests.
+- [x] Step 2: Chạy → **FAIL** (Tier 2 chưa kết nối).
+- [x] Step 3: Chạy toàn bộ implementation từ Task 1-4 → integration test **PASS**.
+- [x] Step 4: `uv run pytest tests/ -v` → **100% PASS, 0 regression**.
+- [x] Step 5: Cập nhật tất cả checkbox `[x]` trong file này. Cập nhật `SCOPE.md` → `Status: Completed`. Commit `feat(backtest): full Tier 2 realistic backtest integration with backtesting.py + tests`.
 
 ---
 
 ## Final Verification Checklist
 
-- [ ] `uv run pytest tests/` — 100% PASS, 0 regression.
-- [ ] `backtesting` không xuất hiện trong `src/quantautoml/packaging/templates/predictor_template.py` (RULE-07).
-- [ ] `OOSBacktestRunner.run()` không có `ohlcv_df` vẫn trả về `(OOSMetrics, None)` (backward compat).
-- [ ] HTML report được tạo thành công với plot nến + điểm vào/ra lệnh.
-- [ ] `trades.csv` có đủ cột: `EntryBar`, `ExitBar`, `EntryPrice`, `ExitPrice`, `PnL`, `ReturnPct`, `Duration`.
+- [x] `uv run pytest tests/` — 100% PASS, 0 regression.
+- [x] `backtesting` không xuất hiện trong `src/quantautoml/packaging/templates/predictor_template.py` (RULE-07).
+- [x] `OOSBacktestRunner.run()` không có `ohlcv_df` vẫn trả về `(OOSMetrics, None)` (backward compat).
+- [x] HTML report được tạo thành công với plot nến + điểm vào/ra lệnh.
+- [x] `trades.csv` có đủ cột: `EntryBar`, `ExitBar`, `EntryPrice`, `ExitPrice`, `PnL`, `ReturnPct`, `Duration`.
 - [ ] Type hints 100% — không có `Any` không rõ nguồn gốc.
-- [ ] Exceptions kế thừa `QuantAutoMLError`.
+- [x] Exceptions kế thừa `QuantAutoMLError`.

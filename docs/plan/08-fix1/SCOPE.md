@@ -2,7 +2,7 @@
 
 **Feature/Topic:** Nâng cấp step backtest thành mô phỏng thực chiến sát thực tế (Execution Realism Layer)
 **Date:** 2026-11-19
-**Status:** In Progress
+**Status:** Completed
 
 ---
 
