@@ -11,12 +11,14 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 from numpy.typing import NDArray
 
 from quantautoml.backtest.buffer import HysteresisBuffer
 from quantautoml.backtest.evaluator import OOSMetrics, evaluate_oos_performance
 from quantautoml.backtest.friction import FrictionCostModel
-from quantautoml.common.config import BacktestConfig
+from quantautoml.backtest.realworld_runner import RealWorldBacktestRunner, RealWorldMetrics
+from quantautoml.common.config import BacktestConfig, RealWorldConfig
 from quantautoml.common.exceptions import BacktestError, DataLeakageError
 from quantautoml.common.types import Segment
 from quantautoml.packaging.predictor_loader import load_predictor
@@ -40,7 +42,9 @@ class OOSBacktestRunner:
         out_path: Path | None = None,
         latency_repeats: int = 200,
         latency_budget_ms: float = 5.0,
-    ) -> OOSMetrics:
+        ohlcv_df: pd.DataFrame | None = None,
+        realworld_cfg: RealWorldConfig | None = None,
+    ) -> tuple[OOSMetrics, RealWorldMetrics | None]:
         cfg = self.cfg
         for seg in other_segments:
             if np.intersect1d(oos.index, seg.index).size:
@@ -80,7 +84,14 @@ class OOSBacktestRunner:
                 "config": cfg.model_dump(),
             }
             Path(out_path).write_text(json.dumps(report, indent=2), encoding="utf-8")
-        return metrics
+        # Tier 2 (realistic execution) only validates strategies Tier 1 already accepted.
+        # It replays the FULL positions array (len n), not the n-1 slice used for returns.
+        rw_metrics: RealWorldMetrics | None = None
+        if ohlcv_df is not None and metrics.accepted:
+            rw_metrics = RealWorldBacktestRunner(realworld_cfg or RealWorldConfig()).run(
+                ohlcv_df=ohlcv_df, positions=positions
+            )
+        return metrics, rw_metrics
 
     def _close(self, X: NDArray[np.float32], feature_names: Sequence[str]) -> NDArray[np.float64]:
         col = self.cfg.price_col

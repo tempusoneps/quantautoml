@@ -33,9 +33,10 @@ def bundle(tmp_path_factory):
 
 def _run(bundle, **cfg_kw):
     cfg = BacktestConfig(rank_window=100, ic_window=300, **cfg_kw)
-    return OOSBacktestRunner(cfg).run(
+    metrics, _ = OOSBacktestRunner(cfg).run(
         bundle_dir=bundle.dir, oos=_wobbly_oos(), feature_names=NAMES, other_segments=[]
     )
+    return metrics
 
 
 def test_friction_lowers_sharpe(bundle) -> None:
