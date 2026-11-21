@@ -34,7 +34,7 @@
 
 - [x] **Task 1: `uv add backtesting` (dev) + `RealWorldConfig`**
 - [x] **Task 2: `BacktestingPyStrategy` (`backtest/strategy.py`)**
-- [ ] **Task 3: `RealWorldMetrics` + `RealWorldBacktestRunner` (`backtest/realworld_runner.py`)**
+- [x] **Task 3: `RealWorldMetrics` + `RealWorldBacktestRunner` (`backtest/realworld_runner.py`)**
 - [ ] **Task 4: Mở rộng `OOSBacktestRunner.run()` — Tier 2 integration**
 - [ ] **Task 5: Integration test + docs + commit tổng**
 
@@ -112,7 +112,7 @@ class BacktestingPyStrategy:  # kế thừa backtesting.Strategy
 
 ---
 
-### [ ] Task 3: `RealWorldMetrics` + `RealWorldBacktestRunner`
+### [x] Task 3: `RealWorldMetrics` + `RealWorldBacktestRunner`
 
 **Files:**
 - Create: `src/quantautoml/backtest/realworld_runner.py`
@@ -157,7 +157,7 @@ class RealWorldBacktestRunner:
 - Nếu `n_trades == 0`: trả về `RealWorldMetrics` với các chỉ số bằng `0.0` (không ném exception — chiến lược flat hoàn toàn vẫn hợp lệ).
 
 **Action Steps:**
-- [ ] Step 1: Viết test với OHLCV giả lập 500 nến + positions giả lập:
+- [x] Step 1: Viết test với OHLCV giả lập 500 nến + positions giả lập:
   - `test_metrics_has_expected_fields`: output phải là `RealWorldMetrics` với tất cả fields.
   - `test_zero_trades_returns_zero_metrics`: positions = `[0]*500` → `n_trades == 0`, không crash.
   - `test_mismatched_length_raises`: len(positions) != len(df) → `ValueError`.
@@ -167,16 +167,16 @@ class RealWorldBacktestRunner:
   - `test_equity_final_positive`: `equity_final > 0`.
   - `test_html_export_creates_file` (tmp_path): khi `cfg.out_html` được set, file HTML phải tồn tại sau `run()`.
   - `test_csv_export_creates_file` (tmp_path): khi `cfg.out_trades_csv` được set, file CSV phải tồn tại.
-- [ ] Step 2: Chạy → **FAIL**.
-- [ ] Step 3: Hiện thực `RealWorldBacktestRunner.run()`:
+- [x] Step 2: Chạy → **FAIL**.
+- [x] Step 3: Hiện thực `RealWorldBacktestRunner.run()`:
   1. Rename các cột OHLCV về `Open/High/Low/Close/Volume` chuẩn của `backtesting.py` nếu cần.
   2. Inject `positions` vào `ohlcv_df["_position"]`.
   3. Khởi tạo và chạy `Backtest(data=ohlcv_df, strategy=BacktestingPyStrategy, cash=cfg.cash, commission=cfg.commission, margin=cfg.margin, trade_on_close=cfg.trade_on_close)`.
   4. Trích xuất `stats` dict → build `RealWorldMetrics`.
   5. Nếu `out_html`: `bt.plot(filename=cfg.out_html, open_browser=False)`.
   6. Nếu `out_trades_csv`: `stats._trades.to_csv(cfg.out_trades_csv, index=False)`.
-- [ ] Step 4: `uv run pytest tests/unit/test_realworld_runner.py -v` → **PASS**. Full suite → no regression.
-- [ ] Step 5: Commit `feat(backtest): add RealWorldMetrics and RealWorldBacktestRunner`.
+- [x] Step 4: `uv run pytest tests/unit/test_realworld_runner.py -v` → **PASS**. Full suite → no regression.
+- [x] Step 5: Commit `feat(backtest): add RealWorldMetrics and RealWorldBacktestRunner`.
 
 ---
 
