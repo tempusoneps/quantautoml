@@ -33,7 +33,7 @@
 ## Execution Order Overview
 
 - [x] **Task 1: `uv add backtesting` (dev) + `RealWorldConfig`**
-- [ ] **Task 2: `BacktestingPyStrategy` (`backtest/strategy.py`)**
+- [x] **Task 2: `BacktestingPyStrategy` (`backtest/strategy.py`)**
 - [ ] **Task 3: `RealWorldMetrics` + `RealWorldBacktestRunner` (`backtest/realworld_runner.py`)**
 - [ ] **Task 4: Mở rộng `OOSBacktestRunner.run()` — Tier 2 integration**
 - [ ] **Task 5: Integration test + docs + commit tổng**
@@ -76,7 +76,7 @@ class RealWorldConfig(BaseModel):  # frozen, extra="forbid"
 
 ---
 
-### [ ] Task 2: `BacktestingPyStrategy`
+### [x] Task 2: `BacktestingPyStrategy`
 
 **Files:**
 - Create: `src/quantautoml/backtest/strategy.py`
@@ -94,21 +94,21 @@ class BacktestingPyStrategy:  # kế thừa backtesting.Strategy
 ```
 
 **Action Steps:**
-- [ ] Step 1: Viết test với `backtesting.Backtest` chạy trên OHLCV giả lập nhỏ (100 nến):
+- [x] Step 1: Viết test với `backtesting.Backtest` chạy trên OHLCV giả lập nhỏ (100 nến):
   - `test_strategy_long_signal_opens_position`: positions = `[0]*20 + [1]*10 + [0]*70` → phải có đúng 1 trade Long.
   - `test_strategy_short_signal_opens_short`: positions short → phải có đúng 1 trade Short.
   - `test_strategy_no_signal_no_trades`: positions = `[0]*100` → `n_trades == 0`.
   - `test_strategy_flip_long_to_short_no_flat_in_between`: `[1]*50 + [-1]*50` → 2 trades, không có bar flat giữa chừng.
-- [ ] Step 2: Chạy → **FAIL**.
-- [ ] Step 3: Hiện thực `BacktestingPyStrategy` với lazy import guard:
+- [x] Step 2: Chạy → **FAIL**.
+- [x] Step 3: Hiện thực `BacktestingPyStrategy` với lazy import guard:
   ```python
   try:
       from backtesting import Strategy
   except ImportError as e:
       raise ImportError("backtesting package required: uv add --dev backtesting") from e
   ```
-- [ ] Step 4: `uv run pytest tests/unit/test_backtest_strategy.py -v` → **PASS**. Full suite → no regression.
-- [ ] Step 5: Commit `feat(backtest): add BacktestingPyStrategy adapter for pre-computed signals`.
+- [x] Step 4: `uv run pytest tests/unit/test_backtest_strategy.py -v` → **PASS**. Full suite → no regression.
+- [x] Step 5: Commit `feat(backtest): add BacktestingPyStrategy adapter for pre-computed signals`.
 
 ---
 
