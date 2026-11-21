@@ -30,7 +30,10 @@ dependencies = [
 quantautoml = "quantautoml.cli:main"
 
 [dependency-groups]
-dev = ["pytest>=8.0.0"]
+dev = [
+    "backtesting>=0.6.6",
+    "pytest>=8.0.0",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/quantautoml"]

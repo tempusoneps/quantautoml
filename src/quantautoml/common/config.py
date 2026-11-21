@@ -145,6 +145,20 @@ class BacktestConfig(_Strict):
         return self
 
 
+class RealWorldConfig(_Strict):
+    cash: float = Field(default=1_000_000.0, gt=0.0)
+    commission: float = Field(default=0.0005, ge=0.0)
+    margin: float = Field(default=1.0, gt=0.0)
+    trade_on_close: bool = False
+    out_html: str | None = None
+    out_trades_csv: str | None = None
+    ohlcv_open_col: str = "Open"
+    ohlcv_high_col: str = "High"
+    ohlcv_low_col: str = "Low"
+    ohlcv_close_col: str = "Close"
+    ohlcv_volume_col: str = "Volume"
+
+
 class PipelineConfig(_Strict):
     data: DataConfig
     labels: LabelsConfig = LabelsConfig()

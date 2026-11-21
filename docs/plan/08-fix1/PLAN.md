@@ -32,7 +32,7 @@
 
 ## Execution Order Overview
 
-- [ ] **Task 1: `uv add backtesting` (dev) + `RealWorldConfig`**
+- [x] **Task 1: `uv add backtesting` (dev) + `RealWorldConfig`**
 - [ ] **Task 2: `BacktestingPyStrategy` (`backtest/strategy.py`)**
 - [ ] **Task 3: `RealWorldMetrics` + `RealWorldBacktestRunner` (`backtest/realworld_runner.py`)**
 - [ ] **Task 4: Mở rộng `OOSBacktestRunner.run()` — Tier 2 integration**
@@ -44,7 +44,7 @@
 
 ---
 
-### [ ] Task 1: Dependency + `RealWorldConfig`
+### [x] Task 1: Dependency + `RealWorldConfig`
 
 **Files:**
 - Modify: `pyproject.toml` — thêm `backtesting>=0.3.3` vào `[dependency-groups] dev`
@@ -68,11 +68,11 @@ class RealWorldConfig(BaseModel):  # frozen, extra="forbid"
 ```
 
 **Action Steps:**
-- [ ] Step 1: Viết test `test_defaults_match_spec` (cash=1M, commission=0.0005, trade_on_close=False), `test_cash_zero_rejected` (`pytest.raises(ValidationError)`), `test_negative_commission_rejected`, `test_extra_field_forbidden`.
-- [ ] Step 2: Chạy → **FAIL** (class chưa tồn tại).
-- [ ] Step 3: `uv add --dev backtesting`; thêm `RealWorldConfig` vào `config.py`.
-- [ ] Step 4: `uv run pytest tests/unit/test_realworld_config.py -v` → **PASS**. Chạy full suite `uv run pytest tests/` → không regression.
-- [ ] Step 5: Commit `feat(setup): add backtesting dev dep and RealWorldConfig`.
+- [x] Step 1: Viết test `test_defaults_match_spec` (cash=1M, commission=0.0005, trade_on_close=False), `test_cash_zero_rejected` (`pytest.raises(ValidationError)`), `test_negative_commission_rejected`, `test_extra_field_forbidden`.
+- [x] Step 2: Chạy → **FAIL** (class chưa tồn tại).
+- [x] Step 3: `uv add --dev backtesting`; thêm `RealWorldConfig` vào `config.py`.
+- [x] Step 4: `uv run pytest tests/unit/test_realworld_config.py -v` → **PASS**. Chạy full suite `uv run pytest tests/` → không regression.
+- [x] Step 5: Commit `feat(setup): add backtesting dev dep and RealWorldConfig`.
 
 ---
 
