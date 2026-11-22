@@ -1,12 +1,13 @@
 # Quant AutoML Pipeline Configuration
 # Generated automatically by scripts/generate_config.py
 # Reference: docs/CONFIGURATION.md
+# Run: uv run quantautoml run --config config.toml --out runs/default
 
 [data]
 # Path to feature matrix file (.parquet or .csv)
 features_path = "datasets/feature.parquet"
 
-# Path to labels file (.parquet or .csv). Leave empty ("") for UNSUPERVISED mode.
+# Path to labels file (.parquet or .csv). Omit for UNSUPERVISED mode.
 labels_path = "datasets/label.csv"
 
 # Name of timestamp column in both features and labels files
@@ -17,11 +18,86 @@ min_match_ratio = 0.95
 
 [labels]
 # Target label column name used for task inference and training
-# Other label columns in labels_path will be stored in labels_aux
 selected = "is_peak_10"
+# Keep only the selected label column (avoids non-numeric sibling label errors)
+ignore_other_columns = true
 
 [split]
-# Maximum forward-looking horizon (number of bars/candles) across all labels
+# Maximum forward-looking horizon (bars) across all labels and ic_horizons
 # Used for Purging & Embargo between Train, Cal-A, Cal-B, Val, and OOS segments.
-# Must be >= 1 and >= max tail NaN count of any label column.
-horizon_h = 10
+# Must be >= 1 and >= max(ic_horizons) / trailing NaN count.
+horizon_h = 21
+
+[features]
+# Leakage-free feature funnel (F1 -> F8); missing fwd_ret_* are derived from price_col
+ic_horizons = { 1 = "fwd_ret_1", 5 = "fwd_ret_5", 10 = "fwd_ret_10", 21 = "fwd_ret_21" }
+target_horizon = 5
+price_col = "Close"
+icir_min = 0.30
+fdr_alpha = 0.05
+rolling_window = 63
+dcor_threshold = 0.85
+cluster_distance = 0.30
+max_nan_ratio = 0.60
+min_unique_ratio = 0.01
+min_cv = 1e-6
+max_peak_var_ratio = 50.0
+max_features = 30
+monotonic_tolerance = 0.05
+mi_floor = 0.0
+synergy_delta = 0.01
+
+[models]
+# GBDT Trio Tournament & Deep Optuna TPE Tuning
+tournament_trials = 30
+tuning_trials = 50
+n_wf_folds = 5
+diversity_threshold = 0.88
+marginal_gain_threshold = 0.015
+wf_consistency_threshold = 0.60
+complexity_penalty = 0.05
+random_state = 42
+enabled_models = ["lightgbm", "xgboost", "catboost"]
+
+[ensemble]
+# Convex SLSQP (C^2 objective on Cal-B) + Bootstrap Shrinkage + Temperature Calibration (Cal-A)
+min_weight = 0.05
+max_weight = 0.60
+n_bootstrap = 200
+bootstrap_sample_ratio = 0.80
+shrinkage_factor = 0.10
+hurdle_ratio = 0.05
+max_ece_threshold = 0.05
+random_state = 42
+
+[packaging]
+# Standalone ONNX Model Bundle (float32 contract < 1e-4, latency < 5 ms)
+precision_tol = 1e-4
+drift_z_threshold = 3.0
+latency_budget_ms = 5.0
+std_floor = 1e-8
+latency_repeats = 200
+
+[backtest]
+# Friction-aware blind OOS acceptance with Hysteresis Buffer Bands
+price_col = "Close"
+fee_bps = 4.0
+slippage_bps = 1.0
+top_pct = 0.20
+exit_pct = 0.30
+rank_window = 2000
+ic_window = 500
+min_rank_ic = 0.035
+min_icir = 0.40
+min_net_sharpe = 1.20
+max_mdd = 0.18
+downside_quantile = 0.20
+min_downside_ic = 0.0
+
+[realworld]
+# Tier 2 realistic execution via backtesting.py (size: "auto", "_start_cash", 1, or fraction 0.5)
+cash = 1000000.0
+commission = 0.0005
+margin = 1.0
+size = "auto"
+trade_on_close = false

@@ -11,6 +11,7 @@ def test_defaults_match_spec() -> None:
     assert cfg.cash == 1_000_000.0
     assert cfg.commission == 0.0005
     assert cfg.margin == 1.0
+    assert cfg.size == "auto"
     assert cfg.trade_on_close is False
     assert cfg.out_html is None
     assert cfg.out_trades_csv is None
@@ -19,6 +20,18 @@ def test_defaults_match_spec() -> None:
     assert cfg.ohlcv_low_col == "Low"
     assert cfg.ohlcv_close_col == "Close"
     assert cfg.ohlcv_volume_col == "Volume"
+
+
+@pytest.mark.parametrize("size", ["auto", "start_cash", "_start_cash", 1, 5, 0.5, "1", "0.25"])
+def test_valid_size_modes_accepted(size: str | int | float) -> None:
+    cfg = RealWorldConfig(size=size)
+    assert cfg.size == size
+
+
+@pytest.mark.parametrize("bad_size", ["unknown_mode", 0, -1, -0.5, 1.5, "0", "-3"])
+def test_invalid_size_rejected(bad_size: str | int | float) -> None:
+    with pytest.raises(ValidationError):
+        RealWorldConfig(size=bad_size)
 
 
 def test_cash_zero_rejected() -> None:

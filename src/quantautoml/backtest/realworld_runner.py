@@ -62,7 +62,11 @@ class RealWorldBacktestRunner:
             trade_on_close=cfg.trade_on_close,
             finalize_trades=True,
         )
-        stats = bt.run()
+        stats = bt.run(
+            size_mode=cfg.size,
+            initial_cash=cfg.cash,
+            commission_rate=cfg.commission,
+        )
         trades: pd.DataFrame = stats["_trades"]
         if cfg.out_html is not None:
             bt.plot(filename=cfg.out_html, open_browser=False)
