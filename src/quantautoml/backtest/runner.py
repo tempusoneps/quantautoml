@@ -85,9 +85,11 @@ class OOSBacktestRunner:
             }
             Path(out_path).write_text(json.dumps(report, indent=2), encoding="utf-8")
         # Tier 2 (realistic execution) only validates strategies Tier 1 already accepted.
-        # It replays the FULL positions array (len n), not the n-1 slice used for returns.
+        # Respects realworld_cfg.enabled when realworld_cfg is explicitly provided;
+        # defaults to enabled when a caller passes ohlcv_df without realworld_cfg.
         rw_metrics: RealWorldMetrics | None = None
-        if ohlcv_df is not None and metrics.accepted:
+        tier2_enabled = True if realworld_cfg is None else realworld_cfg.enabled
+        if ohlcv_df is not None and metrics.accepted and tier2_enabled:
             rw_metrics = RealWorldBacktestRunner(realworld_cfg or RealWorldConfig()).run(
                 ohlcv_df=ohlcv_df, positions=positions
             )

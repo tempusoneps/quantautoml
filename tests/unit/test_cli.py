@@ -28,7 +28,11 @@ def test_run_command_writes_artifacts(tmp_path: Path, make_frames, capsys) -> No
 
     assert code == 0
     assert (out / "train.npz").is_file()
-    assert "mode=oof_assisted" in capsys.readouterr().out
+    stdout = capsys.readouterr().out
+    assert "mode=oof_assisted" in stdout
+    assert "start=" in stdout
+    assert "end=" in stdout
+    assert "duration=" in stdout
 
 
 def test_run_command_returns_nonzero_on_pipeline_error(tmp_path: Path, make_frames, capsys) -> None:

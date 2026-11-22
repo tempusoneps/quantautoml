@@ -85,8 +85,24 @@ def test_backward_compat_old_caller(bundle) -> None:
 
 def test_realworld_cfg_is_forwarded(bundle, tmp_path) -> None:
     csv = tmp_path / "trades.csv"
-    _, rw = _run(bundle, with_ohlcv=True, realworld_cfg=RealWorldConfig(out_trades_csv=str(csv)))
+    _, rw = _run(
+        bundle,
+        with_ohlcv=True,
+        realworld_cfg=RealWorldConfig(enabled=True, out_trades_csv=str(csv)),
+    )
     assert rw is not None and csv.exists()
+
+
+def test_realworld_disabled_skips_tier2_even_when_accepted(bundle, tmp_path) -> None:
+    csv = tmp_path / "trades.csv"
+    metrics, rw = _run(
+        bundle,
+        with_ohlcv=True,
+        realworld_cfg=RealWorldConfig(enabled=False, out_trades_csv=str(csv)),
+    )
+    assert metrics.accepted
+    assert rw is None
+    assert not csv.exists()
 
 
 def test_tier2_uses_full_length_positions(bundle) -> None:

@@ -8,6 +8,7 @@ from quantautoml.common.config import RealWorldConfig
 
 def test_defaults_match_spec() -> None:
     cfg = RealWorldConfig()
+    assert cfg.enabled is False
     assert cfg.cash == 1_000_000.0
     assert cfg.commission == 0.0005
     assert cfg.margin == 1.0
