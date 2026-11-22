@@ -371,3 +371,66 @@ def test_without_mapping_text_labels_keep_alphabetical_codes(make_frames, build_
     f, l, _ = _allow_entry_frames(make_frames)
     ds = _load(build_config(f, l, selected="allow_entry", ignore_other_columns=True))
     assert ds.classes_ is not None and ds.classes_.tolist()[0] == "No - None"
+
+
+@pytest.mark.parametrize("null_key", ["NaN", "nan", "", "None", "null"])
+def test_mapping_allows_mapping_mid_nan_on_numeric_label(
+    make_frames, build_config, null_key: str
+) -> None:
+    """When selected label is numeric (e.g. tb_label in {-1, 0, 1} with mid-series NaN),
+    [labels.mapping] with NaN = 0 must map mid-series NaN to 0 while preserving trailing NaN drop.
+    """
+    f, l = make_frames(n=100)
+    tb = [float((i % 3) - 1) for i in range(100)]
+    tb[12] = float("nan")
+    tb[25] = float("nan")
+    tb[-5:] = [float("nan")] * 5
+    l = l.with_columns(pl.Series("tb_label", tb, dtype=pl.Float64))
+
+    ds = _load(
+        build_config(
+            f,
+            l,
+            selected="tb_label",
+            ignore_other_columns=True,
+            mapping={null_key: 0},
+        )
+    )
+    assert ds.X.shape[0] == 95  # 5 trailing NaNs dropped
+    assert ds.report.n_trailing_label_nan_dropped == 5
+    assert ds.report.mid_nan_count == 0
+    assert ds.classes_ is not None and ds.classes_.tolist() == [-1.0, 0.0, 1.0]
+    assert ds.y is not None
+    assert ds.y[12] == 1 and ds.y[25] == 1  # mapped to 0.0 -> class index 1
+    assert not np.any(ds.y == -1)
+
+
+@pytest.mark.parametrize("null_key", ["NaN", "nan", "", "None", "null"])
+def test_mapping_allows_mapping_mid_nan_to_number_while_preserving_trailing_nan_drop(
+    make_frames, build_config, null_key: str
+) -> None:
+
+    """When [labels.mapping] includes a null/NaN key (e.g. NaN = 0), mid-series nulls
+    are mapped to that class value (mid_nan_count == 0, no -1 code), while trailing
+    nulls at the end of the series are still dropped as forward-looking horizon NaN.
+    """
+    f, l, allow = _allow_entry_frames(make_frames)
+    mapping_with_nan = {**_DIR, null_key: 0}
+    ds = _load(
+        build_config(
+            f,
+            l,
+            selected="allow_entry",
+            ignore_other_columns=True,
+            mapping=mapping_with_nan,
+        )
+    )
+    assert ds.X.shape[0] == 95  # 5 trailing nulls still dropped
+    assert ds.report.n_trailing_label_nan_dropped == 5
+    assert ds.report.mid_nan_count == 0
+    assert ds.classes_ is not None and ds.classes_.tolist() == [-1.0, 0.0, 1.0]
+    assert ds.y is not None
+    # Row 7 was None mid-series -> mapped to 0.0 -> class index 1 (flat)
+    assert ds.y[7] == 1
+    assert not np.any(ds.y == -1)
+
