@@ -154,6 +154,7 @@ def test_generated_config_for_allow_entry_includes_directional_mapping(
         "Yes - Sell": -1.0,
         "No - None": 0.0,
         "No - Sideway": 0.0,
+        "NaN": 0.0,
     }
     dataset = DataIngestion(cfg).load()
     assert list(dataset.classes_) == [-1, 0, 1]

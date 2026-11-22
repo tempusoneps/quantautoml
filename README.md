@@ -208,9 +208,11 @@ ignore_other_columns = true
 "Yes - Sell"   = -1
 "No - None"    = 0
 "No - Sideway" = 0
+"NaN"          = 0        # Tùy chọn: gán các dòng trống giữa chuỗi (mid-series NaN/null) về lớp 0
 ```
 
 - Nhiều nhãn chữ có thể ánh xạ về cùng một con số (ví dụ `"No - None"` và `"No - Sideway"` cùng gộp về lớp trung tính `0`).
+- **Ánh xạ giá trị trống (`"NaN" = 0` hoặc `NaN = 0`):** Nếu trong `[labels.mapping]` có khai báo khóa `"NaN"` (hoặc `"nan"`, `""`, `"null"`, `"None"`), toàn bộ các dòng bị trống nhãn ở giữa chuỗi (`mid-series NaN`, ví dụ 2 cây nến cuối mỗi phiên giao dịch trong `allow_entry`) sẽ được gán thẳng về lớp `0` thay vì tạo ra mã `UNLABELED = -1`, trong khi các dòng `NaN` ở cuối toàn bộ chuỗi dữ liệu (`trailing NaN` do forward-looking horizon) vẫn được bảo toàn để cắt bỏ an toàn.
 - Mô hình GBDT sẽ huấn luyện trên mã lớp `0..K-1` theo thứ tự tăng dần của số đã map (`-1` $\to$ lớp `0` Sell, `0` $\to$ lớp `1` Flat, `+1` $\to$ lớp `2` Buy).
 - Khi suy luận trong `predictor.py` và chạy Backtest, điểm dự báo (`score`) của bài toán đa lớp được tính bằng kỳ vọng lớp $\sum_{c=0}^{K-1} c \cdot P(y=c) = 1 + P(\text{Buy}) - P(\text{Sell})$, đồng biến 100% với hiệu xác suất có hướng $P(\text{Buy}) - P(\text{Sell})$ mà `HysteresisBuffer` sử dụng để vào lệnh Long/Short.
 
@@ -377,8 +379,9 @@ min_downside_ic   = 0.0
 
 ```toml
 [realworld]
+enabled          = false         # true: tự động chạy Tier 2 backtesting.py sau khi Tier 1 accepted
 cash             = 1000000.0
-commission       = 0.0005
+commission       = 0.00025
 margin           = 1.0
 size             = "auto"        # "auto", "start_cash" ("_start_cash"), số nguyên >= 1 (vd: 1), hoặc tỷ lệ vốn (0, 1)
 trade_on_close   = false
@@ -391,6 +394,7 @@ ohlcv_volume_col = "Volume"
 
 | Khóa | Mặc định | Ràng buộc | Mô tả chi tiết |
 | :--- | :--- | :--- | :--- |
+| `realworld.enabled` | `false` | `bool` | Cờ bật/tắt tầng backtest thực chiến Tier 2 (`backtesting.py`). Đặt `false` để chỉ chạy Tier 1 (NumPy vectorized); đặt `true` để tự động xuất thêm `realworld_report.json`, `trades.csv` và `backtest_report.html` khi Tier 1 `accepted = true`. |
 | `realworld.cash` | `1_000_000.0` | `> 0.0` | Số vốn khởi tạo ban đầu (`initial_cash`) của tài khoản mô phỏng. |
 | `realworld.commission` | `0.0005` | `>= 0.0` | Tỷ lệ phí giao dịch trên mỗi chiều khớp lệnh (`0.0005` = `0.05%` = `5 bps`). |
 | `realworld.margin` | `1.0` | `> 0.0` | Tỷ lệ ký quỹ (`1.0` = không dùng đòn bẩy; `0.2` = đòn bẩy 5x). |

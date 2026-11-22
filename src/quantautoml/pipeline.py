@@ -13,7 +13,7 @@ from pathlib import Path
 
 import numpy as np
 
-from quantautoml.backtest import OOSBacktestRunner, OOSMetrics
+from quantautoml.backtest import OOSBacktestRunner, OOSMetrics, RealWorldMetrics
 from quantautoml.common.config import PipelineConfig, load_config
 from quantautoml.common.exceptions import InvalidDataError
 from quantautoml.common.types import Dataset, PreprocessorSpec, Segment, SplitResult, TaskType
@@ -44,6 +44,7 @@ class PipelineResult:
     calibration_result: CalibrationResult | None = None
     bundle_manifest: BundleManifest | None = None
     backtest_metrics: OOSMetrics | None = None
+    realworld_metrics: RealWorldMetrics | None = None
 
 
 def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> PipelineResult:
@@ -221,10 +222,22 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
         )
 
     backtest_metrics: OOSMetrics | None = None
+    realworld_metrics: RealWorldMetrics | None = None
     if cfg.backtest is not None and cfg.packaging is not None and bundle_manifest is not None:
         # Blind OOS acceptance: the only stage allowed to read split.oos for evaluation.
         others = [split.train, split.val] + [s for s in (split.cal_a, split.cal_b) if s is not None]
-        backtest_metrics, _ = OOSBacktestRunner(cfg.backtest).run(
+        ohlcv_df = None
+        rw_cfg = cfg.realworld
+        if rw_cfg is not None and rw_cfg.enabled:
+            ohlcv_df = _extract_ohlcv_df(split.oos, dataset.feature_names, rw_cfg)
+            if ohlcv_df is not None:
+                rw_cfg = rw_cfg.model_copy(
+                    update={
+                        "out_html": rw_cfg.out_html or str(out / "backtest_report.html"),
+                        "out_trades_csv": rw_cfg.out_trades_csv or str(out / "trades.csv"),
+                    }
+                )
+        backtest_metrics, realworld_metrics = OOSBacktestRunner(cfg.backtest).run(
             bundle_dir=out / "bundle",
             oos=split.oos,
             feature_names=dataset.feature_names,
@@ -232,7 +245,11 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             out_path=out / "backtest_report.json",
             latency_repeats=cfg.packaging.latency_repeats,
             latency_budget_ms=cfg.packaging.latency_budget_ms,
+            ohlcv_df=ohlcv_df,
+            realworld_cfg=rw_cfg,
         )
+        if realworld_metrics is not None:
+            _dump_json(out / "realworld_report.json", realworld_metrics.model_dump())
 
     return PipelineResult(
         dataset=dataset,
@@ -245,6 +262,29 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
         calibration_result=calibration_result,
         bundle_manifest=bundle_manifest,
         backtest_metrics=backtest_metrics,
+        realworld_metrics=realworld_metrics,
+    )
+
+
+def _extract_ohlcv_df(
+    oos: Segment, feature_names: tuple[str, ...], rw_cfg: object
+) -> object | None:
+    """Build an OHLCV DataFrame from raw OOS features when all 5 columns are present."""
+    import pandas as pd
+
+    cols = (
+        rw_cfg.ohlcv_open_col,  # type: ignore[attr-defined]
+        rw_cfg.ohlcv_high_col,  # type: ignore[attr-defined]
+        rw_cfg.ohlcv_low_col,  # type: ignore[attr-defined]
+        rw_cfg.ohlcv_close_col,  # type: ignore[attr-defined]
+        rw_cfg.ohlcv_volume_col,  # type: ignore[attr-defined]
+    )
+    if not all(c in feature_names for c in cols):
+        return None
+    name_to_idx = {name: i for i, name in enumerate(feature_names)}
+    return pd.DataFrame(
+        {c: oos.X[:, name_to_idx[c]].astype(np.float64) for c in cols},
+        index=pd.to_datetime(oos.timestamps),
     )
 
 

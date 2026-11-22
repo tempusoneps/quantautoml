@@ -146,6 +146,7 @@ class BacktestConfig(_Strict):
 
 
 class RealWorldConfig(_Strict):
+    enabled: bool = False
     cash: float = Field(default=1_000_000.0, gt=0.0)
     commission: float = Field(default=0.0005, ge=0.0)
     margin: float = Field(default=1.0, gt=0.0)

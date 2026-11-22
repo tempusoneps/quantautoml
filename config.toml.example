@@ -55,7 +55,7 @@ n_wf_folds = 5
 diversity_threshold = 0.88
 marginal_gain_threshold = 0.015
 wf_consistency_threshold = 0.60
-complexity_penalty = 0.05
+complexity_penalty = 0.15
 random_state = 42
 enabled_models = ["lightgbm", "xgboost", "catboost"]
 
@@ -81,9 +81,9 @@ latency_repeats = 200
 [backtest]
 # Friction-aware blind OOS acceptance with Hysteresis Buffer Bands
 price_col = "Close"
-fee_bps = 4.0
+fee_bps = 1.5
 slippage_bps = 1.0
-top_pct = 0.20
+top_pct = 0.15
 exit_pct = 0.30
 rank_window = 2000
 ic_window = 500
@@ -95,9 +95,10 @@ downside_quantile = 0.20
 min_downside_ic = 0.0
 
 [realworld]
-# Tier 2 realistic execution via backtesting.py (size: "auto", "_start_cash", 1, or fraction 0.5)
+# Tier 2 realistic execution via backtesting.py (set enabled = true to run)
+enabled = false
 cash = 1000000.0
-commission = 0.0005
+commission = 0.00025
 margin = 1.0
 size = "auto"
 trade_on_close = false
