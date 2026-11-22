@@ -77,3 +77,43 @@ def test_unfitted_model_raises(tmp_path: Path) -> None:
     m = LightGBMCandidate(TaskType.BINARY_CLASSIFICATION, dict(PARAMS))
     with pytest.raises((PackagingError, ModelError)):
         export_candidate_onnx(m, 8, tmp_path / "m.onnx")
+
+
+def test_lightgbm_boundary_samples_have_float32_thresholds_matching_onnx(
+    tmp_path: Path,
+) -> None:
+    """LightGBM stores split thresholds in float64 by default while ONNX casts them to float32.
+    After LightGBMCandidate.fit(), tree thresholds must be quantized to float32 so samples
+    sitting on a split boundary match between Python predict_proba and ONNX within 1e-4.
+    """
+    X, y = _data(3, seed=7)
+    model = LightGBMCandidate(
+        TaskType.MULTICLASS_CLASSIFICATION,
+        {"n_estimators": 60, "learning_rate": 0.05, "num_leaves": 31},
+    ).fit(X, y)
+
+    # Probe exact float32 representations of every non-sentinel threshold in the fitted booster
+    model_str = model.estimator_.booster_.model_to_string()
+    thresholds: list[float] = []
+    for line in model_str.splitlines():
+        if line.startswith("threshold="):
+            for tok in line[len("threshold=") :].split():
+                val = float(tok)
+                if abs(val + 1e-35) < 1e-40:
+                    continue
+                # Every non-sentinel threshold stored in the booster must equal its float32 cast
+                assert val == float(np.float32(val)), (
+                    f"Threshold {val!r} is not float32-quantized ({float(np.float32(val))!r})"
+                )
+                thresholds.append(val)
+    assert thresholds
+
+    # Also construct boundary probe rows where each feature takes its float32 threshold value
+    rng = np.random.default_rng(99)
+    probe = rng.choice(thresholds, size=(200, X.shape[1])).astype(np.float32)
+    path = tmp_path / "lgb_boundary.onnx"
+    export_candidate_onnx(model, X.shape[1], path)
+    out = _run(path, probe)
+    py = model.predict_proba(probe)
+    assert np.max(np.abs(out - py)) < 1e-5
+
