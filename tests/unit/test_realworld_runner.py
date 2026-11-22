@@ -121,3 +121,19 @@ def test_csv_export_creates_file(tmp_path: Path) -> None:
     assert {"EntryBar", "ExitBar", "EntryPrice", "ExitPrice", "PnL", "ReturnPct", "Duration"} <= set(
         trades.columns
     )
+
+
+def test_runner_respects_fixed_size_config(tmp_path: Path) -> None:
+    out = tmp_path / "trades_size1.csv"
+    _run(RealWorldConfig(size=1, out_trades_csv=str(out)))
+    trades = pd.read_csv(out)
+    assert len(trades) > 0
+    assert set(trades["Size"].abs().unique()) == {1}
+
+
+def test_runner_respects_start_cash_size_config(tmp_path: Path) -> None:
+    out = tmp_path / "trades_start_cash.csv"
+    m = _run(RealWorldConfig(size="_start_cash", out_trades_csv=str(out)))
+    assert m.n_trades > 0
+    assert out.is_file()
+

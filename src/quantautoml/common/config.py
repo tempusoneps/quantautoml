@@ -149,6 +149,7 @@ class RealWorldConfig(_Strict):
     cash: float = Field(default=1_000_000.0, gt=0.0)
     commission: float = Field(default=0.0005, ge=0.0)
     margin: float = Field(default=1.0, gt=0.0)
+    size: str | int | float = "auto"
     trade_on_close: bool = False
     out_html: str | None = None
     out_trades_csv: str | None = None
@@ -157,6 +158,36 @@ class RealWorldConfig(_Strict):
     ohlcv_low_col: str = "Low"
     ohlcv_close_col: str = "Close"
     ohlcv_volume_col: str = "Volume"
+
+    @field_validator("size")
+    @classmethod
+    def _validate_size(cls, v: str | int | float) -> str | int | float:
+        if isinstance(v, bool):
+            raise ValueError("realworld.size cannot be a boolean")
+        if isinstance(v, str):
+            s = v.strip()
+            if s in ("auto", "start_cash", "_start_cash"):
+                return v
+            try:
+                num = float(s)
+            except ValueError as exc:
+                raise ValueError(
+                    "realworld.size must be 'auto', 'start_cash' ('_start_cash'), "
+                    "a positive integer unit count (>= 1), or an equity fraction in (0, 1)"
+                ) from exc
+            if num <= 0 or (num >= 1.0 and not num.is_integer()):
+                raise ValueError(
+                    "numeric realworld.size must be an integer >= 1 or a fraction in (0, 1)"
+                )
+            return v
+        num_val = float(v)
+        if not math.isfinite(num_val) or num_val <= 0:
+            raise ValueError("realworld.size must be > 0")
+        if num_val >= 1.0 and not num_val.is_integer():
+            raise ValueError(
+                "realworld.size >= 1 must be a whole integer number of units/contracts"
+            )
+        return v
 
 
 class PipelineConfig(_Strict):
@@ -168,6 +199,7 @@ class PipelineConfig(_Strict):
     ensemble: EnsembleConfig | None = None
     packaging: PackagingConfig | None = None
     backtest: BacktestConfig | None = None
+    realworld: RealWorldConfig | None = None
 
     @model_validator(mode="after")
     def _labels_consistency(self) -> Self:
