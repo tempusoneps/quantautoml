@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/pipeline.py": {
-    "mtime": 1794960345.7689369,
-    "ast_hash": "c17474263df9d1b51d30603d5043faae",
+    "mtime": 1795311973.5437984,
+    "ast_hash": "c972acd8a9285352263bfc4ff64cb17d",
     "semantic_hash": ""
   },
   "src/quantautoml/cli.py": {
@@ -20,18 +20,18 @@
     "semantic_hash": ""
   },
   "src/quantautoml/common/types.py": {
-    "mtime": 1794958963.7179737,
-    "ast_hash": "d16360e810d3c94e535c2af065c4d889",
+    "mtime": 1795042308.2101843,
+    "ast_hash": "c14c93e73146510ce6bfc568d70968bd",
     "semantic_hash": ""
   },
   "src/quantautoml/common/config.py": {
-    "mtime": 1794959858.9495442,
-    "ast_hash": "952660f72cb1be82cf968055f0109b2c",
+    "mtime": 1795337935.1883638,
+    "ast_hash": "14eb61f552dd2ac2bc36fdcdd2ffc5b6",
     "semantic_hash": ""
   },
   "src/quantautoml/common/exceptions.py": {
-    "mtime": 1794959851.3506742,
-    "ast_hash": "9f4a0ebaf49a683475cab3a9d2d83c27",
+    "mtime": 1795042308.2094927,
+    "ast_hash": "f92414d8d23dcfd0b8bf81a90003909b",
     "semantic_hash": ""
   },
   "src/quantautoml/common/__init__.py": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "src/quantautoml/data/ingestion.py": {
-    "mtime": 1794433993.610268,
-    "ast_hash": "7182e8cadac192be24e76e2686b10785",
+    "mtime": 1795042308.2121744,
+    "ast_hash": "2f0120a7552df8f95a5c6c1447e4a626",
     "semantic_hash": ""
   },
   "src/quantautoml/data/splitter.py": {
-    "mtime": 1794433993.6117413,
-    "ast_hash": "65fa9df2bb2e22dace7e35da433729d8",
+    "mtime": 1795042308.2131426,
+    "ast_hash": "7fa43d9b5c38c1930c7d83ac30ba3e9f",
     "semantic_hash": ""
   },
   "src/quantautoml/data/task_inference.py": {
@@ -60,13 +60,13 @@
     "semantic_hash": ""
   },
   "scripts/generate_config.py": {
-    "mtime": 1794433993.6056187,
-    "ast_hash": "9eba4bcbe0bcf65c78e2536ce0f2b5e6",
+    "mtime": 1795338281.9857438,
+    "ast_hash": "cf84581b5cf42500b3e16c11a98c9203",
     "semantic_hash": ""
   },
   "tests/conftest.py": {
-    "mtime": 1794097611.2964647,
-    "ast_hash": "7c6997f89f41c419cbfb8213b73a4ae3",
+    "mtime": 1795042308.2368135,
+    "ast_hash": "af4cd0a186a1f1a2acef97527ca791a3",
     "semantic_hash": ""
   },
   "tests/unit/test_cli.py": {
@@ -85,8 +85,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_splitter.py": {
-    "mtime": 1794433993.6282752,
-    "ast_hash": "c3c71ffe41090c66026282f7d0d3ad3f",
+    "mtime": 1795042308.2531023,
+    "ast_hash": "e93379e9831df2c8e495816b493c8032",
     "semantic_hash": ""
   },
   "tests/unit/test_types.py": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_ingestion.py": {
-    "mtime": 1794433993.6266239,
-    "ast_hash": "f4622181eaa21ea0fe8a3ce3642057b7",
+    "mtime": 1795042308.2448986,
+    "ast_hash": "43d8927da1139be9455db0da764ddf17",
     "semantic_hash": ""
   },
   "tests/integration/test_zero_leakage.py": {
@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1793488001.344919,
-    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "mtime": 1795338073.4308953,
+    "ast_hash": "0a0521cbb0deccc72c8153ba33764e32",
     "semantic_hash": ""
   },
   "docs/FEATURES.md": {
@@ -135,23 +135,23 @@
     "semantic_hash": ""
   },
   "docs/CONFIGURATION.md": {
-    "mtime": 1794959875.0276432,
-    "ast_hash": "84ac3cf2a216eb937c98d897b6559929",
+    "mtime": 1795338071.7872455,
+    "ast_hash": "ad621ad6322e610812ec2dfc41d8c290",
     "semantic_hash": ""
   },
   "docs/STRUCTURE.md": {
-    "mtime": 1793496490.8449721,
-    "ast_hash": "09886de497f189074c7ccff7f79dac23",
+    "mtime": 1795042307.8255768,
+    "ast_hash": "e588e8cc71f310f245a5b55712f67b6c",
     "semantic_hash": ""
   },
   "docs/plan/PHASES.md": {
-    "mtime": 1794960467.8197205,
-    "ast_hash": "16875cd09ab56de325b3bb3632fb3985",
+    "mtime": 1795042307.9164302,
+    "ast_hash": "6b6486bf65c4cca5b212eced0880fc65",
     "semantic_hash": ""
   },
   "docs/plan/PLAN.md": {
-    "mtime": 1794960452.981951,
-    "ast_hash": "e0b1352bf3a7b795f421ca3534828ff3",
+    "mtime": 1795042307.9177034,
+    "ast_hash": "6ca0ae0fe65085312adae8b5b3373dba",
     "semantic_hash": ""
   },
   "docs/plan/TRADE-OFF.md": {
@@ -175,13 +175,13 @@
     "semantic_hash": ""
   },
   "docs/plan/ARCHITECTURE.md": {
-    "mtime": 1794096726.569296,
-    "ast_hash": "034335faead574e333bb693354dcf076",
+    "mtime": 1795314744.3533661,
+    "ast_hash": "e54bc6c7fec4da2c99c7c46c35642676",
     "semantic_hash": ""
   },
   "docs/plan/STRUCTURE.md": {
-    "mtime": 1794958963.5286305,
-    "ast_hash": "f2914efff9d112ca06475aa4fd7d1173",
+    "mtime": 1795042307.9189527,
+    "ast_hash": "28125e512537f520dc4b88f44bbadb20",
     "semantic_hash": ""
   },
   "docs/plan/05-ensemble-calibration/TRADE-OFF.md": {
@@ -320,8 +320,8 @@
     "semantic_hash": ""
   },
   "pyproject.toml": {
-    "mtime": 1794958963.7145588,
-    "ast_hash": "dbaa39dd9df2cd36b94aa292d0a5b5b6",
+    "mtime": 1795311973.5188048,
+    "ast_hash": "5caae8df472439ee67d70916597b7f38",
     "semantic_hash": ""
   },
   "scripts/generate_agents_markdown.sh": {
@@ -330,22 +330,22 @@
     "semantic_hash": ""
   },
   "src/quantautoml/ensemble/__init__.py": {
-    "mtime": 1794960197.4846604,
+    "mtime": 1795042308.213798,
     "ast_hash": "09d3b948bcf190b4283628eb27266029",
     "semantic_hash": ""
   },
   "src/quantautoml/ensemble/bootstrap.py": {
-    "mtime": 1794960118.3652103,
+    "mtime": 1795042308.214401,
     "ast_hash": "1bc5e0a1da392ec108976b0ef158bbb7",
     "semantic_hash": ""
   },
   "src/quantautoml/ensemble/calibration.py": {
-    "mtime": 1794960236.970621,
+    "mtime": 1795042308.2158597,
     "ast_hash": "2f26ae5de647c3cb2faa5a8a1c5c7556",
     "semantic_hash": ""
   },
   "src/quantautoml/ensemble/slsqp.py": {
-    "mtime": 1794960016.1367247,
+    "mtime": 1795042308.2168052,
     "ast_hash": "9b9021027738cd9fd753be758b7003fa",
     "semantic_hash": ""
   },
@@ -360,8 +360,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/features/base.py": {
-    "mtime": 1794958963.7211533,
-    "ast_hash": "5c87199192f4b5fb67a778d1ca7ad762",
+    "mtime": 1795042308.218093,
+    "ast_hash": "7d12a26d77248226321421751f4dcc2f",
     "semantic_hash": ""
   },
   "src/quantautoml/features/clustering.py": {
@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/features/funnel.py": {
-    "mtime": 1794958963.7234468,
-    "ast_hash": "9cf619b06ea5a832105e6b3342f8fcf3",
+    "mtime": 1795042308.2190528,
+    "ast_hash": "dfb415e49fa767cd42a6bd28661c9c0a",
     "semantic_hash": ""
   },
   "src/quantautoml/features/ic_stability.py": {
@@ -395,8 +395,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/features/triage.py": {
-    "mtime": 1794958963.7279541,
-    "ast_hash": "a05cd74be76b3debf2e97ccff164043b",
+    "mtime": 1795042308.2199104,
+    "ast_hash": "81c54147bbf33c36ff1666357b76b72c",
     "semantic_hash": ""
   },
   "src/quantautoml/features/variance.py": {
@@ -405,12 +405,12 @@
     "semantic_hash": ""
   },
   "src/quantautoml/metrics/__init__.py": {
-    "mtime": 1794959952.8966994,
+    "mtime": 1795042308.222993,
     "ast_hash": "8201aa3608f5bb5ea39557b25ee5c8c0",
     "semantic_hash": ""
   },
   "src/quantautoml/metrics/calibration.py": {
-    "mtime": 1794959943.6925259,
+    "mtime": 1795042308.2243955,
     "ast_hash": "16680f5d00cc8a2e3434a63945223611",
     "semantic_hash": ""
   },
@@ -430,8 +430,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/models/candidates.py": {
-    "mtime": 1794958963.7342153,
-    "ast_hash": "2acf81ef2758923ff4c92b78b55edd00",
+    "mtime": 1795332736.8596208,
+    "ast_hash": "b0b33a67a0f9d35133e06d14f2c49f2e",
     "semantic_hash": ""
   },
   "src/quantautoml/models/decision_engine.py": {
@@ -455,7 +455,7 @@
     "semantic_hash": ""
   },
   "tests/integration/test_zero_leakage_ensemble.py": {
-    "mtime": 1794960303.0645022,
+    "mtime": 1795042308.238156,
     "ast_hash": "afd60ac0c3e8efb52b2381d6211818e5",
     "semantic_hash": ""
   },
@@ -475,13 +475,13 @@
     "semantic_hash": ""
   },
   "tests/unit/test_bootstrap_shrinkage.py": {
-    "mtime": 1794960131.971711,
+    "mtime": 1795042308.2412238,
     "ast_hash": "6206d40d92e0f1ca56a7852a1f1be3c0",
     "semantic_hash": ""
   },
   "tests/unit/test_candidates.py": {
-    "mtime": 1794958963.741843,
-    "ast_hash": "d7cf2d85531296084507064b8e1224e4",
+    "mtime": 1795311973.5502577,
+    "ast_hash": "09451d188662e7095e4590ba50c77fbe",
     "semantic_hash": ""
   },
   "tests/unit/test_clustering.py": {
@@ -500,7 +500,7 @@
     "semantic_hash": ""
   },
   "tests/unit/test_ensemble_config.py": {
-    "mtime": 1794959842.32767,
+    "mtime": 1795042308.2428868,
     "ast_hash": "c38b5e0c9a75854e25ee07175b06c9ba",
     "semantic_hash": ""
   },
@@ -525,7 +525,7 @@
     "semantic_hash": ""
   },
   "tests/unit/test_metrics_calibration.py": {
-    "mtime": 1794959927.2758715,
+    "mtime": 1795042308.245948,
     "ast_hash": "62f0055abcb729cdf9fc68d7f02c8552",
     "semantic_hash": ""
   },
@@ -560,12 +560,12 @@
     "semantic_hash": ""
   },
   "tests/unit/test_slsqp_smooth.py": {
-    "mtime": 1794959989.1159756,
+    "mtime": 1795042308.2521787,
     "ast_hash": "cced1b1c49a31dd8ae0c5e74bf7e2b00",
     "semantic_hash": ""
   },
   "tests/unit/test_temperature_calibration.py": {
-    "mtime": 1794960227.7094324,
+    "mtime": 1795042308.2536366,
     "ast_hash": "6a027958f0b4b728cc1cca0bc6d1cf43",
     "semantic_hash": ""
   },
@@ -670,13 +670,1843 @@
     "semantic_hash": ""
   },
   "docs/plan/03-model-selection/PLAN.md": {
-    "mtime": 1794959723.8918805,
+    "mtime": 1795042307.8315952,
     "ast_hash": "3dd69dd7e94161217fc8d996412c5b69",
     "semantic_hash": ""
   },
   "docs/plan/05-ensemble-calibration/PLAN.md": {
-    "mtime": 1794960455.9563205,
+    "mtime": 1795042307.9145582,
     "ast_hash": "e0b1352bf3a7b795f421ca3534828ff3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/scripts/drawio_extract.py": {
+    "mtime": 1795042307.802956,
+    "ast_hash": "4e55084f6c1c58da393aacc5802daaa8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/scripts/excalidraw_extract.py": {
+    "mtime": 1795042307.8040836,
+    "ast_hash": "76913509a551ce4bc36a2f173cf4ded6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/scripts/export_png.py": {
+    "mtime": 1795042307.8047175,
+    "ast_hash": "13cdd80755a31b9ff45399a22784ff98",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/scripts/export_svg.py": {
+    "mtime": 1795042307.8086839,
+    "ast_hash": "51a65228276545c762c399132ed215a5",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/scripts/mermaid_extract.py": {
+    "mtime": 1795042307.810745,
+    "ast_hash": "ec687a259f2d2574a3b02286025a008b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/scripts/plantuml_extract.py": {
+    "mtime": 1795042307.8166513,
+    "ast_hash": "a625772f40fe1b8e17bdfe93cfd66e18",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/scripts/self_check.py": {
+    "mtime": 1795042307.820038,
+    "ast_hash": "f50f2ab5c0e0aa27020687dc0338d48a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/scripts/verify_geometry.py": {
+    "mtime": 1795042307.8212547,
+    "ast_hash": "c70a7bc1c63bf7b0eb9a5aea0afec8e5",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/backtest/__init__.py": {
+    "mtime": 1795311973.5201764,
+    "ast_hash": "a35132401711aeb57181fea244f9f697",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/backtest/buffer.py": {
+    "mtime": 1795042308.2036295,
+    "ast_hash": "c6b123d464628da8bf2c3df1d85cf70a",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/backtest/evaluator.py": {
+    "mtime": 1795042308.2058897,
+    "ast_hash": "b0425d9b85643e1336363d49b1c952e7",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/backtest/friction.py": {
+    "mtime": 1795042308.2065973,
+    "ast_hash": "c2c86fe5d5bdbba2179fb1566bcc9705",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/backtest/realworld_runner.py": {
+    "mtime": 1795337938.4784591,
+    "ast_hash": "1dfb894c13deecdc9caf565e2ab8497e",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/backtest/runner.py": {
+    "mtime": 1795311973.5247576,
+    "ast_hash": "86bb3a33c4fbe83e3cff62030bbc4392",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/backtest/strategy.py": {
+    "mtime": 1795337937.033495,
+    "ast_hash": "247cc11e8e938453e3da0e111e1bf64f",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/packaging/__init__.py": {
+    "mtime": 1795042308.2257526,
+    "ast_hash": "a30c0c42bc46e479ae58a39e365a3242",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/packaging/bundle.py": {
+    "mtime": 1795042308.2265184,
+    "ast_hash": "c467f2cf6d07791ccfd166e9f591eabe",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/packaging/converters.py": {
+    "mtime": 1795042308.2269719,
+    "ast_hash": "b254b5dcbef01ad111b0b32cc895d4bc",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/packaging/predictor_loader.py": {
+    "mtime": 1795042308.2299697,
+    "ast_hash": "cd197f097ce7ac512f5f925797c54903",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/packaging/preprocessor.py": {
+    "mtime": 1795042308.230719,
+    "ast_hash": "ce9a7f2d0b9c8ead106834ac2925f5d3",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/packaging/schema.py": {
+    "mtime": 1795042308.2315567,
+    "ast_hash": "36751fd677ffd931b51092adf1600d33",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/packaging/templates/predictor_template.py": {
+    "mtime": 1795042308.234511,
+    "ast_hash": "c61644283b9cb13b530dfcda8fef78da",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/packaging/validator.py": {
+    "mtime": 1795042308.23516,
+    "ast_hash": "becf939deae2a1c3bc706fb29d7c5154",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_friction_backtest.py": {
+    "mtime": 1795311973.5458255,
+    "ast_hash": "455d14b60c845b6f6d02aee35558324f",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_realworld_backtest.py": {
+    "mtime": 1795311973.5482266,
+    "ast_hash": "c007a0659f8487ae4ed8dc68298be2f9",
+    "semantic_hash": ""
+  },
+  "tests/integration/test_zero_leakage_packaging.py": {
+    "mtime": 1795042308.2388172,
+    "ast_hash": "ee27f477e1f7b8fe4167ccbf6ac7eeda",
+    "semantic_hash": ""
+  },
+  "tests/unit/bundle_helper.py": {
+    "mtime": 1795042308.2402751,
+    "ast_hash": "800e7cf0d9eb19b54a2931b00aac46b0",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_backtest_config.py": {
+    "mtime": 1795042308.2407625,
+    "ast_hash": "9a5e4fe1b5d8957fdf1e2de7c6bc5f12",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_backtest_strategy.py": {
+    "mtime": 1795337887.320846,
+    "ast_hash": "c1dae4e63d79e56eeca4b398aabb302e",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_buffer.py": {
+    "mtime": 1795042308.2422867,
+    "ast_hash": "47ba66c756fc4725f5a4ffb78ac1822d",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_evaluator.py": {
+    "mtime": 1795042308.2434075,
+    "ast_hash": "81bf58ea2385a30a2cf7c31b9bfb4a1f",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_friction.py": {
+    "mtime": 1795042308.2438197,
+    "ast_hash": "e1db5c981cd08167fa2dd95d9001ab07",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_generate_config.py": {
+    "mtime": 1795314303.5097072,
+    "ast_hash": "2974e66aa88bb35fd1867649b95555d7",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_packaging_bundle.py": {
+    "mtime": 1795042308.2472582,
+    "ast_hash": "76f099e711a018a5276a3b3ad637819a",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_packaging_config.py": {
+    "mtime": 1795042308.2476945,
+    "ast_hash": "328b3150b497db0e637d73b70804a85a",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_packaging_converters.py": {
+    "mtime": 1795332739.6865513,
+    "ast_hash": "ad049eac356fc4083034dfd825c88fb6",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_packaging_schema.py": {
+    "mtime": 1795042308.2485592,
+    "ast_hash": "ed884e845fed5274c9a92459bf44e163",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_packaging_validator.py": {
+    "mtime": 1795042308.2489629,
+    "ast_hash": "6c2c9c0a5de8a29463ea7c3a700fccd7",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_pipeline_packaging.py": {
+    "mtime": 1795042308.249404,
+    "ast_hash": "6ca7f97d74b948d0ad4c756a78f9dd69",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_predictor_template.py": {
+    "mtime": 1795042308.2499018,
+    "ast_hash": "9641e5d9f6225e398315ec44b28405bb",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_preprocessor_onnx.py": {
+    "mtime": 1795042308.250325,
+    "ast_hash": "7db3cfafd049cba26d90826f776bf76e",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_preprocessor_spec.py": {
+    "mtime": 1795042308.250748,
+    "ast_hash": "8dfe2dce9e73690fdd31d5a9fed5dfd2",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_realworld_config.py": {
+    "mtime": 1795337885.2543755,
+    "ast_hash": "fdacbe626488a56f5a9ddbe6916a968e",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_realworld_runner.py": {
+    "mtime": 1795337889.3192754,
+    "ast_hash": "675d82513edd9d258d5bc2ac7e4714e6",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_runner.py": {
+    "mtime": 1795311973.552915,
+    "ast_hash": "24c9fa518c1fffce7361a1130c5d5e66",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_runner_tier2_integration.py": {
+    "mtime": 1795311973.553789,
+    "ast_hash": "f3fb508a7804ab7da84237476f7d3e88",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/SKILL.md": {
+    "mtime": 1795042307.3724813,
+    "ast_hash": "3dd849a9ee44c772fc6b43b67c0fab69",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-arc-diagram-dark.html": {
+    "mtime": 1795042307.3735747,
+    "ast_hash": "b788618477b1e6e75c5c50aa84b18294",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-arc-diagram-full.html": {
+    "mtime": 1795042307.3746107,
+    "ast_hash": "8e6be5728efd1c1dada9eb5c88b6713c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-arc-diagram.html": {
+    "mtime": 1795042307.3757095,
+    "ast_hash": "e479e4d937c5c6bf3f7dd3c433afa55a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-architecture-containment-dark.html": {
+    "mtime": 1795042307.3777509,
+    "ast_hash": "c4e04d1e641cb344205520e84de6970c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-architecture-containment-full.html": {
+    "mtime": 1795042307.3792734,
+    "ast_hash": "6b4e642d028874386bdb98b6b98932f2",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-architecture-containment.html": {
+    "mtime": 1795042307.3802192,
+    "ast_hash": "8d955868c8430e854e962860da7947a4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-architecture-dark.html": {
+    "mtime": 1795042307.3814871,
+    "ast_hash": "8f37fbdc74a97460006703c95ce6aa3e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-architecture-delta-dark.html": {
+    "mtime": 1795042307.3837335,
+    "ast_hash": "47bf724d98bbe0cb88aabdb5e056a4ba",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-architecture-delta-full.html": {
+    "mtime": 1795042307.384749,
+    "ast_hash": "82464a803c188ddb4b8127995d135896",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-architecture-delta.html": {
+    "mtime": 1795042307.3856928,
+    "ast_hash": "76dd855098d607a13e17a77eb2cae7ee",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-architecture-full.html": {
+    "mtime": 1795042307.3864765,
+    "ast_hash": "23b70963a6e343ce7b649b305389bb7f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-architecture.html": {
+    "mtime": 1795042307.3875859,
+    "ast_hash": "8b88011ceb7d4d50bbf743f0093fa771",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-campus-animated.html": {
+    "mtime": 1795042307.390085,
+    "ast_hash": "eddad9549ceeca40714ca97e3338c010",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-campus-dark.html": {
+    "mtime": 1795042307.3916483,
+    "ast_hash": "1f04ededcdfcc5503879c3451469ce74",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-campus-full.html": {
+    "mtime": 1795042307.3940523,
+    "ast_hash": "a0732e1405e93a04743c745a0cf721e4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-campus.html": {
+    "mtime": 1795042307.3951278,
+    "ast_hash": "999139264a0cdc1d831fdc81895a22cd",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-coffee-shop-animated.html": {
+    "mtime": 1795042307.3964064,
+    "ast_hash": "f838dad0710fba20985fd72178e7d1b7",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-coffee-shop-dark.html": {
+    "mtime": 1795042307.3976722,
+    "ast_hash": "cc6e8540fa248bdb75083170aa6f6103",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-coffee-shop-full.html": {
+    "mtime": 1795042307.3993278,
+    "ast_hash": "47d25d1f4b361157cf4b023eda46bec5",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-coffee-shop.html": {
+    "mtime": 1795042307.401312,
+    "ast_hash": "a781b5037edd6717c7dfaa4a7c4c0346",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-dark.html": {
+    "mtime": 1795042307.4031055,
+    "ast_hash": "352e3d251a4e6c7bab6573261a76dab4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-full.html": {
+    "mtime": 1795042307.4042356,
+    "ast_hash": "5f77355f94d387f6ab958dfa6a3b7ebb",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-warehouse-animated.html": {
+    "mtime": 1795042307.4072938,
+    "ast_hash": "d069baf30e7c94864d7e15f9d5852727",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-warehouse-dark.html": {
+    "mtime": 1795042307.4085953,
+    "ast_hash": "2729211f596cdd624d1b17f131c282d4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-warehouse-full.html": {
+    "mtime": 1795042307.4106045,
+    "ast_hash": "7696767bf6bfcb0ad6db57ec07403bba",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan-warehouse.html": {
+    "mtime": 1795042307.4121993,
+    "ast_hash": "9c945d18cdfa6d04623ef5911d65e24e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-axonometric-plan.html": {
+    "mtime": 1795042307.413585,
+    "ast_hash": "2ba1be74bf6df23c09693181ff0ef84a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-bar-dark.html": {
+    "mtime": 1795042307.4152627,
+    "ast_hash": "b854e355c3654487f0fdb94728fd009c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-bar-full.html": {
+    "mtime": 1795042307.4160888,
+    "ast_hash": "4e9036bcbabdfb32de713d48e0ea5d9e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-bar.html": {
+    "mtime": 1795042307.4168642,
+    "ast_hash": "2312866c92c55e149662e3783132433a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-beeswarm-dark.html": {
+    "mtime": 1795042307.417948,
+    "ast_hash": "1e72a17479b162ccacb9e90ffdab02b7",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-beeswarm-full.html": {
+    "mtime": 1795042307.4191406,
+    "ast_hash": "0a82a0f2b1125b6fe77eb3a29b09fd1d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-beeswarm.html": {
+    "mtime": 1795042307.4199798,
+    "ast_hash": "d9af571b5e04f6fa280f1a8d106b1e85",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-box-plot-dark.html": {
+    "mtime": 1795042307.420628,
+    "ast_hash": "e53e093495870bc2a875d744ea9835b2",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-box-plot-full.html": {
+    "mtime": 1795042307.4229894,
+    "ast_hash": "7996b702fb45307306776d00e5d20af6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-box-plot.html": {
+    "mtime": 1795042307.4241598,
+    "ast_hash": "2a5bf398ab010fead79bd7f451093dbd",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-bubble-dark.html": {
+    "mtime": 1795042307.4248395,
+    "ast_hash": "dba33db1aa624a3f295e0d654216bd66",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-bubble-full.html": {
+    "mtime": 1795042307.4264262,
+    "ast_hash": "adcec27a79ffed48b9d3eefa1b2e0373",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-bubble.html": {
+    "mtime": 1795042307.4272232,
+    "ast_hash": "a1bd93eaa76b61d9e2421b9bdf6d50ea",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-bump-dark.html": {
+    "mtime": 1795042307.4279883,
+    "ast_hash": "4fae3cead3d3d2a7fe6a20fdbd6e2f65",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-bump-full.html": {
+    "mtime": 1795042307.4288332,
+    "ast_hash": "1c45a969fbe010b1b82883b16a8f86a1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-bump.html": {
+    "mtime": 1795042307.4295936,
+    "ast_hash": "39a12503f11dd875dd875779207d3165",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-data-flow-dark.html": {
+    "mtime": 1795042307.4303422,
+    "ast_hash": "3bef985712e953ca2de727c896cb37cd",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-data-flow-full.html": {
+    "mtime": 1795042307.431213,
+    "ast_hash": "3d39a467f6328b9371920d6ad33ca687",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-data-flow.html": {
+    "mtime": 1795042307.4334288,
+    "ast_hash": "f0914c424c06874b4393127fed28ac6d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-datalake-dark.html": {
+    "mtime": 1795042307.434659,
+    "ast_hash": "07ac0e963b790b2e9a550198fb6c7b66",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-datalake-full.html": {
+    "mtime": 1795042307.4357593,
+    "ast_hash": "8b82043d376a573acf4c7b945db20844",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-datalake.html": {
+    "mtime": 1795042307.4368157,
+    "ast_hash": "50ba786191794a7ad07fdf63f978adcb",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-db-schema-dark.html": {
+    "mtime": 1795042307.4384735,
+    "ast_hash": "2b727b3b6a762b19238a7aabfe7bc24a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-db-schema-full.html": {
+    "mtime": 1795042307.4398956,
+    "ast_hash": "05e71ce1a0cd2c9f9d395ccb73dc65da",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-db-schema.html": {
+    "mtime": 1795042307.440839,
+    "ast_hash": "c22cd17b26625e28047eda6f88be0bb8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-dependency-dark.html": {
+    "mtime": 1795042307.441537,
+    "ast_hash": "ee43ae138e58dd9aef58aad8c83331e9",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-dependency-full.html": {
+    "mtime": 1795042307.4438124,
+    "ast_hash": "9751f9df3cb248737e9c2f417cfffe1e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-dependency.html": {
+    "mtime": 1795042307.444804,
+    "ast_hash": "d4ee2c630e2d61e991afb51e27fcb382",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-deployment-dark.html": {
+    "mtime": 1795042307.445986,
+    "ast_hash": "8ed6fa0e5fac5f83bf8ef61d7a03926f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-deployment-full.html": {
+    "mtime": 1795042307.4468515,
+    "ast_hash": "a9df0c59d57340a5522597f6f280c00a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-deployment.html": {
+    "mtime": 1795042307.4475167,
+    "ast_hash": "a4e7d1a57e246e0f2b6b7c96cadae2d5",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-dp-integration-dark.html": {
+    "mtime": 1795042307.4484134,
+    "ast_hash": "1bb47b05175d647248f4f37dc2fe3f86",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-dp-integration-full.html": {
+    "mtime": 1795042307.4499898,
+    "ast_hash": "1d98005a314ef01d2248b80a671423fc",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-dp-integration.html": {
+    "mtime": 1795042307.4507864,
+    "ast_hash": "6fc65d3d0e03d1307cbe34b46216e360",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-dp-security-matrix-dark.html": {
+    "mtime": 1795042307.4514596,
+    "ast_hash": "cb7a4604b91d454ae51b21973e4a1849",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-dp-security-matrix-full.html": {
+    "mtime": 1795042307.4522567,
+    "ast_hash": "fc48b8235fad0bcb9e541e579902935a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-dp-security-matrix.html": {
+    "mtime": 1795042307.4547682,
+    "ast_hash": "d5ee1b3f651e954694dded2c86232750",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-er-dark.html": {
+    "mtime": 1795042307.4556227,
+    "ast_hash": "399dec5b326938a0faea891826d541e0",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-er-full.html": {
+    "mtime": 1795042307.456652,
+    "ast_hash": "93d249acd6cb13796d59397374a3ca96",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-er.html": {
+    "mtime": 1795042307.4576385,
+    "ast_hash": "46e45a72210ce32abdd68cf85c1b7879",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-event-modeling-dark.html": {
+    "mtime": 1795042307.4583263,
+    "ast_hash": "56148b4dc1c1f7f8390d51d24a28abd2",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-event-modeling-full.html": {
+    "mtime": 1795042307.4592252,
+    "ast_hash": "5746f666373917a3f77625d5f1980bc6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-event-modeling.html": {
+    "mtime": 1795042307.4602487,
+    "ast_hash": "0ceb1bcd0c5964363c6200fa74265433",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-ai-stack-animated.html": {
+    "mtime": 1795042307.4616067,
+    "ast_hash": "e22b18c42f305179baddba8c8f5d1539",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-ai-stack-dark.html": {
+    "mtime": 1795042307.462796,
+    "ast_hash": "f282c6b6ab120b42b3481d2963f8eb55",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-ai-stack-full.html": {
+    "mtime": 1795042307.4641519,
+    "ast_hash": "cc43044a4e83b397fb884fac333693be",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-ai-stack.html": {
+    "mtime": 1795042307.467144,
+    "ast_hash": "43601b1511b224f09048d00ed62d8bca",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-dark.html": {
+    "mtime": 1795042307.4680498,
+    "ast_hash": "b9066be60bd292958ce2bb9f6bd2feb8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-full.html": {
+    "mtime": 1795042307.468861,
+    "ast_hash": "24589f234b6e4f2f8525badf6bce7eb6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-keyboard-animated.html": {
+    "mtime": 1795042307.4746363,
+    "ast_hash": "d1da48d9ba6c3facbaf75491c51d86f6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-keyboard-dark.html": {
+    "mtime": 1795042307.4797144,
+    "ast_hash": "17a6931c6f41f43ad1fde240954ac606",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-keyboard-full.html": {
+    "mtime": 1795042307.4856586,
+    "ast_hash": "4b30261b0ad453eb511f8f503fdf796e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-keyboard.html": {
+    "mtime": 1795042307.4963102,
+    "ast_hash": "982c70888167acd0918e1a3c0f66dd04",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-phone-animated.html": {
+    "mtime": 1795042307.5008597,
+    "ast_hash": "19d1f486531053570f26168adda8649c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-phone-dark.html": {
+    "mtime": 1795042307.5025833,
+    "ast_hash": "4fd5c247bcf5ac8c94ef5e078915d1a1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-phone-full.html": {
+    "mtime": 1795042307.504549,
+    "ast_hash": "66c8f5cede7b4e2954ced1a15abd0656",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-phone.html": {
+    "mtime": 1795042307.5054452,
+    "ast_hash": "d6703c1fc8da79f20358dbbc5419927a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-unboxing-animated.html": {
+    "mtime": 1795042307.50781,
+    "ast_hash": "b7ce6724386167b8ad2be2db3f486427",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-unboxing-dark.html": {
+    "mtime": 1795042307.5093799,
+    "ast_hash": "78db6e934e43d43b0b1a02390dc6cd37",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-unboxing-full.html": {
+    "mtime": 1795042307.5104957,
+    "ast_hash": "52062d1708292e52661961a503e94a8d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded-unboxing.html": {
+    "mtime": 1795042307.5133562,
+    "ast_hash": "5aa5d2243e6b3477cf37e407a4bac137",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-exploded.html": {
+    "mtime": 1795042307.5147455,
+    "ast_hash": "8dca6096ace9f38ff1b6c67e5d852b27",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-fishbone-dark.html": {
+    "mtime": 1795042307.5154605,
+    "ast_hash": "df6409bca82fcae9d4e64d12011627d2",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-fishbone-full.html": {
+    "mtime": 1795042307.516332,
+    "ast_hash": "ffe774e40bc776171b32b51ab24d7e2b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-fishbone.html": {
+    "mtime": 1795042307.517144,
+    "ast_hash": "555403716b31b8dd22ecd603233ce766",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-flowchart-dark.html": {
+    "mtime": 1795042307.517821,
+    "ast_hash": "b9cb63de09aadd9d94f5abbcda682db8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-flowchart-full.html": {
+    "mtime": 1795042307.5187974,
+    "ast_hash": "5e404c9bb38b6f99f3af6a4bd4c15c08",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-flowchart.html": {
+    "mtime": 1795042307.5197556,
+    "ast_hash": "d66059126b1dbfc4695932830b06129d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-gantt-dark.html": {
+    "mtime": 1795042307.5205176,
+    "ast_hash": "50cc1e65dd2b610552bb82da9cd9fca7",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-gantt-full.html": {
+    "mtime": 1795042307.5213444,
+    "ast_hash": "dd68cf4c9732aa808ff257ca17aeb4a1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-gantt.html": {
+    "mtime": 1795042307.5222154,
+    "ast_hash": "8b7fdb1a957a6fb1e366124868670cc7",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-heatmap-dark.html": {
+    "mtime": 1795042307.5230627,
+    "ast_hash": "1d1465e1ad00f91b7a67b6362400e635",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-heatmap-full.html": {
+    "mtime": 1795042307.5242329,
+    "ast_hash": "bce3847d01e465010cd786e2e1d2e78b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-heatmap.html": {
+    "mtime": 1795042307.5250962,
+    "ast_hash": "c577bbc0ca27a8c29702d8b857de3d92",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-high-level-dark.html": {
+    "mtime": 1795042307.525935,
+    "ast_hash": "9fb658d596f4a65dfbe04a9a3e61e47b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-high-level-full.html": {
+    "mtime": 1795042307.5269349,
+    "ast_hash": "327f306eed1b10dcb06a54247a6f7695",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-high-level-vertical-dark.html": {
+    "mtime": 1795042307.528618,
+    "ast_hash": "e518cf734b01d7a06b4a4fe123d411eb",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-high-level-vertical-full.html": {
+    "mtime": 1795042307.5311325,
+    "ast_hash": "9940c3759e3585c095522a2546dcc6ac",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-high-level-vertical.html": {
+    "mtime": 1795042307.5327945,
+    "ast_hash": "ddde1906e8933d3b33b2d10b7beaa21c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-high-level.html": {
+    "mtime": 1795042307.5338943,
+    "ast_hash": "63510692bd74754eb2e0c29f642e6557",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-import-drawio.html": {
+    "mtime": 1795042307.5354817,
+    "ast_hash": "4987403d29f77789260d8cb495fab0b0",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-import-excalidraw.html": {
+    "mtime": 1795042307.5361753,
+    "ast_hash": "f8adf9b0ca47d82972aef15d8f730372",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-import-mermaid.html": {
+    "mtime": 1795042307.5368023,
+    "ast_hash": "be8e97b936ca269955e425d80adf1da5",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-import-plantuml.html": {
+    "mtime": 1795042307.537577,
+    "ast_hash": "5ca3238633f53c4cc02d5de4e4c2ac2f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-it-state-dark.html": {
+    "mtime": 1795042307.5382829,
+    "ast_hash": "5bee035fc0afce6e621cff3cd731440d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-it-state-full.html": {
+    "mtime": 1795042307.5390687,
+    "ast_hash": "ed9687c4e71a76e95c7d0ac555bfdda3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-it-state.html": {
+    "mtime": 1795042307.5404637,
+    "ast_hash": "71b7e178f5340ef9aff68d27595267df",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-journey-dark.html": {
+    "mtime": 1795042307.541671,
+    "ast_hash": "93af2aac44a3b98a7a48cd3984bd8846",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-journey-full.html": {
+    "mtime": 1795042307.5433576,
+    "ast_hash": "b574daaadfbd99ce52396e6911d5434e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-journey.html": {
+    "mtime": 1795042307.5441093,
+    "ast_hash": "ed08e0da4d5d39439654ac556266a317",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-kanban-dark.html": {
+    "mtime": 1795042307.545417,
+    "ast_hash": "ebd22f3b771609d8e6edda7eecb9f64c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-kanban-full.html": {
+    "mtime": 1795042307.546371,
+    "ast_hash": "b2b3d2bc35934a6723060be676fce4d3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-kanban.html": {
+    "mtime": 1795042307.5476744,
+    "ast_hash": "faf69894c76ae91539a790aea31733bd",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-layers-dark.html": {
+    "mtime": 1795042307.548357,
+    "ast_hash": "884d38971c0b78241816933d56384c93",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-layers-full.html": {
+    "mtime": 1795042307.5493338,
+    "ast_hash": "55bc40a6dc46378e51fe59088d80eceb",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-layers.html": {
+    "mtime": 1795042307.5502088,
+    "ast_hash": "4201fa3eeb6339e2e03dc9a478210303",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-line-dark.html": {
+    "mtime": 1795042307.5515494,
+    "ast_hash": "f8bfe26c57bd7bb4b5378a2bda10bdc4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-line-full.html": {
+    "mtime": 1795042307.553567,
+    "ast_hash": "fbf9e6dd1928d241c5a4c446d1e8cf79",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-line.html": {
+    "mtime": 1795042307.554479,
+    "ast_hash": "d62dba1838060b11b3438edab02d816a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-loop-dark.html": {
+    "mtime": 1795042307.5551264,
+    "ast_hash": "9fce9d50c39e667ea47f9ea9c5313b83",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-loop-full.html": {
+    "mtime": 1795042307.556054,
+    "ast_hash": "afa54fee92337a63bb584bdd569e5e64",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-loop-terminal.html": {
+    "mtime": 1795042307.558059,
+    "ast_hash": "40d6252680671a4108c77d12e146bfba",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-loop.html": {
+    "mtime": 1795042307.5587437,
+    "ast_hash": "25c55e63a9cd77cdf56dec8fa9fd357b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-marimekko-dark.html": {
+    "mtime": 1795042307.5599387,
+    "ast_hash": "9d3a40044784e8d69134529b55c6e659",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-marimekko-full.html": {
+    "mtime": 1795042307.5608256,
+    "ast_hash": "b669308dce69393c9a0938a8134f9053",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-marimekko.html": {
+    "mtime": 1795042307.5642273,
+    "ast_hash": "ad39c1d7abc604034383c0c215030f03",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-medallion-dark.html": {
+    "mtime": 1795042307.5657673,
+    "ast_hash": "8004fb2e469c1b520c606d995ec79e04",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-medallion-full.html": {
+    "mtime": 1795042307.5667639,
+    "ast_hash": "a345ef5df9f580478bf3090d377f7b03",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-medallion.html": {
+    "mtime": 1795042307.5675504,
+    "ast_hash": "f66ade0eb49c1db01257eb3bcf49fa5e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-nested-dark.html": {
+    "mtime": 1795042307.5686166,
+    "ast_hash": "9e437a089077f8fa837a7e4eeec37638",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-nested-full.html": {
+    "mtime": 1795042307.5694873,
+    "ast_hash": "f86882d84a757de31f65390e40916020",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-nested.html": {
+    "mtime": 1795042307.570546,
+    "ast_hash": "0e280b4556c229647db92abba157f3c5",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-org-chart-dark.html": {
+    "mtime": 1795042307.5716858,
+    "ast_hash": "231ae5e3787e21a6616cb7673e684296",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-org-chart-full.html": {
+    "mtime": 1795042307.5733793,
+    "ast_hash": "d54dd8c8f12ff23a19365cd239f2b17f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-org-chart.html": {
+    "mtime": 1795042307.5745332,
+    "ast_hash": "d805a8f807ea17981883df3059dcdab4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-paved-road-animated.html": {
+    "mtime": 1795042307.5757194,
+    "ast_hash": "bd1320f90c5df2e023d70e796c0816f6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-polar-dark.html": {
+    "mtime": 1795042307.5764165,
+    "ast_hash": "9e78af8b419895ea46dcfda66a22408e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-polar-full.html": {
+    "mtime": 1795042307.5771885,
+    "ast_hash": "9d91c8ac6391aa377ae4035811e88eb9",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-polar.html": {
+    "mtime": 1795042307.5778792,
+    "ast_hash": "1886e6142d6f7e42e05150c5e66f6ae6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-policy-trace-animated.html": {
+    "mtime": 1795042307.5795827,
+    "ast_hash": "534e4dc780a0e9e3d86ee866fc8fa17e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-process-dark.html": {
+    "mtime": 1795042307.5806222,
+    "ast_hash": "937c7146e632e2f4a8daf0e72b3070c7",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-process-full.html": {
+    "mtime": 1795042307.5815997,
+    "ast_hash": "b2a37f00c9fd946fcc851e4eb512c1dd",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-process.html": {
+    "mtime": 1795042307.582384,
+    "ast_hash": "2b60a53f6d75fa2f9a370849bbed57cf",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-pyramid-dark.html": {
+    "mtime": 1795042307.582984,
+    "ast_hash": "9728aa542efb93dafca19d9da01c134b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-pyramid-full.html": {
+    "mtime": 1795042307.584117,
+    "ast_hash": "5a318f2e728a32020b32b791f0b783e3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-pyramid.html": {
+    "mtime": 1795042307.58539,
+    "ast_hash": "9ebe75c35506ebe30ce3982f602f39f9",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-quadrant-consultant.html": {
+    "mtime": 1795042307.5875218,
+    "ast_hash": "b7f66c1e334a9dbfabfe64a89cd53ec6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-quadrant-dark.html": {
+    "mtime": 1795042307.588212,
+    "ast_hash": "73a9660db9a8d24e0fc704c93655198b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-quadrant-full.html": {
+    "mtime": 1795042307.5889301,
+    "ast_hash": "83db0b88792fda1c4503a08605cef64f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-quadrant.html": {
+    "mtime": 1795042307.5904741,
+    "ast_hash": "0d8dbd7de130f2096d2fe33b5ae236a0",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-queue-animated.html": {
+    "mtime": 1795042307.5915031,
+    "ast_hash": "2ad6d8c3b39f82485ef5f556ba155f9f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-radar-dark.html": {
+    "mtime": 1795042307.5922928,
+    "ast_hash": "eeae38ec25588d6f812e7c5d1217e45f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-radar-full.html": {
+    "mtime": 1795042307.592979,
+    "ast_hash": "9091d29a994e048168555c4ac89c16c3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-radar.html": {
+    "mtime": 1795042307.5935998,
+    "ast_hash": "71db8a4a98eb8c77d416432b9264ad07",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-requirement-traceability-dark.html": {
+    "mtime": 1795042307.5950718,
+    "ast_hash": "4adee6e52571c348b17fc2937cc8e6f1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-requirement-traceability-full.html": {
+    "mtime": 1795042307.5982802,
+    "ast_hash": "f759cdfaf436a675b43f66bcc43c801e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-requirement-traceability.html": {
+    "mtime": 1795042307.5991755,
+    "ast_hash": "b491c6121aa5ce87bf9dcd3cc546f963",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-ridgeline-dark.html": {
+    "mtime": 1795042307.600463,
+    "ast_hash": "dfe3ddbe36718059b3f3ec77b777d3f6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-ridgeline-full.html": {
+    "mtime": 1795042307.6024504,
+    "ast_hash": "7003ad037ab03e21d303e9135be8d6c4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-ridgeline.html": {
+    "mtime": 1795042307.6032817,
+    "ast_hash": "2d7a3d179de5d16a62bd941686bd0e06",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sankey-dark.html": {
+    "mtime": 1795042307.6040883,
+    "ast_hash": "bea35c81b9fbe2eb2a6e78f6e0ab2b9b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sankey-full.html": {
+    "mtime": 1795042307.6060421,
+    "ast_hash": "ffec07888c317529951f6d50e15fe8cb",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sankey.html": {
+    "mtime": 1795042307.6070428,
+    "ast_hash": "51df22eea6065ec9226308ad4f684ebe",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sbgn-dark.html": {
+    "mtime": 1795042307.6078696,
+    "ast_hash": "8e21ae2045732c6fbc99adec3d4ce3d2",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sbgn-full.html": {
+    "mtime": 1795042307.6087246,
+    "ast_hash": "bd10c5704fb18fdfaa3e7803f25ee5be",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sbgn.html": {
+    "mtime": 1795042307.6094813,
+    "ast_hash": "f2622fb3da780d771f0a008716b15ced",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-scatter-dark.html": {
+    "mtime": 1795042307.6102762,
+    "ast_hash": "5863fbc4b887735cad1ce27c88cc194d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-scatter-full.html": {
+    "mtime": 1795042307.6109452,
+    "ast_hash": "8838b42047d45bf3c08b49cfc4f0f948",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-scatter.html": {
+    "mtime": 1795042307.611661,
+    "ast_hash": "220f8bcaa3adab2224d45100a8e696e2",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sequence-dark.html": {
+    "mtime": 1795042307.6136675,
+    "ast_hash": "1a93a5e80c296a45b21fa00afaa34f12",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sequence-full.html": {
+    "mtime": 1795042307.6145346,
+    "ast_hash": "48f1460f503596cf65780f7edf787780",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sequence-oauth-dark.html": {
+    "mtime": 1795042307.6154776,
+    "ast_hash": "4a58392c8a709fc654297a1a6ca9bd84",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sequence-oauth-full.html": {
+    "mtime": 1795042307.6172132,
+    "ast_hash": "42652c6f40b8297437a5194c2f043e78",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sequence-oauth.html": {
+    "mtime": 1795042307.620859,
+    "ast_hash": "09ca41daa49d3e375f7c93271d03347d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-sequence.html": {
+    "mtime": 1795042307.6217866,
+    "ast_hash": "efc61abdd3f50577f795c00af43921e3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-service-blueprint-dark.html": {
+    "mtime": 1795042307.6226497,
+    "ast_hash": "3192f6a90f3368ca715bb2f0286f70b4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-service-blueprint-full.html": {
+    "mtime": 1795042307.623721,
+    "ast_hash": "cd6423ab6f3df5e3933623eac12c5c44",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-service-blueprint.html": {
+    "mtime": 1795042307.62592,
+    "ast_hash": "1f941ab8566ff21f9f30a3d9144f7436",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-slopegraph-dark.html": {
+    "mtime": 1795042307.62735,
+    "ast_hash": "fefe9d233572102171d476eaa618a57d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-slopegraph-full.html": {
+    "mtime": 1795042307.6282172,
+    "ast_hash": "9cc3c191aefe639f75038cf88dd1df3b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-slopegraph.html": {
+    "mtime": 1795042307.6288962,
+    "ast_hash": "7588f89dfd2315f2f30ba87c1dbddfea",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-state-dark.html": {
+    "mtime": 1795042307.6296985,
+    "ast_hash": "17f812fc94643e3fec679e99103d4932",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-state-full.html": {
+    "mtime": 1795042307.6304655,
+    "ast_hash": "09eee11c05d291842d3b33a162ca1221",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-state-lifecycle-dark.html": {
+    "mtime": 1795042307.6317255,
+    "ast_hash": "d6a65fefcb61b36ddd88f62072600101",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-state-lifecycle-full.html": {
+    "mtime": 1795042307.63518,
+    "ast_hash": "d182da6993caf49811066d0f2335398f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-state-lifecycle.html": {
+    "mtime": 1795042307.6361308,
+    "ast_hash": "9c9de9b9a271159c55a7263cb60fad7b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-state.html": {
+    "mtime": 1795042307.6372888,
+    "ast_hash": "1ab51a8bc6af8830168eca9c57c3ee3d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-steps-dark.html": {
+    "mtime": 1795042307.637978,
+    "ast_hash": "23de2c61f33ca76ed5d31e2059b4e223",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-steps-full.html": {
+    "mtime": 1795042307.6388834,
+    "ast_hash": "9c2982d80a6d47d5f936fc4132bf2624",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-steps.html": {
+    "mtime": 1795042307.6396935,
+    "ast_hash": "ab91c947f64445e341157802bec6fb35",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-story-map-dark.html": {
+    "mtime": 1795042307.6404088,
+    "ast_hash": "14ca05451ebe8615449e923e20594bf2",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-story-map-full.html": {
+    "mtime": 1795042307.6411061,
+    "ast_hash": "bc2b277e54b1ff701ae82f4c0ffe9432",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-story-map.html": {
+    "mtime": 1795042307.6418996,
+    "ast_hash": "5576efe08ecb4ffd151197a562a527bf",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-streamgraph-dark.html": {
+    "mtime": 1795042307.644173,
+    "ast_hash": "2b4e44dcfc4b9129926789ac9d6376dc",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-streamgraph-full.html": {
+    "mtime": 1795042307.6451325,
+    "ast_hash": "925e0271feeb3cc7bdb46c8f47014bc3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-streamgraph.html": {
+    "mtime": 1795042307.6461742,
+    "ast_hash": "9d3e6f158afb57b86e0bbead8dc4f989",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-swimlane-dark.html": {
+    "mtime": 1795042307.6481748,
+    "ast_hash": "4b0dfc9740fb9d3a89c5f82b305905c3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-swimlane-full.html": {
+    "mtime": 1795042307.648887,
+    "ast_hash": "827eb287dc061c56b0ce0b6193d30299",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-swimlane.html": {
+    "mtime": 1795042307.6509588,
+    "ast_hash": "149accde0fb369b9696dc85b69bf6b70",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-timeline-dark.html": {
+    "mtime": 1795042307.6515994,
+    "ast_hash": "7b52adfe09ea538c74d1eb9e92f4bb12",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-timeline-full.html": {
+    "mtime": 1795042307.6522918,
+    "ast_hash": "eeade198a20fc8c3cf47ebf6989f3ce4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-timeline.html": {
+    "mtime": 1795042307.6535318,
+    "ast_hash": "60bae7fbb28029ec109f74f0080532b0",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-tree-block-decomposition-dark.html": {
+    "mtime": 1795042307.6549788,
+    "ast_hash": "1fa6a414c245f908103bb205b56cb1a3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-tree-block-decomposition-full.html": {
+    "mtime": 1795042307.6562119,
+    "ast_hash": "c672a5ba24403e292d27443f98f45474",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-tree-block-decomposition.html": {
+    "mtime": 1795042307.6569502,
+    "ast_hash": "efce9308150da1ff17677525d715b996",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-tree-dark.html": {
+    "mtime": 1795042307.6576881,
+    "ast_hash": "084b470e978bf68d2ae5f5115b6d7c67",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-tree-full.html": {
+    "mtime": 1795042307.6590385,
+    "ast_hash": "da6238e293ccc521a86d62cc1298efcf",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-tree.html": {
+    "mtime": 1795042307.6597693,
+    "ast_hash": "921db5fab302e4bd5e2a7321c91d064e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-treemap-dark.html": {
+    "mtime": 1795042307.6615715,
+    "ast_hash": "cadab90221662b48319ffd0c107cea50",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-treemap-full.html": {
+    "mtime": 1795042307.6627083,
+    "ast_hash": "6853c328314a8c444a0ec3fdc486af06",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-treemap.html": {
+    "mtime": 1795042307.6653395,
+    "ast_hash": "e011191bce3f90e0e4caa1f9095266ad",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-uml-class-dark.html": {
+    "mtime": 1795042307.6670678,
+    "ast_hash": "6a6a1c8f239ccc53ef32be3802050694",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-uml-class-full.html": {
+    "mtime": 1795042307.6679375,
+    "ast_hash": "8467401ab1241a7518fb1c5fc6789a5f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-uml-class.html": {
+    "mtime": 1795042307.6689553,
+    "ast_hash": "fdff8a718bff5d4b9ee2bdc0df83b37b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-unit-grid-dark.html": {
+    "mtime": 1795042307.669969,
+    "ast_hash": "79ac3e8e9ae54bf3f31bf72637698011",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-unit-grid-full.html": {
+    "mtime": 1795042307.6713693,
+    "ast_hash": "b8f7af29a7acc2d4d20354c83e389fb6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-unit-grid.html": {
+    "mtime": 1795042307.6733472,
+    "ast_hash": "3b052e18126c4b7a2dab0478d64bbbec",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-venn-dark.html": {
+    "mtime": 1795042307.6740549,
+    "ast_hash": "07e0893dd5c007e84b7b2530c4d0392f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-venn-full.html": {
+    "mtime": 1795042307.6748881,
+    "ast_hash": "5b7c6a1879801466764a6e7ab451703a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-venn.html": {
+    "mtime": 1795042307.6755946,
+    "ast_hash": "a8b04dc99e0f860c294b9c4f8af88c27",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-wardley-dark.html": {
+    "mtime": 1795042307.6770253,
+    "ast_hash": "e06320ce9a50480ee08adf57711ce01c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-wardley-full.html": {
+    "mtime": 1795042307.6777196,
+    "ast_hash": "de26a949ff2ebed944e81d9652af395a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-wardley.html": {
+    "mtime": 1795042307.6785038,
+    "ast_hash": "6608df7aaf5e8fe29b4b1244a789fd11",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-waterfall-dark.html": {
+    "mtime": 1795042307.6793869,
+    "ast_hash": "ab38f9622c2f38b28888338bda0bcb22",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-waterfall-full.html": {
+    "mtime": 1795042307.6808786,
+    "ast_hash": "7ceb06ebdb71672885cdfc4673c785a3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/example-waterfall.html": {
+    "mtime": 1795042307.681764,
+    "ast_hash": "045506780cc3b7e09837a79cebb7d3be",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/icons.html": {
+    "mtime": 1795042307.6893995,
+    "ast_hash": "fbb6b612a8b0271fb5cc4d5dd905e131",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/index.html": {
+    "mtime": 1795042307.6911461,
+    "ast_hash": "a03ac7f375954cdff8a4843784d0f1b0",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/template-dark.html": {
+    "mtime": 1795042307.6927736,
+    "ast_hash": "8936c2992a0479514d8d828acf860ab5",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/template-full.html": {
+    "mtime": 1795042307.693743,
+    "ast_hash": "aa8096f862289a6981bf8700fbb95497",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/template-motion.html": {
+    "mtime": 1795042307.695499,
+    "ast_hash": "1c5641e3d2e7d2ba58b45c88d57f4bfd",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/template-terminal.html": {
+    "mtime": 1795042307.6963434,
+    "ast_hash": "61af1dfb3521f90a326947635d079a64",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/assets/template.html": {
+    "mtime": 1795042307.6979759,
+    "ast_hash": "104ce9c88832a851bcbefee563aa6cdb",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/animation.md": {
+    "mtime": 1795042307.6994467,
+    "ast_hash": "1e3832a1a2a7be44a28ba9b469f281b8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/doctor.md": {
+    "mtime": 1795042307.7002532,
+    "ast_hash": "316e2ce82eee633079d091c14dba9982",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/export-registry.md": {
+    "mtime": 1795042307.7011645,
+    "ast_hash": "4671a7bfb2359e9a293c9c599f032d0f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/export.md": {
+    "mtime": 1795042307.7033722,
+    "ast_hash": "27d80e6389be63298eb87f5669258ad6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/import-drawio.md": {
+    "mtime": 1795042307.7047899,
+    "ast_hash": "439f4b766c7405ea38166090c281cbd4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/import-excalidraw.md": {
+    "mtime": 1795042307.705521,
+    "ast_hash": "f2063146ed15f266157c8ac0cefb0e9a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/import-mermaid.md": {
+    "mtime": 1795042307.7067783,
+    "ast_hash": "d6894828dc81ec95642571f4ab9f1594",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/import-plantuml.md": {
+    "mtime": 1795042307.70767,
+    "ast_hash": "e2dd185bc55365d0591565efbed5cbd8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/layout-budget.md": {
+    "mtime": 1795042307.7085395,
+    "ast_hash": "a6f4e5f0650e54d17eead02f6931f7d9",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/onboarding.md": {
+    "mtime": 1795042307.7109976,
+    "ast_hash": "2af2d6cbf7f4099ed05381c6ffeaa074",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/output-spec.md": {
+    "mtime": 1795042307.7122977,
+    "ast_hash": "006634c7255d36a40fd5936cee5dc5f8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/primitive-annotation.md": {
+    "mtime": 1795042307.712813,
+    "ast_hash": "6ea04e34ec4b4c4f21df743b0aaac303",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/primitive-icons.md": {
+    "mtime": 1795042307.71752,
+    "ast_hash": "43b36ddd6ded6b106c6972181bf2b40a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/primitive-sketchy.md": {
+    "mtime": 1795042307.718097,
+    "ast_hash": "ee2e09c824eb0586fd282e7153509fe7",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/primitive-terminal.md": {
+    "mtime": 1795042307.7186215,
+    "ast_hash": "05a975492f2412191950447fb38bcc81",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/primitives-core.md": {
+    "mtime": 1795042307.7195408,
+    "ast_hash": "d9b9e5316ed0c96f9b740f820ef42619",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/profiles.md": {
+    "mtime": 1795042307.7206714,
+    "ast_hash": "bef1155e4e556c0f90af314e5cfe0115",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/semantic-patterns.md": {
+    "mtime": 1795042307.7225654,
+    "ast_hash": "7ba7b5515a68922f4c859170ea68b708",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/style-guide.md": {
+    "mtime": 1795042307.7236316,
+    "ast_hash": "961a7c2ac231086594d8b556fe369765",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-architecture-delta.md": {
+    "mtime": 1795042307.7246146,
+    "ast_hash": "a9f417bf744e0c5fa20c1f40285eb525",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-architecture.md": {
+    "mtime": 1795042307.7257063,
+    "ast_hash": "959f679d3d3ab720cc1367f14dabc00f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-axonometric-plan.md": {
+    "mtime": 1795042307.7264137,
+    "ast_hash": "e8819294ef04eadc701ce493aab8102f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-bar.md": {
+    "mtime": 1795042307.7275655,
+    "ast_hash": "9cbd1097d9a51464f28846df33c008d6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-data-flow.md": {
+    "mtime": 1795042307.7285626,
+    "ast_hash": "f8fa4aa3b59d8d15b8130d2aa849262b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-db-schema.md": {
+    "mtime": 1795042307.729181,
+    "ast_hash": "be9973d48306e476c1f35b91f9911133",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-dependency.md": {
+    "mtime": 1795042307.7299883,
+    "ast_hash": "74662800f8a992d97eba686cf6023677",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-deployment.md": {
+    "mtime": 1795042307.730701,
+    "ast_hash": "8ff96ecd3224531b754136888139b39b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-dp-integration.md": {
+    "mtime": 1795042307.7322369,
+    "ast_hash": "cf128e36c52b1e925527b6e04f6c5eac",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-dp-security-matrix.md": {
+    "mtime": 1795042307.7342074,
+    "ast_hash": "19c712a994e7d3faf5e9fc05ca0ac15d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-er.md": {
+    "mtime": 1795042307.7347872,
+    "ast_hash": "bfcf8dea54766660287f21136cf2240b",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-event-modeling.md": {
+    "mtime": 1795042307.7353423,
+    "ast_hash": "b3498caebd87c480ec4b0953f257ad2f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-exploded.md": {
+    "mtime": 1795042307.7503152,
+    "ast_hash": "2786ac00decf5b25f6d32151a33c84f1",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-fishbone.md": {
+    "mtime": 1795042307.75253,
+    "ast_hash": "b38049829015f8db87ee2dd8ea0ba7fc",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-flowchart.md": {
+    "mtime": 1795042307.7612996,
+    "ast_hash": "14551dcd83bdc34badb031fbd77bea90",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-gantt.md": {
+    "mtime": 1795042307.7626257,
+    "ast_hash": "b06cdee7e2c72905c98587619c3b38c5",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-heatmap.md": {
+    "mtime": 1795042307.7636876,
+    "ast_hash": "07afbb4ec549bf63fe06a00fb11c1080",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-high-level.md": {
+    "mtime": 1795042307.7653506,
+    "ast_hash": "2cc9b447089f19c622947afd7dd42a99",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-it-state.md": {
+    "mtime": 1795042307.768687,
+    "ast_hash": "5dd70789ab2a7e7c1b922ff706b8d76c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-journey.md": {
+    "mtime": 1795042307.769354,
+    "ast_hash": "2235cbd5b4c77eeb3345b53c38fe2c6d",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-kanban.md": {
+    "mtime": 1795042307.7699323,
+    "ast_hash": "03f9db03b829ac57e40236223f00339f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-layers.md": {
+    "mtime": 1795042307.7704375,
+    "ast_hash": "4d283a5cb81e31c2ec35fdaa6005d97e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-line.md": {
+    "mtime": 1795042307.7728984,
+    "ast_hash": "6563ee86d778b8e5e88342b9007c29af",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-loop.md": {
+    "mtime": 1795042307.7741673,
+    "ast_hash": "fb5063a91797e946eb51694a72b0039f",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-medallion.md": {
+    "mtime": 1795042307.775529,
+    "ast_hash": "0f4a54387b21b0f6320ae99dd65f5f86",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-nested.md": {
+    "mtime": 1795042307.776353,
+    "ast_hash": "a01bc47f2c5973392bc8d2eb24a362e0",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-org-chart.md": {
+    "mtime": 1795042307.7770267,
+    "ast_hash": "18f5d5278da9affee59f3c525a3d22fd",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-polar.md": {
+    "mtime": 1795042307.7783282,
+    "ast_hash": "681d882f2f0843ce3c0563cdff0d562a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-process.md": {
+    "mtime": 1795042307.7796288,
+    "ast_hash": "e587dc5ba453d899fd56818f73afb693",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-pyramid.md": {
+    "mtime": 1795042307.7802038,
+    "ast_hash": "a5921bff79e4d2c4cd17ab28bd3c5cfa",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-quadrant.md": {
+    "mtime": 1795042307.7809634,
+    "ast_hash": "340ff8fb9f55ac667eaa7f5723e6fa4a",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-radar.md": {
+    "mtime": 1795042307.7828991,
+    "ast_hash": "22e5cd9e1eee39df4df677e563afe50c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-requirement-traceability.md": {
+    "mtime": 1795042307.783664,
+    "ast_hash": "d3dd0d9d2dec2f84f4ce09a64b4c87ce",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-sankey.md": {
+    "mtime": 1795042307.7851157,
+    "ast_hash": "8fa76188d1d223670d5fc477f1140e97",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-sbgn.md": {
+    "mtime": 1795042307.7857606,
+    "ast_hash": "9b8d4257caca089287419ed414e447a4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-scatter.md": {
+    "mtime": 1795042307.787167,
+    "ast_hash": "7fd1ba3b23dce24e434259736a016c19",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-sequence.md": {
+    "mtime": 1795042307.7877927,
+    "ast_hash": "b4d8f68116f07bfa6206e2df5ac6cfe6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-service-blueprint.md": {
+    "mtime": 1795042307.7893915,
+    "ast_hash": "3ac76a6c44e93ede0175128f7254fa01",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-state.md": {
+    "mtime": 1795042307.7902029,
+    "ast_hash": "e48fe6baaae65987ac0dcb245da64124",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-steps.md": {
+    "mtime": 1795042307.7909372,
+    "ast_hash": "6c06984b5df435985edc30919989b8d9",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-story-map.md": {
+    "mtime": 1795042307.791614,
+    "ast_hash": "c48df4d133b87ef8eb4c43f6988de113",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-swimlane.md": {
+    "mtime": 1795042307.792164,
+    "ast_hash": "49c23709bd443cb8bedd2f2ea4c3b820",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-timeline.md": {
+    "mtime": 1795042307.7927413,
+    "ast_hash": "77e30fe8a66196aa454e359a33d35483",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-tree.md": {
+    "mtime": 1795042307.793257,
+    "ast_hash": "92cfe45103ca7596a84435d018d7c732",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-treemap.md": {
+    "mtime": 1795042307.7943115,
+    "ast_hash": "3050e5857481849f4724d4a0070136c8",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-uml-class.md": {
+    "mtime": 1795042307.7959013,
+    "ast_hash": "bb867f196284c7929db686ac9958f2ea",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-unit-grid.md": {
+    "mtime": 1795042307.7965488,
+    "ast_hash": "2f27abd04fe7ff458e84ad08e4655287",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-venn.md": {
+    "mtime": 1795042307.7974985,
+    "ast_hash": "e585261e8fdbcf82f3d7bf4d39fe57ff",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-wardley.md": {
+    "mtime": 1795042307.7981472,
+    "ast_hash": "564b56e69d22ca8eeb102dfe5f847403",
+    "semantic_hash": ""
+  },
+  ".agents/skills/diagram-design/references/type-waterfall.md": {
+    "mtime": 1795042307.8013124,
+    "ast_hash": "927477a02a7f9252f3ebd59e43c4aed6",
+    "semantic_hash": ""
+  },
+  "docs/ARCHITECTURE.md": {
+    "mtime": 1795314742.272942,
+    "ast_hash": "073e065d5dd368dd51ba82e633d46449",
+    "semantic_hash": ""
+  },
+  "docs/diagrams/architecture.html": {
+    "mtime": 1795315984.9121034,
+    "ast_hash": "1eef5dfae78af25643d3fd3125ec6566",
+    "semantic_hash": ""
+  },
+  "docs/plan/08-fix1/DESIGN.md": {
+    "mtime": 1795044899.4508474,
+    "ast_hash": "9eb176a1e540c2f8fa7d51420c01ede7",
+    "semantic_hash": ""
+  },
+  "docs/plan/08-fix1/PLAN.md": {
+    "mtime": 1795311973.516846,
+    "ast_hash": "9a049a32c6e00d80944e4b5be08c2269",
+    "semantic_hash": ""
+  },
+  "docs/plan/08-fix1/SCOPE.md": {
+    "mtime": 1795311973.5179484,
+    "ast_hash": "7fc118ded6dd177548dc8aef28526d53",
+    "semantic_hash": ""
+  },
+  "docs/plan/08-fix1/TRADE-OFF.md": {
+    "mtime": 1795044858.697968,
+    "ast_hash": "626d702b6eb9ed172292fe884f66ff23",
+    "semantic_hash": ""
+  },
+  "docs/diagrams/architecture.svg": {
+    "mtime": 1795315987.499047,
+    "ast_hash": "c8c9c82adb8c074db78a7c76bbb6a76c",
+    "semantic_hash": ""
+  },
+  "scripts/generate_readme.sh": {
+    "mtime": 1795331613.2448654,
+    "ast_hash": "8f939817c616f2b8e938cc6bb287d708",
+    "semantic_hash": ""
+  },
+  "docs/OUTPUTS.md": {
+    "mtime": 1795331535.8799088,
+    "ast_hash": "d2426d92c550ea0cfe2581d929e8c160",
+    "semantic_hash": ""
+  },
+  "docs/OVERVIEW.md": {
+    "mtime": 1795331532.6999745,
+    "ast_hash": "f6865101b973f351d9f029147e9a121c",
+    "semantic_hash": ""
+  },
+  "docs/QUICKSTART.md": {
+    "mtime": 1795331534.2574725,
+    "ast_hash": "1747e9935bdff7729a7986b200f68b52",
     "semantic_hash": ""
   }
 }

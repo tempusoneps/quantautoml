@@ -49,12 +49,14 @@ flowchart TD
         SLSQP -->|"Cal-A (or OOF)"| Calib["Temperature Scaling (T > 0)\n100% Rank Invariant, ECE < 0.05"]
     end
 
-    subgraph PackagingStage["Giai đoạn 5: Packaging & Friction-Aware Acceptance"]
-        Calib --> Bundle["ONNX Model Bundle Packaging\n(preprocessor, models, meta, schema, predictor.py)"]
+    subgraph PackagingStage["Giai đoạn 5: Packaging & Dual-Tier Friction-Aware Acceptance"]
+        Calib --> Bundle["ONNX Model Bundle Packaging\n(preprocessor.onnx, model_*.onnx, meta, schema, predictor.py)"]
         Bundle --> PrecisionCheck{"Numerical Precision\n|y_py - y_onnx| < 1e-4?"}
-        PrecisionCheck -->|"Pass"| OOSTest["Blind OOS Acceptance Test (backtesting.py)\n+ Friction Matrix (Fee + Slippage)\n+ Hysteresis Buffer (Turnover Cap)\n+ Downside IC Check"]
-        PrecisionCheck -->|"Fail"| ErrorStop["Raise PrecisionError"]
-        OOSTest --> Report["Production Deployment Artifacts"]
+        PrecisionCheck -->|"Pass"| Tier1Test["Tier 1: Fast Vectorized OOS Acceptance (NumPy)\n+ Friction Matrix (Fee + Slippage)\n+ Hysteresis Buffer (Turnover Cap)\n+ Downside IC & Latency (< 5ms) Gate"]
+        PrecisionCheck -->|"Fail"| ErrorStop["Raise PrecisionValidationError"]
+        Tier1Test -->|"accepted = True"| Tier2Test["Tier 2: Realistic Execution Simulation (backtesting.py)\n+ Next-Bar Open Fill (trade_on_close=False)\n+ Interactive HTML Chart + trades.csv"]
+        Tier1Test -->|"accepted = False"| Report["Production Artifacts & Acceptance Report (backtest_report.json)"]
+        Tier2Test --> Report
     end
 ```
 
