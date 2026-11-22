@@ -15,6 +15,7 @@ from quantautoml.common.types import Dataset, IngestionReport
 from quantautoml.data.task_inference import infer_task_type
 
 _NAIVE = "naive"
+_NULL_MAPPING_KEYS = ("NaN", "nan", "NAN", "", "None", "null", "NULL")
 
 
 @dataclass(frozen=True)
@@ -277,20 +278,56 @@ class DataIngestion:
     def _apply_mapping(
         sel: _SelectedLabel, mapping: dict[str, float], name: str
     ) -> _SelectedLabel:
-        """Text label -> mapped number; nulls stay null, unmapped texts are rejected."""
+        """Text label -> mapped number; mid-series nulls use any null key (NaN/nan/''/None/null),
+        while trailing nulls stay null so trailing-NaN horizon drop remains intact.
+        For numeric labels, a null-only mapping (e.g. ``NaN = 0``) fills mid-series NaN while
+        rejecting non-null keys on numeric columns.
+        """
+        n_trailing = DataIngestion._trailing_nan(np.where(sel.null_mask, np.nan, 0.0))
+        keep_end = sel.values.size - n_trailing
+
         if sel.values.dtype.kind != "O":
-            raise InvalidDataError(
-                f"labels.mapping needs a text label but {name!r} is numeric; remove the mapping"
-            )
+            non_null_keys = [k for k in mapping if k not in _NULL_MAPPING_KEYS]
+            if non_null_keys:
+                raise InvalidDataError(
+                    f"labels.mapping needs a text label but {name!r} is numeric; remove the mapping"
+                )
+            null_val: float | None = None
+            for nk in _NULL_MAPPING_KEYS:
+                if nk in mapping:
+                    null_val = float(mapping[nk])
+                    break
+            out_num = sel.values.astype(np.float64, copy=True)
+            new_mask_num = sel.null_mask.copy()
+            if null_val is not None and keep_end > 0:
+                mid_nulls = new_mask_num[:keep_end]
+                out_num[:keep_end] = np.where(mid_nulls, null_val, out_num[:keep_end])
+                new_mask_num[:keep_end] = False
+            return _SelectedLabel(out_num, new_mask_num)
+
         present = {v for v, isnull in zip(sel.values.tolist(), sel.null_mask.tolist()) if not isnull}
         unmapped = sorted(present - mapping.keys())
         if unmapped:
             raise InvalidDataError(f"labels.mapping lacks values of {name!r}: {unmapped}")
-        out = np.array(
-            [np.nan if isnull else mapping[v] for v, isnull in zip(sel.values.tolist(), sel.null_mask.tolist())],
-            dtype=np.float64,
-        )
-        return _SelectedLabel(out, sel.null_mask)
+
+        null_mapped_val: float | None = None
+        for nk in _NULL_MAPPING_KEYS:
+            if nk in mapping and nk not in present:
+                null_mapped_val = float(mapping[nk])
+                break
+
+        out = np.empty(sel.values.size, dtype=np.float64)
+        new_mask = sel.null_mask.copy()
+        for i, (v, isnull) in enumerate(zip(sel.values.tolist(), sel.null_mask.tolist())):
+            if isnull:
+                if null_mapped_val is not None and i < keep_end:
+                    out[i] = null_mapped_val
+                    new_mask[i] = False
+                else:
+                    out[i] = np.nan
+            else:
+                out[i] = mapping[v]
+        return _SelectedLabel(out, new_mask)
 
     @staticmethod
     def _require_numeric(df: pl.DataFrame, cols: list[str], kind: str) -> None:
