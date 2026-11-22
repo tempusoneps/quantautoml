@@ -121,8 +121,46 @@ class LightGBMCandidate(BaseGBDCandidate):
         default_kwargs["objective"] = "binary" if is_binary else "multiclass"
         clf = lgb.LGBMClassifier(**default_kwargs)
         clf.fit(X_arr, y_arr)
+        self._quantize_booster_to_float32(clf)
         self.estimator_ = clf
         return self
+
+    @staticmethod
+    def _quantize_booster_to_float32(clf: Any) -> None:
+        """Quantize LightGBM tree thresholds and leaf values to float32 in-place.
+
+        LightGBM stores tree split thresholds in float64 by default while ONNX's
+        ``TreeEnsembleClassifier`` represents ``nodes_values`` in float32. Quantizing
+        the booster immediately after ``fit()`` guarantees that Python ``predict_proba``
+        and ONNX Runtime take identical branch decisions on boundary samples (RULE-06).
+        """
+        import lightgbm as lgb
+
+        raw_lines = clf.booster_.model_to_string().splitlines()
+        out_lines: list[str] = []
+        for line in raw_lines:
+            if line.startswith("tree_sizes="):
+                # Strip byte-length index so LightGBM parses the modified tree blocks cleanly
+                continue
+            if line.startswith("threshold="):
+                vals: list[str] = []
+                for v in line[len("threshold=") :].split():
+                    fv = float(v)
+                    # Preserve LightGBM's sentinel threshold (-1e-35 for zero_as_missing) intact
+                    if abs(fv + 1e-35) < 1e-40:
+                        vals.append(v)
+                    else:
+                        vals.append(repr(float(np.float32(fv))))
+                out_lines.append("threshold=" + " ".join(vals))
+            elif line.startswith("leaf_value="):
+                vals = [
+                    repr(float(np.float32(float(v))))
+                    for v in line[len("leaf_value=") :].split()
+                ]
+                out_lines.append("leaf_value=" + " ".join(vals))
+            else:
+                out_lines.append(line)
+        clf._Booster = lgb.Booster(model_str="\n".join(out_lines) + "\n")
 
     def predict_proba(self, X: NDArray[np.float32]) -> NDArray[np.float32]:
         self._ensure_fitted()
