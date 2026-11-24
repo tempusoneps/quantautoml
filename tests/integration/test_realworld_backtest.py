@@ -53,7 +53,7 @@ def test_tier2_produces_html_and_csv_on_real_bundle(bundle, tmp_path) -> None:
     metrics, rw = OOSBacktestRunner(BacktestConfig(rank_window=100, ic_window=300)).run(
         bundle_dir=bundle.dir, oos=oos, feature_names=NAMES, other_segments=[],
         ohlcv_df=_ohlcv(oos),
-        realworld_cfg=RealWorldConfig(out_html=str(html), out_trades_csv=str(csv)),
+        realworld_cfg=RealWorldConfig(enabled=True, out_html=str(html), out_trades_csv=str(csv)),
     )
     assert metrics.accepted, metrics.failed_gates
     assert rw is not None and rw.n_trades > 0
@@ -72,7 +72,7 @@ def test_tier2_skipped_when_tier1_rejected(bundle, tmp_path) -> None:
         BacktestConfig(rank_window=100, ic_window=300, min_net_sharpe=999.0)
     ).run(
         bundle_dir=bundle.dir, oos=oos, feature_names=NAMES, other_segments=[],
-        ohlcv_df=_ohlcv(oos), realworld_cfg=RealWorldConfig(out_html=str(html)),
+        ohlcv_df=_ohlcv(oos), realworld_cfg=RealWorldConfig(enabled=True, out_html=str(html)),
     )
     assert not metrics.accepted
     assert rw is None and not html.exists()
@@ -84,7 +84,7 @@ def test_tier2_trades_are_consistent_with_tier1_positions(bundle, tmp_path) -> N
     csv = tmp_path / "trades.csv"
     _, rw = OOSBacktestRunner(BacktestConfig(rank_window=100, ic_window=300)).run(
         bundle_dir=bundle.dir, oos=oos, feature_names=NAMES, other_segments=[],
-        ohlcv_df=_ohlcv(oos), realworld_cfg=RealWorldConfig(out_trades_csv=str(csv)),
+        ohlcv_df=_ohlcv(oos), realworld_cfg=RealWorldConfig(enabled=True, out_trades_csv=str(csv)),
     )
     assert rw is not None
     trades = pd.read_csv(csv)
