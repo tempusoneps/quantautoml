@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/common/config.py": {
-    "mtime": 1795490228.0244708,
-    "ast_hash": "ac26ae90160a5f242b8a6e4d7812dd73",
+    "mtime": 1795497750.213161,
+    "ast_hash": "79dd3350bb304299aa3315e417ea2f6a",
     "semantic_hash": ""
   },
   "src/quantautoml/common/exceptions.py": {
@@ -60,8 +60,8 @@
     "semantic_hash": ""
   },
   "scripts/generate_config.py": {
-    "mtime": 1795491122.7222102,
-    "ast_hash": "4b10a972c048fbbf09cf62f355065394",
+    "mtime": 1795497770.9744873,
+    "ast_hash": "477643bf09497b78498f3c7c6f6515ea",
     "semantic_hash": ""
   },
   "tests/conftest.py": {
@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_pipeline.py": {
-    "mtime": 1795496530.6554627,
-    "ast_hash": "42e9449d99447c6d38eefd246836ed2f",
+    "mtime": 1795497888.9441657,
+    "ast_hash": "75b61a39eb55783c2c3efca08eb76156",
     "semantic_hash": ""
   },
   "tests/unit/test_splitter.py": {
@@ -350,8 +350,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/features/__init__.py": {
-    "mtime": 1795477650.908085,
-    "ast_hash": "391906e5abeb3dc40d5a4095fcf9870f",
+    "mtime": 1795497755.2173672,
+    "ast_hash": "10cc5e11790550820f41b28d07651ba2",
     "semantic_hash": ""
   },
   "src/quantautoml/features/_binning.py": {
@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/features/funnel.py": {
-    "mtime": 1795477650.909162,
-    "ast_hash": "dfb415e49fa767cd42a6bd28661c9c0a",
+    "mtime": 1795497753.590492,
+    "ast_hash": "93a4a00f903f660f182214bd6068d326",
     "semantic_hash": ""
   },
   "src/quantautoml/features/ic_stability.py": {
@@ -400,8 +400,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/features/variance.py": {
-    "mtime": 1795488910.2451074,
-    "ast_hash": "a561530c449d09f40df30ebe7bc68a51",
+    "mtime": 1795497748.8970213,
+    "ast_hash": "935f5990b201925dd354e1ccb439493c",
     "semantic_hash": ""
   },
   "src/quantautoml/metrics/__init__.py": {
@@ -460,8 +460,8 @@
     "semantic_hash": ""
   },
   "tests/integration/test_zero_leakage_funnel.py": {
-    "mtime": 1795477650.9163039,
-    "ast_hash": "0fdc0b678edc3980e78c6f8ad14d044e",
+    "mtime": 1795497769.4000576,
+    "ast_hash": "a580a448a80a41d860b3be3329d729cf",
     "semantic_hash": ""
   },
   "tests/integration/test_zero_leakage_models.py": {
@@ -510,8 +510,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_funnel.py": {
-    "mtime": 1795477650.920019,
-    "ast_hash": "b1c236dbab281de206b9886c177a08c6",
+    "mtime": 1795497766.5608788,
+    "ast_hash": "9e312ee8f307a984ce73e81c4db2fdfe",
     "semantic_hash": ""
   },
   "tests/unit/test_ic_stability.py": {
@@ -2495,8 +2495,8 @@
     "semantic_hash": ""
   },
   "docs/OUTPUTS.md": {
-    "mtime": 1795477650.7645,
-    "ast_hash": "d2426d92c550ea0cfe2581d929e8c160",
+    "mtime": 1795497773.4261339,
+    "ast_hash": "6b3eaaccff7636635a117994cece14f2",
     "semantic_hash": ""
   },
   "docs/OVERVIEW.md": {
@@ -2542,6 +2542,16 @@
   "docs/plan/v1.1-fix1/TRADE-OFF.md": {
     "mtime": 1795486012.6929896,
     "ast_hash": "9b6ce3b8365aba8c3f1955d32c6fb53e",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/features/stationarity.py": {
+    "mtime": 1795497744.4857085,
+    "ast_hash": "73df6d1d0cfc309510bfae1d7fbff74f",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_stationarity.py": {
+    "mtime": 1795497690.2371476,
+    "ast_hash": "4057de5ed0948f7ac01442ccb9bb18aa",
     "semantic_hash": ""
   }
 }

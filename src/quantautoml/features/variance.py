@@ -1,4 +1,4 @@
-"""F2: multi-metric variance check (CV, peak rolling variance, unique ratio)."""
+"""F2a: multi-metric variance check (CV, peak rolling variance, unique ratio)."""
 
 from __future__ import annotations
 
@@ -49,7 +49,7 @@ class MultiMetricVarianceFilter(BaseFeatureFilter):
         InvalidDataError: at fit if Train has fewer rows than ``rolling_window``.
     """
 
-    name: ClassVar[str] = "f2_variance"
+    name: ClassVar[str] = "f2a_variance"
 
     def __init__(self, cfg: FeaturesConfig) -> None:
         super().__init__()

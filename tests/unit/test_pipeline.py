@@ -71,7 +71,7 @@ def test_run_pipeline_with_features_writes_funnel_reports(
     feat_dir = out / "02_features"
     report = json.loads((feat_dir / "01_funnel_report.json").read_text())
     assert [r["stage"] for r in report] == [r.stage for r in result.funnel.reports_]
-    assert len(report) == 7
+    assert len(report) == 8
     for entry in report:
         assert set(entry) == {"stage", "n_in", "n_out", "dropped", "notes"}
     for a, b in zip(report, report[1:]):

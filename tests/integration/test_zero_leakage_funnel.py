@@ -32,7 +32,8 @@ HORIZONS = (1, 5, 10, 21)
 SIGNAL_LOADING = 0.4045  # corr(s_i, r) = a / sqrt(5 a^2 + 1) = 0.30 with 5 signals
 STAGES = (
     "f1_triage",
-    "f2_variance",
+    "f2a_variance",
+    "f2b_stationarity",
     "f3_ic_stability",
     "f4_collinearity",
     "f5_clustering",
@@ -293,6 +294,6 @@ def test_full_funnel_scales_to_20k_rows(tmp_path_factory: pytest.TempPathFactory
     print(f"\n[scale] N=20,000 x 60 funnel fit+transform: {elapsed:.2f}s; {counts}")
 
     assert elapsed < 120.0
-    assert funnel.reports_[3].n_in > 5  # F4 had real dCor work to do
+    assert funnel.reports_[4].n_in > 5  # F4 had real dCor work to do
     assert out.X.dtype == np.float32
     assert out.X.shape == (len(case.split.oos.X), len(funnel.selected_features_))

@@ -17,7 +17,8 @@ from quantautoml.features.base import BaseFeatureFilter, FitContext
 
 STAGES = (
     "f1_triage",
-    "f2_variance",
+    "f2a_variance",
+    "f2b_stationarity",
     "f3_ic_stability",
     "f4_collinearity",
     "f5_clustering",
@@ -179,8 +180,8 @@ def test_empty_stage_passes_through_remaining_stages() -> None:
     split = _split(ds)
     funnel = FeatureFunnel(_cfg()).fit(split, ds)
     assert funnel.selected_features_ == ()
-    assert len(funnel.reports_) == 7
-    assert funnel.reports_[1].n_out == 0  # F2 drops every constant column
+    assert len(funnel.reports_) == 8
+    assert funnel.reports_[1].n_out == 0  # F2a drops every constant column
     for r in funnel.reports_[2:]:
         assert (r.n_in, r.n_out) == (0, 0)
         assert r.notes == ("skipped: no features left",)
@@ -197,7 +198,7 @@ def test_refit_rebuilds_state(fitted) -> None:
     const = _dataset(constant=True)
     funnel.fit(_split(const), const)
     assert funnel.selected_features_ == ()
-    assert len(funnel.reports_) == 7
+    assert len(funnel.reports_) == 8
 
 
 def test_unsupervised_raises() -> None:
@@ -251,7 +252,7 @@ def test_f6_thresholds_passed_from_cfg(fitted) -> None:
         ic_horizons=_cfg().ic_horizons, target_horizon=1, mi_floor=10.0, synergy_delta=10.0
     )
     funnel = FeatureFunnel(cfg).fit(split, ds)
-    f6, f8 = funnel.reports_[5], funnel.reports_[6]
+    f6, f8 = funnel.reports_[6], funnel.reports_[7]
     assert f6.n_in >= 1 and f6.n_out == 0
     assert all("mi_floor 10" in why for why in f6.dropped.values())
     assert (f8.n_in, f8.n_out) == (0, 0) and f8.notes == ("skipped: no features left",)

@@ -7,6 +7,7 @@ from quantautoml.features.funnel import FeatureFunnel
 from quantautoml.features.ic_stability import ICStabilityFilter
 from quantautoml.features.jmi import JMIFeatureSelector
 from quantautoml.features.regime_synergy import RegimeSynergyFilter, label_regimes
+from quantautoml.features.stationarity import StationarityFilter
 from quantautoml.features.triage import NaNInfTriage
 from quantautoml.features.variance import MultiMetricVarianceFilter
 
@@ -21,6 +22,7 @@ __all__ = [
     "MultiMetricVarianceFilter",
     "NaNInfTriage",
     "RegimeSynergyFilter",
+    "StationarityFilter",
     "fast_dcor",
     "label_regimes",
 ]

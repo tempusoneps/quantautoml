@@ -1,4 +1,4 @@
-"""FeatureFunnel: chain the seven leakage-free filters F1 -> F2 -> F3+7 -> F4 -> F5 -> F6 -> F8."""
+"""FeatureFunnel: chain the eight leakage-free filters F1 -> F2a -> F2b -> F3+7 -> F4 -> F5 -> F6 -> F8."""
 
 from __future__ import annotations
 
@@ -25,6 +25,7 @@ from quantautoml.features.collinearity import FastNonlinearCollinearityFilter
 from quantautoml.features.ic_stability import ICStabilityFilter
 from quantautoml.features.jmi import JMIFeatureSelector
 from quantautoml.features.regime_synergy import RegimeSynergyFilter
+from quantautoml.features.stationarity import StationarityFilter
 from quantautoml.features.triage import NaNInfTriage
 from quantautoml.features.variance import MultiMetricVarianceFilter
 
@@ -33,6 +34,7 @@ StageFactory = Callable[[FeaturesConfig], BaseFeatureFilter]
 STAGE_FACTORIES: tuple[StageFactory, ...] = (
     NaNInfTriage,
     MultiMetricVarianceFilter,
+    StationarityFilter,
     ICStabilityFilter,
     FastNonlinearCollinearityFilter,
     ICBehaviorClusterFilter,
@@ -44,7 +46,7 @@ SKIPPED_NOTE = "skipped: no features left"
 
 
 class FeatureFunnel:
-    """Fit the seven feature filters in order on Train only, then transform any segment.
+    """Fit the eight feature filters in order on Train only, then transform any segment.
 
     ``fit`` reads only ``split.train`` (X, y, labels_aux, index) plus
     ``dataset.task_type`` / ``dataset.feature_names`` / ``dataset.report`` metadata; the

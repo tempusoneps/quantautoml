@@ -54,7 +54,7 @@ Có **3 file** giúp bạn tra cứu và kiểm toán các đặc trưng (featur
 2. **`bundle/features_schema.json` (Hợp đồng đầu vào & thống kê chuẩn hóa):**
    Lưu cả `input_features` (toàn bộ 824 cột thô đầu vào), `model_features` (các cột sau `preprocessor.onnx`), cùng vector `train_mean` và `train_std` được tính thuần túy trên tập `Train` để kiểm tra cảnh báo trôi phân phối (`DistributionShiftWarning` khi $|z| > 3.0$).
 3. **`funnel_report.json` (Giải thích vì sao từng đặc trưng được giữ hoặc bị loại):**
-   Ghi lại toàn bộ 7 bước lọc (`f1_triage` $\to$ `f2_variance` $\to$ `f3_ic_stability` $\to$ `f4_collinearity` $\to$ `f5_clustering` $\to$ `f6_regime_synergy` $\to$ `f8_jmi`). Với mỗi cột bị loại trong trường `"dropped"`, file ghi rõ lý do định lượng (ví dụ: `icir |0.154| <= icir_min 0.3`, `dcor=0.9850 > 0.85 with kept 'vortex_diff'`, hoặc `cluster 11: represented by 'close_vs_session_range'`).
+   Ghi lại toàn bộ 8 bước lọc (`f1_triage` $\to$ `f2a_variance` $\to$ `f2b_stationarity` $\to$ `f3_ic_stability` $\to$ `f4_collinearity` $\to$ `f5_clustering` $\to$ `f6_regime_synergy` $\to$ `f8_jmi`). Với mỗi cột bị loại trong trường `"dropped"`, file ghi rõ lý do định lượng (ví dụ: `non-stationary: lag1_autocorr=0.99994 > 0.995 and temporal_drift=2.270 > 1.5`, `icir |0.154| <= icir_min 0.3`, `dcor=0.9850 > 0.85 with kept 'vortex_diff'`, hoặc `cluster 11: represented by 'close_vs_session_range'`).
 
 ---
 
