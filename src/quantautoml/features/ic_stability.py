@@ -6,13 +6,23 @@ from typing import ClassVar
 
 import numpy as np
 from numpy.typing import NDArray
+from scipy.stats import ttest_1samp
 
 from quantautoml.common.config import FeaturesConfig
 from quantautoml.common.exceptions import InvalidDataError
 from quantautoml.common.types import FilterReport
 from quantautoml.features.base import BaseFeatureFilter, FitContext
 from quantautoml.metrics.fdr import apply_fdr_correction
-from quantautoml.metrics.ic import calc_icir, calc_rank_ic, calc_rolling_ic_matrix
+from quantautoml.metrics.ic import calc_icir, calc_rolling_ic_matrix
+
+
+def _rolling_ic_pvalue(series: NDArray[np.float64]) -> float:
+    """Two-sided 1-sample t-test p-value of non-overlapping rolling Rank ICs vs 0."""
+    valid = series[~np.isnan(series)]
+    if valid.size < 2 or np.ptp(valid) == 0.0 or float(np.std(valid, ddof=1)) <= 1e-12:
+        return 1.0
+    p = float(ttest_1samp(valid, 0.0).pvalue)
+    return 1.0 if np.isnan(p) else p
 
 
 class ICStabilityFilter(BaseFeatureFilter):
@@ -78,6 +88,8 @@ class ICStabilityFilter(BaseFeatureFilter):
 
         icir = np.zeros((len(horizons), p), dtype=np.float64)
         mean_ic = np.zeros((len(horizons), p), dtype=np.float64)
+        t = horizons.index(cfg.target_horizon)
+        p_vals = np.ones(p, dtype=np.float64)
         for k, h in enumerate(horizons):
             roll = calc_rolling_ic_matrix(X, labels[h], cfg.rolling_window)
             for j in range(p):
@@ -85,19 +97,17 @@ class ICStabilityFilter(BaseFeatureFilter):
                 valid = series[~np.isnan(series)]
                 mean_ic[k, j] = float(valid.mean()) if valid.size else 0.0
                 icir[k, j] = calc_icir(series)
+                if k == t:
+                    p_vals[j] = _rolling_ic_pvalue(series)
 
-        target = labels[cfg.target_horizon]
-        p_vals = np.array(
-            [calc_rank_ic(X[:, j], target)[1] for j in range(p)], dtype=np.float64
-        )
         fdr_ok = apply_fdr_correction(p_vals, cfg.fdr_alpha)
 
-        t = horizons.index(cfg.target_horizon)
         abs_icir = np.abs(icir)
         signs = np.sign(mean_ic)
         icir_ok = abs_icir[t] > cfg.icir_min
         sign_ok = ~((signs > 0).any(axis=0) & (signs < 0).any(axis=0))
-        mono_ok = np.all(abs_icir[:-1] >= abs_icir[1:] - cfg.monotonic_tolerance, axis=0)
+        # Check monotonic decay from target_horizon onward (noisy h < target_horizon is allowed)
+        mono_ok = np.all(abs_icir[t:-1] >= abs_icir[t + 1 :] - cfg.monotonic_tolerance, axis=0)
 
         dropped: dict[str, str] = {}
         keep: list[int] = []

@@ -188,17 +188,63 @@ def test_short_train_raises() -> None:
 
 
 def test_aux_nan_tail_masked_pairwise() -> None:
+    from scipy.stats import ttest_1samp
+
     nxt, aux = _market(seed=10)
     sig = (0.3 * nxt + np.random.default_rng(11).normal(size=N)).astype(np.float32)
     f = _fit({"sig": sig.astype(np.float64)}, aux)
     lab = aux[COLS[1]]
     assert np.isnan(lab[-1])
-    expected_p = calc_rank_ic(sig[:-1], lab[:-1])[1]
+    roll1 = calc_rolling_ic(sig, lab, 63)
+    valid1 = roll1[~np.isnan(roll1)]
+    expected_p = float(ttest_1samp(valid1, 0.0).pvalue)
     assert f.p_values_["sig"] == pytest.approx(expected_p, rel=1e-9)
     lab21 = aux[COLS[21]]
     expected = calc_icir(calc_rolling_ic(sig, lab21, 63))
     assert np.isfinite(f.icir_by_horizon_["sig"][21])
     assert f.icir_by_horizon_["sig"][21] == pytest.approx(expected, rel=1e-9)
+
+
+def test_hump_at_target_horizon_kept_when_decaying_after_target() -> None:
+    """Audit #3: When target_horizon=5, noisy h=1 < peak h=5 > h=10 > h=21 MUST be kept."""
+    rng = np.random.default_rng(21)
+    aux = {c: rng.normal(size=N).astype(np.float32) for c in COLS.values()}
+    a1, a5, a10, a21 = (aux[COLS[h]].astype(np.float64) for h in HORIZONS)
+    # Weak at h=1 (microstructure noise), peaks at h=5 (target), decays at h=10, h=21
+    hump = 0.15 * a1 + 0.8 * a5 + 0.4 * a10 + 0.2 * a21 + rng.normal(size=N)
+    cfg = FeaturesConfig(ic_horizons=dict(COLS), target_horizon=5)
+    f = _fit({"hump": hump}, aux, cfg)
+    assert f.output_names_ == ("hump",)
+    assert f.icir_by_horizon_["hump"][1] < f.icir_by_horizon_["hump"][5]
+
+
+def test_rising_after_target_horizon_dropped() -> None:
+    """Audit #3: Rising |ICIR| AFTER target_horizon=5 (h=5 < h=10) must still be dropped."""
+    rng = np.random.default_rng(22)
+    aux = {c: rng.normal(size=N).astype(np.float32) for c in COLS.values()}
+    a1, a5, a10, a21 = (aux[COLS[h]].astype(np.float64) for h in HORIZONS)
+    rising = 0.2 * a1 + 0.4 * a5 + 1.0 * a10 + 0.2 * a21 + rng.normal(size=N)
+    cfg = FeaturesConfig(ic_horizons=dict(COLS), target_horizon=5)
+    f = _fit({"rising": rising}, aux, cfg)
+    assert f.output_names_ == ()
+    assert f.report_ is not None and "monotonic" in f.report_.dropped["rising"]
+
+
+def test_fdr_rolling_ttest_controls_false_positives_on_overlapping_returns() -> None:
+    """Audit #3: Autocorrelated noise vs overlapping fwd_ret_10 must not blow up BH-FDR."""
+    _, aux = _market(seed=23)
+    rng = np.random.default_rng(24)
+    # Generate 200 AR(1) autocorrelated pure-noise features (independent of market returns)
+    n_cols = 200
+    eps = rng.normal(size=(N, n_cols))
+    ar = np.zeros_like(eps)
+    for t in range(1, N):
+        ar[t] = 0.9 * ar[t - 1] + eps[t]
+    cols = {f"ar_{j}": ar[:, j] for j in range(n_cols)}
+    cfg = FeaturesConfig(ic_horizons={10: "fwd_ret_10"}, target_horizon=10, icir_min=0.0)
+    f = _fit(cols, {"fwd_ret_10": aux["fwd_ret_10"]}, cfg)
+    # Under H0 with overlapping returns, rolling-IC t-test keeps false discovery rate <= 5%
+    assert len(f.output_names_) / n_cols <= 0.05
 
 
 def test_transform_selects_columns_without_reading_aux() -> None:
