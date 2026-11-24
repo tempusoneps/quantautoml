@@ -51,10 +51,38 @@ def test_default_generated_config_loads_full_pipeline_sections(tmp_path: Path) -
     }
     assert cfg.features.target_horizon == 5
     assert cfg.features.price_col == "Close"
+    assert cfg.features.min_unique_ratio == 0.0
+    assert cfg.features.max_top_freq_ratio == 0.995
+    assert cfg.features.max_peak_var_ratio is None
     assert cfg.models is not None
     assert cfg.ensemble is not None
+    assert cfg.ensemble.bootstrap_block_size == 20
     assert cfg.packaging is not None
     assert cfg.backtest is not None
+    assert cfg.backtest.execution_price == "close"
+    assert cfg.backtest.open_col == "Open"
+
+
+def test_generated_config_with_date_range_args(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    gen = _load_generate_config()
+    out_file = tmp_path / "dated.toml"
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "generate_config.py",
+            "--output",
+            str(out_file),
+            "--date-from",
+            "2020-01-01 00:00:00",
+            "--date-to",
+            "2026-12-31 15:00:00",
+            "--force",
+        ],
+    )
+    gen.main()
+    cfg = load_config(out_file)
+    assert cfg.data.date_from == "2020-01-01 00:00:00"
+    assert cfg.data.date_to == "2026-12-31 15:00:00"
 
 
 def test_generated_config_ingests_labels_with_non_numeric_sibling_columns(

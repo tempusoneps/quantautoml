@@ -1,16 +1,16 @@
 # Graph Report - quantautoml  (2026-11-24)
 
 ## Corpus Check
-- 268 files · ~865,281 words
+- 268 files · ~865,448 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3453 nodes · 7731 edges · 214 communities (201 shown, 13 thin omitted)
+- 3454 nodes · 7736 edges · 214 communities (202 shown, 12 thin omitted)
 - Extraction: 80% EXTRACTED · 20% INFERRED · 0% AMBIGUOUS · INFERRED: 1534 edges (avg confidence: 0.67)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `550e844a`
+- Built from commit: `9893baa8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -243,12 +243,12 @@
   CLAUDE.md → docs/plan/ARCHITECTURE.md
 - `FeaturesConfig` --uses--> `Pipeline: config -> ingestion -> task inference -> split -> artifacts on disk.`  [INFERRED]
   src/quantautoml/common/config.py → tests/unit/test_pipeline.py
-- `ModelsConfig` --calls--> `test_invalid_diversity_threshold_rejected()`  [INFERRED]
-  src/quantautoml/common/config.py → tests/unit/test_models_config.py
-- `ModelsConfig` --calls--> `test_invalid_enabled_models_rejected()`  [INFERRED]
-  src/quantautoml/common/config.py → tests/unit/test_models_config.py
-- `ModelsConfig` --calls--> `test_invalid_trials_rejected()`  [INFERRED]
-  src/quantautoml/common/config.py → tests/unit/test_models_config.py
+- `PipelineConfig` --uses--> `Shared pytest fixtures for the quantautoml test-suite.`  [INFERRED]
+  src/quantautoml/common/config.py → tests/conftest.py
+- `PipelineConfig` --uses--> `Build (features, labels) frames with forward-looking labels.      Labels: ``y_di`  [INFERRED]
+  src/quantautoml/common/config.py → tests/conftest.py
+- `PipelineConfig` --uses--> `Write frames to disk and return a PipelineConfig pointing at them.`  [INFERRED]
+  src/quantautoml/common/config.py → tests/conftest.py
 
 ## Import Cycles
 - None detected.
@@ -260,47 +260,47 @@
 - **SLSQP, bootstrap shrinkage and temperature calibration flow** — s05_slsqp_optimizer, s05_bootstrap_shrinkage, s05_temperature_scaling, s05_rank_pearson_objective [EXTRACTED 0.95]
 - **Friction-aware OOS acceptance** — s07_backtest_runner, s07_friction_cost_model, s07_hysteresis_buffer, s07_oos_acceptance_gate [EXTRACTED 0.95]
 
-## Communities (214 total, 13 thin omitted)
+## Communities (214 total, 12 thin omitted)
 
 ### Community 0 - "InvalidDataError"
 Cohesion: 0.21
 Nodes (27): verify_split(), int32, NDArray, Yield (train_indices, test_indices) for each expanding fold.          Both index, make_dataset(), ndarray, test_gap_between_every_adjacent_segment_equals_horizon(), test_horizon_too_large_for_oof_blocks_is_rejected() (+19 more)
 
 ### Community 1 - "FitContext"
-Cohesion: 0.22
-Nodes (18): PrecisionValidationError, Python vs ONNX outputs differ by >= the numerical precision tolerance (RULE-06)., float32, NDArray, Numerical Precision Contract (RULE-06): max|y_py - y_onnx| < tol on float32 outp, Return ``max|y_py - y_onnx|``; raise ``PrecisionValidationError`` unless it is `, validate_numerical_precision(), _f32() (+10 more)
+Cohesion: 0.11
+Nodes (26): ArgumentParser, Exception, build_config_content(), detect_file_info(), main(), Any, Path, _build_parser() (+18 more)
 
 ### Community 2 - "types.py"
-Cohesion: 0.17
-Nodes (37): FeaturesConfig, FeatureSelectionError, InvalidDataError, Feature funnel cannot be fit or applied (e.g. unfitted filter, empty result)., Input data or configuration violates a pipeline data contract., FitContext, F5: IC-behavior hierarchical clustering with a Max-MI representative per cluster, Pairwise ``d_ij = 1 - |corr(IC_i, IC_j)|`` over rolling-IC columns ``(W, p)``. (+29 more)
+Cohesion: 0.12
+Nodes (54): ABC, BaseFeatureFilter, FeaturesConfig, FeatureSelectionError, Feature funnel cannot be fit or applied (e.g. unfitted filter, empty result)., FilterReport, BaseFeatureFilter, FitContext (+46 more)
 
 ### Community 3 - ".fit"
-Cohesion: 0.15
-Nodes (31): _fit(), int32, Self, Set `output_names_` and `report_`., MonkeyPatch, small_funnel(), test_every_stage_fits_on_train_rows_only(), test_noise_in_val_oos_cal_does_not_change_selection() (+23 more)
+Cohesion: 0.16
+Nodes (32): _fit(), int32, Self, Set `output_names_` and `report_`., _cfg(), int32, test_label_shape_mismatch_raises(), test_missing_target_label_raises_naming_it() (+24 more)
 
 ### Community 4 - "Core Hard Gates RULE-01..10"
 Cohesion: 0.06
 Nodes (56): AGENTS.md Agent Guide, Agent TDD Workflow & Session Onboarding, CLAUDE.md Agent Guide, Six-Layer Unidirectional Architecture, Senior Quant Developer Persona, RULE-01 Zero Look-Ahead Leakage, RULE-02 Rank Metric Consistency, RULE-03 No Isotonic; Temperature Scaling (+48 more)
 
 ### Community 5 - "calc_rank_ic"
-Cohesion: 0.15
-Nodes (27): calc_rank_ic(), calc_rolling_ic(), calc_rolling_ic_matrix(), float32, float64, int32, NDArray, Return (Spearman rho, p-value); degenerate inputs yield (0.0, 1.0).      Pairs w (+19 more)
+Cohesion: 0.16
+Nodes (26): calc_rank_ic(), calc_rolling_ic(), calc_rolling_ic_matrix(), float32, float64, int32, NDArray, Return (Spearman rho, p-value); degenerate inputs yield (0.0, 1.0).      Pairs w (+18 more)
 
 ### Community 6 - "make_frames"
-Cohesion: 0.06
-Nodes (82): ArgumentParser, build_config_content(), detect_file_info(), main(), Any, Path, _build_parser(), _format_duration() (+74 more)
+Cohesion: 0.10
+Nodes (61): build_config(), make_frames(), DataFrame, Shared pytest fixtures for the quantautoml test-suite., Build (features, labels) frames with forward-looking labels.      Labels: ``y_di, Write frames to disk and return a PipelineConfig pointing at them., _allow_entry_frames(), _load() (+53 more)
 
 ### Community 7 - "BaseGBDCandidate"
-Cohesion: 0.10
-Nodes (24): create_candidate(), Any, float32, int32, NDArray, Self, Quantize LightGBM tree thresholds and leaf values to float32 in-place., Factory creating a unified GBDT candidate wrapper. (+16 more)
+Cohesion: 0.09
+Nodes (30): create_candidate(), LightGBMCandidate, Any, float32, int32, NDArray, Self, Quantize LightGBM tree thresholds and leaf values to float32 in-place. (+22 more)
 
 ### Community 8 - "load_config"
-Cohesion: 0.10
-Nodes (44): load_config(), Path, Path, write_toml(), Path, d = 1 - |corr| <= 1 always, so a cut at 1.0 would merge every feature., test_cluster_distance_open_unit_interval(), test_data_config_date_range_validation() (+36 more)
+Cohesion: 0.09
+Nodes (47): load_config(), PackagingConfig, Path, Path, write_toml(), Path, d = 1 - |corr| <= 1 always, so a cut at 1.0 would merge every feature., test_cluster_distance_open_unit_interval() (+39 more)
 
 ### Community 9 - "test_regime_synergy.py"
 Cohesion: 0.15
-Nodes (37): _cfg(), _ctx(), _fit(), _noise(), float32, float64, int32, int8 (+29 more)
+Nodes (38): label_regimes(), int8, _cfg(), _ctx(), _fit(), _noise(), float32, float64 (+30 more)
 
 ### Community 10 - "7-Stage Feature Funnel (F1-F8)"
 Cohesion: 0.06
@@ -316,27 +316,27 @@ Nodes (29): _cfg(), _ctx(), _fit(), _label(), _loading(), _noise(), float32, flo
 
 ### Community 13 - "test_collinearity.py"
 Cohesion: 0.11
-Nodes (35): fast_dcor(), FastNonlinearCollinearityFilter, float32, float64, int32, NDArray, F4: fast nonlinear collinearity filter based on distance correlation (dCor, AVL), _standardize() (+27 more)
+Nodes (29): fast_dcor(), FastNonlinearCollinearityFilter, float32, float64, int32, NDArray, _standardize(), _f32() (+21 more)
 
 ### Community 14 - "test_jmi.py"
 Cohesion: 0.17
-Nodes (13): fold_subwindow_ics(), ModelTournament, float32, int32, NDArray, Executes a fair budget tournament between GBDT models on Walk-Forward folds., Run tournament across enabled models on X and y.          X and y must belong st, Compute non-overlapping sub-window Rank ICs within a fold test block.      Provi (+5 more)
+Nodes (13): EnsembleWeightsResult, BaseModel, Result contract of the ensemble weight optimization and hurdle evaluation., Convex ensemble optimization and probability calibration., Smooth SLSQP Convex Optimization on Rank-Transformed Data (C2 Differentiable Obj, SLSQP convex weight optimizer with C2 differentiable objective.      Solves for, SmoothSLSQPOptimizer, Unit tests for SmoothSLSQPOptimizer (C2 Objective). (+5 more)
 
 ### Community 15 - "test_variance.py"
-Cohesion: 0.11
-Nodes (37): float32, NDArray, Path, Run ``preprocessor.onnx`` (helper for tests and the precision validator)., run_preprocessor_onnx(), Path, test_onnx_matches_funnel_transform_clean(), test_onnx_matches_funnel_transform_with_inf_nan() (+29 more)
+Cohesion: 0.20
+Nodes (25): _cfg(), _ctx(), _fit(), _normal(), float32, int32, NDArray, test_all_nan_column_dropped_no_warning() (+17 more)
 
 ### Community 16 - "infer_task_type"
-Cohesion: 0.18
-Nodes (18): generic, infer_task_type(), NDArray, Infer the task. Missing labels (NaN / None) are unlabeled rows: they are     ign, test_binary_minus_one_one_is_remapped_to_zero_one(), test_binary_string_labels(), test_binary_zero_one_float_labels(), test_empty_labels_are_rejected() (+10 more)
+Cohesion: 0.11
+Nodes (30): generic, InvalidDataError, Input data or configuration violates a pipeline data contract., infer_task_type(), NDArray, Infer the learning task (binary / multiclass / unsupervised) from the label vect, Infer the task. Missing labels (NaN / None) are unlabeled rows: they are     ign, TaskInference (+22 more)
 
 ### Community 17 - "test_ic_stability.py"
 Cohesion: 0.16
 Nodes (28): _cfg(), _ctx(), _fit(), _market(), float32, float64, int32, MonkeyPatch (+20 more)
 
 ### Community 18 - "ModelsConfig"
-Cohesion: 0.18
-Nodes (17): ModelDecisionEngine, float32, int32, NDArray, Evaluates tournament candidates against 3 hurdle ensemble conditions (RULE-05)., Evaluate whether to form an Ensemble Pool (K <= 3) or fallback to Single Best Mo, create_mock_tournament_result(), Ties between ensemble and single best must NOT count as outperformance. (+9 more)
+Cohesion: 0.07
+Nodes (61): BaseModel, ModelsConfig, Quantitative metrics shared across pipeline layers., CatBoostCandidate, CatBoost candidate wrapper., DecisionReport, DecisionType, ModelDecisionEngine (+53 more)
 
 ### Community 19 - "Temperature Scaling (RULE-03, rank invariant)"
 Cohesion: 0.17
@@ -347,32 +347,32 @@ Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Part A - Structural extraction for code files (+16 more)
 
 ### Community 21 - "EnsembleConfig"
-Cohesion: 0.08
-Nodes (34): EnsembleConfig, BootstrapShrinkageEngine, EnsembleWeightsResult, BaseModel, Bootstrap Shrinkage Engine and Hurdle Fallback Gate (RULE-05)., Result contract of the ensemble weight optimization and hurdle evaluation., Bootstrap weight distribution estimator with shrinkage and hurdle guard rail., Convex ensemble optimization and probability calibration. (+26 more)
+Cohesion: 0.14
+Nodes (20): EnsembleConfig, BootstrapShrinkageEngine, Bootstrap weight distribution estimator with shrinkage and hurdle guard rail., RULE-01: Mutating split.val or split.oos MUST NOT affect ensemble weights or cal, test_zero_lookahead_leakage_val_and_oos_independence(), Unit tests for BootstrapShrinkageEngine and Hurdle Fallback (RULE-05)., Audit #7: Moving Block Bootstrap must sample contiguous time-series blocks., test_block_bootstrap_preserves_contiguous_blocks() (+12 more)
 
 ### Community 22 - "TemperatureCalibrator"
-Cohesion: 0.10
-Nodes (25): Enum, Core enums, data containers and report dataclasses for Phase 1., TaskType, Infer the learning task (binary / multiclass / unsupervised) from the label vect, TaskInference, CalibrationResult, BaseModel, float32 (+17 more)
+Cohesion: 0.15
+Nodes (12): Temperature Scaling Probability Calibration with Strict Rank Invariance (RULE-03, Probability calibration via Temperature Scaling.      Guarantees 100% preservati, TemperatureCalibrator, Metrics for evaluating probability calibration error (ECE)., ndarray, Python reference: spec -> models -> weights -> temperature. Returns calibrated p, Unit tests for TemperatureCalibrator and strict Rank Invariance (RULE-03)., RULE-03: Temperature Scaling must preserve 100% of Rank IC with 0 ties created. (+4 more)
 
 ### Community 23 - "exceptions.py"
-Cohesion: 0.12
-Nodes (33): bundle(), Friction + Hysteresis behave as RULE-09 requires on a real bundle (blind OOS run, Slow signal + noise: the percentile rank keeps wobbling around the entry boundar, _run(), test_buffer_lowers_turnover(), test_friction_lowers_sharpe(), test_higher_friction_never_improves_net_sharpe(), _wobbly_oos() (+25 more)
+Cohesion: 0.06
+Nodes (71): PrecisionValidationError, Python vs ONNX outputs differ by >= the numerical precision tolerance (RULE-06)., float32, NDArray, Numerical Precision Contract (RULE-06): max|y_py - y_onnx| < tol on float32 outp, Return ``max|y_py - y_onnx|``; raise ``PrecisionValidationError`` unless it is `, validate_numerical_precision(), bundle() (+63 more)
 
 ### Community 25 - "Detailed Task Breakdown"
 Cohesion: 0.10
 Nodes (19): Detailed Task Breakdown, Execution Order Overview, Final Verification Checklist, Global Constraints, Implementation Plan: Quant AutoML Pipeline, Quyết định thiết kế (cần bạn xác nhận), Review Focus, [x] Task 10: F6 — Regime-Aware MI & Synergy (+11 more)
 
 ### Community 26 - "create_candidate"
-Cohesion: 0.14
-Nodes (19): Exception, CalibrationError, EnsembleError, OptimizationConvergenceError, Exception, QuantAutoMLError, Custom exceptions shared across the quantautoml pipeline., Tournament evaluation or candidate selection failed. (+11 more)
+Cohesion: 0.21
+Nodes (11): CalibrationError, EnsembleError, OptimizationConvergenceError, Base class for ensemble optimization and probability calibration failures., SLSQP convex optimization failed to converge to a feasible solution., Probability calibration failed or violated rank-invariance., CalibrationResult, BaseModel (+3 more)
 
 ### Community 27 - "float32"
 Cohesion: 0.21
 Nodes (26): _cfg(), _ctx(), _fit(), _noise(), float32, float64, int32, MonkeyPatch (+18 more)
 
 ### Community 28 - "TaskType"
-Cohesion: 0.13
-Nodes (26): A candidate model that has been fine-tuned and refitted on the full training set, TunedCandidate, _dump_json(), _extract_ohlcv_df(), _fit_oof_candidates(), _get_candidate_probs(), _get_candidate_scores(), _identity_spec() (+18 more)
+Cohesion: 0.09
+Nodes (42): PreprocessorSpec, Composed description of ``FeatureFunnel.transform`` for ONNX export.      Semant, TaskType, A candidate model that has been fine-tuned and refitted on the full training set, TunedCandidate, BundleManifest, ONNXBundleExporter, BaseModel (+34 more)
 
 ### Community 29 - "calc_ece"
 Cohesion: 0.67
@@ -404,7 +404,7 @@ Nodes (9): 1.1. Các Nhánh Chính Của Dự Án (Core Branches), 1.2. Nhánh D
 
 ### Community 36 - "config.py"
 Cohesion: 0.26
-Nodes (8): Walk-forward GBDT tournament with uniform budget and random sampling., Deep hyperparameter optimization using Optuna Multivariate TPE and Hyperband pru, ExpandingWalkForwardSplitter, Walk-forward time-series validation with expanding window and embargo., Expanding-window walk-forward splitter with embargo for temporal data.      The, test_walk_forward_splitter_splits(), test_walk_forward_splitter_too_few_samples(), test_walk_forward_splitter_validation()
+Nodes (12): _daily_compounded_returns(), _deflated_sharpe_ratio(), _max_drawdown(), bool_, datetime64, float64, NDArray, OOS acceptance gates (RULE-02 rank metrics, RULE-09 Net Sharpe after friction). (+4 more)
 
 ### Community 37 - "graphify reference: extra exports and benchmark"
 Cohesion: 0.22
@@ -415,8 +415,8 @@ Cohesion: 0.22
 Nodes (8): 1. Vai Trò & Tôn Chỉ Kỹ Thuật (Persona & Core Philosophy), 2.1. Giao Thức Khởi Động Phiên Làm Việc (Session Onboarding & State Discovery Protocol), 2.2. Giao Thức Quản Lý Vòng Đời Trạng Thái (State Lifecycle Management), 2.3. Các bước bắt buộc khi thực hiện task:, 2. Quy Trình Làm Việc Tiêu Chuẩn Cho Agent (Workflow), 3. Nguyên Tắc An Toàn Định Lượng (Quant Safety Directives), 4. Hướng Dẫn Debug & Xử Lý Sự Cố (Root-Cause Debugging), AI Agent Guidelines — Quant AutoML Pipeline
 
 ### Community 39 - "Quantitative metrics shared across pipeline layers."
-Cohesion: 0.19
-Nodes (18): BaseModel, Quantitative metrics shared across pipeline layers., DecisionReport, DecisionType, BaseModel, Decision engine evaluating Single Model vs. Ensemble Pool under 3 hard condition, Evaluation report containing the decision and metrics for all 3 gates., Models package: GBDT Trio tournament, decision engine, and deep tuning. (+10 more)
+Cohesion: 0.29
+Nodes (7): float32, int32, NDArray, Self, Apply learned temperature scaling to input probabilities.          Parameters, Verify that temperature calibration strictly preserved 100% of ranking order., Fit optimal temperature scalar T > 0 on Cal-B (chronologically after Ensemble).
 
 ### Community 40 - "graphify reference: query, path, explain"
 Cohesion: 0.33
@@ -431,8 +431,8 @@ Cohesion: 0.05
 Nodes (51): BalanceParser, canonical_controller(), check_css_references(), check_document_completeness(), check_motion(), check_scripts(), check_svgs(), check_text_fit() (+43 more)
 
 ### Community 43 - ".optimize"
-Cohesion: 0.19
-Nodes (12): calc_ece(), float32, int32, NDArray, Metrics for evaluating probability calibration error (ECE)., Calculate the Expected Calibration Error (ECE) for binary or multiclass probabil, Unit tests for Expected Calibration Error (ECE) metric., test_calc_ece_empty_or_invalid() (+4 more)
+Cohesion: 0.23
+Nodes (11): calc_ece(), float32, int32, NDArray, Calculate the Expected Calibration Error (ECE) for binary or multiclass probabil, Unit tests for Expected Calibration Error (ECE) metric., test_calc_ece_empty_or_invalid(), test_calc_ece_multiclass_2d() (+3 more)
 
 ### Community 44 - "graphify reference: add a URL and watch a folder"
 Cohesion: 0.50
@@ -459,7 +459,7 @@ Cohesion: 0.50
 Nodes (3): In-Scope (Must Have), Ràng buộc liên quan, Step 06 — Scope: ONNX Model Bundle Packaging
 
 ### Community 50 - "Self"
-Cohesion: 0.18
+Cohesion: 0.20
 Nodes (8): _css_blocks(), Make HTML comments valid XML comments; CDATA is copied unchanged.      HTML allo, Yield whole balanced rules without flattening nested conditional blocks., xml_safe_comments(), parse_iso_bound(), Self, Parse an ISO-8601 date or datetime string into a UTC-aware ``datetime``.      A, ValueError
 
 ### Community 59 - "README.md"
@@ -471,32 +471,32 @@ Cohesion: 0.08
 Nodes (44): arc(), attached(), attribute(), bezier(), bounds(), check(), check_connectors(), chord_count() (+36 more)
 
 ### Community 64 - "DeepOptunaTuner"
-Cohesion: 0.19
-Nodes (15): ModelsConfig, DeepOptunaTuner, float32, int32, NDArray, Deep Bayesian hyperparameter tuner using Multivariate TPE and HyperbandPruner., Run deep tuning for each model in models_to_tune.          Evaluates on walk-for, MonkeyPatch (+7 more)
+Cohesion: 0.16
+Nodes (14): DeepOptunaTuner, float32, int32, NDArray, Deep Bayesian hyperparameter tuner using Multivariate TPE and HyperbandPruner., Run deep tuning for each model in models_to_tune.          Evaluates on walk-for, MonkeyPatch, Audit #4: Intermediate values reported to HyperbandPruner must use the same (+6 more)
 
 ### Community 65 - "drawio_extract.py"
 Cohesion: 0.11
 Nodes (43): _aligned(), analyze(), classify_shape(), clean_label(), _configure_stdout_utf8(), _decompress_limited(), digest(), Edge (+35 more)
 
 ### Community 67 - "BacktestError"
-Cohesion: 0.10
-Nodes (29): Hysteresis Buffer Bands: enter on the top/bottom ``top_pct`` of the signal, exit, OOSMetrics, BaseModel, FrictionCostModel, Friction cost model (RULE-09): R_net = R_gross - Turnover * (fee + slippage)., Taker fee + slippage in basis points, charged on ``Turnover_t = 0.5 * sum|w_t -, Friction-aware blind OOS backtesting., BaseModel (+21 more)
+Cohesion: 0.11
+Nodes (28): Series, Hysteresis Buffer Bands: enter on the top/bottom ``top_pct`` of the signal, exit, OOSMetrics, BaseModel, Friction-aware blind OOS backtesting., _num(), BaseModel, DataFrame (+20 more)
 
 ### Community 68 - "Step 08-fix1 — Design: Dual-Tier Realistic Backtest (backtesting.py Integration)"
 Cohesion: 0.06
 Nodes (32): 1. Kiến Trúc Tổng Thể (Dual-Tier), 2. Data Flow Chi Tiết, 3. Source Layout, 4. Interface Contracts, 5. Non-Functional Requirements, `BacktestingPyStrategy` (`backtest/strategy.py`), `RealWorldConfig` (thêm vào `common/config.py`), `RealWorldMetrics` (Pydantic, frozen) (+24 more)
 
 ### Community 69 - "exceptions.py"
-Cohesion: 0.15
-Nodes (24): BundleFixture, ndarray, Test-only helper: build a tiny but real model bundle (same file formats as the e, Python reference: spec -> models -> weights -> temperature. Returns calibrated p, _calib(), _ensemble(), _export(), fx() (+16 more)
+Cohesion: 0.33
+Nodes (7): BacktestConfig, Unit tests for BacktestConfig., test_backtest_defaults_match_spec(), test_exit_pct_lt_top_pct_rejected(), test_extra_field_forbidden(), test_negative_fee_rejected(), test_pct_must_be_below_half()
 
 ### Community 70 - "FeatureFunnel"
 Cohesion: 0.17
 Nodes (28): FeatureFunnel, Fit the seven feature filters in order on Train only, then transform any segment, _cfg(), _dataset(), fitted(), _fwd(), float32, float64 (+20 more)
 
 ### Community 71 - "contingency_mi"
-Cohesion: 0.10
-Nodes (33): FilterReport, BaseFeatureFilter, ABC, Base contract for every feature filter (fit on Train only, transform anywhere)., Template-method base: validation lives here, logic in `_fit`/`_transform`., contingency_mi(), float32, intp (+25 more)
+Cohesion: 0.12
+Nodes (19): contingency_mi(), float32, intp, NDArray, quantile_bin_codes(), Private helpers shared by F6 and F8: quantile bin codes and contingency-table MI, Per-column ``n_bins``-quantile bin codes and the code range of each column., Plug-in MI (nats) of codes ``a`` in ``[0, na)`` vs class codes ``yc`` in ``[0, n (+11 more)
 
 ### Community 72 - "Onboarding — generate your skin from a design source"
 Cohesion: 0.07
@@ -515,20 +515,24 @@ Cohesion: 0.17
 Nodes (27): analyze(), clean_label(), _configure_stdout_utf8(), digest(), Edge, _escape_inline(), _escape_markdown(), _escape_table() (+19 more)
 
 ### Community 76 - "evaluate_oos_performance"
-Cohesion: 0.12
-Nodes (37): _daily_compounded_returns(), _deflated_sharpe_ratio(), evaluate_oos_performance(), _max_drawdown(), bool_, datetime64, float32, float64 (+29 more)
+Cohesion: 0.18
+Nodes (25): evaluate_oos_performance(), float32, int32, Compute OOS metrics and the acceptance gates (all strict inequalities).      Dow, _good(), evaluate_oos_performance: RULE-09 net-of-friction acceptance gates., Audit #8: Daily Net Sharpe compounds bars within each calendar day and scales by, Strong, consistent signal with steady positive net returns -> every gate passes. (+17 more)
 
 ### Community 77 - "DataIngestion"
-Cohesion: 0.14
-Nodes (20): IngestionReport, DataIngestion, _encode_features(), _extract_selected_label(), DataFrame, float64, NDArray, Path (+12 more)
+Cohesion: 0.11
+Nodes (22): Timestamps are non-monotonic, duplicated or cannot be aligned., TimestampAlignmentError, IngestionReport, Any, _encode_features(), _extract_selected_label(), DataFrame, float64 (+14 more)
 
 ### Community 78 - "Process"
 Cohesion: 0.07
 Nodes (28): 10. Complexity budget, 11. Anti-patterns, 12.1 What this YAML proves, 12.2 Adapting this YAML to a different process, 12. Worked example — full YAML for an extended process variant, 13. Examples, 1. Inputs — the parameter contract, 2.1 Background structure (+20 more)
 
+### Community 79 - "runner.py"
+Cohesion: 0.18
+Nodes (13): FrictionCostModel, float64, NDArray, Friction cost model (RULE-09): R_net = R_gross - Turnover * (fee + slippage)., Taker fee + slippage in basis points, charged on ``Turnover_t = 0.5 * sum|w_t -, FrictionCostModel: R_net = R_gross - Turnover * (fee + slippage), Turnover = 0.5, test_first_bar_entry_pays_cost(), test_known_net_returns() (+5 more)
+
 ### Community 80 - "FeatureSchemaContract"
-Cohesion: 0.16
-Nodes (18): Input columns/dtype do not match the features_schema.json data contract., SchemaMismatchError, _is_binary(), float32, float64, NDArray, Self, _make() (+10 more)
+Cohesion: 0.13
+Nodes (22): Input columns/dtype do not match the features_schema.json data contract., SchemaMismatchError, FeatureSchemaContract, _is_binary(), BaseModel, float32, float64, NDArray (+14 more)
 
 ### Community 81 - "Data Flow"
 Cohesion: 0.08
@@ -555,12 +559,12 @@ Cohesion: 0.10
 Nodes (19): _activation_shortcut(), _configure_stdout_utf8(), ExtractError, _finalize_degrees(), _note_has_inline_body(), _parse_note(), Exception, _quoted_or_token() (+11 more)
 
 ### Community 87 - "HysteresisBuffer"
-Cohesion: 0.16
+Cohesion: 0.15
 Nodes (18): HysteresisBuffer, float32, float64, NDArray, Percentile in [0, 1] of ``scores[t]`` within ``scores[t-w+1 : t+1]``; NaN before, State machine over percentiles: +1 long, -1 short, 0 flat (also while pct is NaN, _buf(), HysteresisBuffer: causal rolling percentile + enter/exit bands on the signal ran (+10 more)
 
 ### Community 88 - "validate_numerical_precision"
-Cohesion: 0.27
-Nodes (11): TempPathFactory, _load(), _noise_segment(), float64, NDArray, Path, _signal_case(), small_case() (+3 more)
+Cohesion: 0.18
+Nodes (18): TempPathFactory, Case, _load(), _noise_segment(), float64, MonkeyPatch, NDArray, Path (+10 more)
 
 ### Community 89 - "apply_fdr_correction"
 Cohesion: 0.17
@@ -580,15 +584,15 @@ Nodes (20): 10. Worked YAML, 1. Inputs — the parameter contract, 2.1 Backgroun
 
 ### Community 93 - "export_svg_document"
 Cohesion: 0.12
-Nodes (20): assert_export_gate(), decode_xml_references(), ensure_viewbox(), ensure_xmlns(), export_svg_document(), find_defs_ids(), main(), namespace_defs_ids() (+12 more)
+Nodes (26): assert_export_gate(), decode_xml_references(), ensure_viewbox(), ensure_xmlns(), export_svg_document(), find_defs_ids(), has_diagram_stylesheet(), leading_accessibility_end() (+18 more)
 
 ### Community 94 - "str"
 Cohesion: 0.45
 Nodes (12): datetime, _fwd(), _labels_unchanged_when_future_masked(), ndarray, Path, _run(), test_horizon_smaller_than_longest_label_is_blocked_before_splitting(), test_no_segment_label_depends_on_a_later_segment() (+4 more)
 
 ### Community 95 - "export_svg.py"
-Cohesion: 0.17
-Nodes (22): _animation_component(), _animation_declarations(), _animation_property(), body_inherited_css(), _css_paint_may_target_descendants(), _css_segments(), _decoded_css_property_text(), _diagram_css_leaf() (+14 more)
+Cohesion: 0.36
+Nodes (9): _animation_component(), _animation_declarations(), _animation_property(), _css_segments(), _diagram_css_leaf(), _has_animation_property(), namespace_inline_animations(), Remove CSS comments while preserving quoted and escaped literals. (+1 more)
 
 ### Community 96 - "digest"
 Cohesion: 0.19
@@ -599,12 +603,12 @@ Cohesion: 0.16
 Nodes (10): Diagram, _parse_class(), Consume multi-line styling: `skinparam x {` ... `}` and     `legend` / `header`, Return True when *text* is styling that the caller must skip., Store a note's text plus where it sits. A note on exactly one     participant or, Resolve a name exactly (PlantUML names are case-sensitive).          Class names, Return statement text, skipping note, legend, styling, and class bodies.      Bo, _record_note() (+2 more)
 
 ### Community 98 - "OOSBacktestRunner"
-Cohesion: 0.11
-Nodes (22): BacktestConfig, DataConfig, LabelsConfig, BaseModel, Pipeline configuration loaded from a TOML file and validated with Pydantic., SplitConfig, _Strict, bundle() (+14 more)
+Cohesion: 0.24
+Nodes (6): DataConfig, LabelsConfig, BaseModel, Pipeline configuration loaded from a TOML file and validated with Pydantic., SplitConfig, _Strict
 
 ### Community 99 - "test_zero_leakage_packaging.py"
 Cohesion: 0.23
-Nodes (22): BacktestError, Out-of-sample backtest cannot be run on the supplied data., _oos(), _other(), Path, OOSBacktestRunner: blind OOS run through the standalone predictor with friction, Audit #8: execution_price='next_open' computes returns from Open[t+1] -> Open[t+, _run() (+14 more)
+Nodes (21): bundle(), _oos(), _other(), Path, OOSBacktestRunner: blind OOS run through the standalone predictor with friction, Audit #8: execution_price='next_open' computes returns from Open[t+1] -> Open[t+, _run(), test_feature_name_order_mismatch_raises() (+13 more)
 
 ### Community 100 - "_edge_split"
 Cohesion: 0.12
@@ -619,24 +623,24 @@ Cohesion: 0.12
 Nodes (17): Constraints (don't break these), Contrast contract, Customizing the skin, Cyrillic labels, Font source, Font stack, Inversion rule (light → dark), Korean labels (+9 more)
 
 ### Community 103 - "test_packaging_bundle.py"
-Cohesion: 0.14
-Nodes (28): RealWorldConfig, Unit tests for RealWorldConfig., test_cash_zero_rejected(), test_defaults_match_spec(), test_extra_field_forbidden(), test_invalid_size_rejected(), test_negative_commission_rejected(), test_valid_size_modes_accepted() (+20 more)
+Cohesion: 0.21
+Nodes (20): _ohlcv(), _positions(), DataFrame, ndarray, Path, Unit tests for RealWorldBacktestRunner / RealWorldMetrics (Tier 2)., _run(), test_csv_export_creates_file() (+12 more)
 
 ### Community 104 - "Optional animation"
 Cohesion: 0.22
 Nodes (9): Anti-patterns, Complexity and deterministic timing, Export and verification, Interactive controls and keyboard, Modes, Optional animation, Reduced motion, color, and accessibility, Semantic primitives (+1 more)
 
 ### Community 105 - "css_escape"
-Cohesion: 0.24
-Nodes (10): css_escape(), css_id_token(), decoded_css_url_fragment(), Read one CSS identifier escape, including its optional hex terminator., Decode valid CSS escapes before comparing a local fragment with an ID., Read a whole valid CSS ID selector after '#', decoding identifier escapes., Whether the first compound names this root outside attributes/functions., Retarget whole decoded ID tokens, preserving unrelated escapes and literals. (+2 more)
+Cohesion: 0.12
+Nodes (19): body_inherited_css(), css_escape(), css_id_token(), _css_paint_may_target_descendants(), decoded_css_url_fragment(), is_chrome_selector(), Element, Exclude provably unrelated simple selectors; preserve unknown CSS cascades. (+11 more)
 
 ### Community 106 - ".predict_proba"
 Cohesion: 0.18
 Nodes (11): InferenceSession, DistributionShiftWarning, Predictor, ndarray, Path, Standalone inference engine for a quantautoml model bundle (numpy + onnxruntime, An input feature lies more than ``drift_z_threshold`` Train std-devs from its Tr, Calibrated probabilities ``[N, C]`` (binary: ``[1 - p, p]``), float32. (+3 more)
 
 ### Community 107 - "test_zero_leakage.py"
-Cohesion: 0.50
-Nodes (4): leading_accessibility_end(), merge_style_into_defs(), Keep leading title/desc and comments ahead of a newly inserted defs., Ensure one <defs> and place a <style> with fonts + diagram CSS first.      With
+Cohesion: 0.25
+Nodes (7): Anti-patterns, Complexity budget, Examples, Fishbone / Ishikawa (root-cause), Layout conventions, Math, Pre-computed reference (5-bone layout, HEAD=1200, CY=320)
 
 ### Community 108 - "Sequence"
 Cohesion: 0.13
@@ -671,8 +675,8 @@ Cohesion: 0.25
 Nodes (12): _blank_comments(), _detect_kind(), _fail(), parse_block(), _parse_participant(), _parse_sequence(), NoReturn, Record an activation change on the message timeline.          ``after_message`` (+4 more)
 
 ### Community 116 - "build_preprocessor_onnx"
-Cohesion: 0.23
-Nodes (9): BaseFeatureFilter, ICStabilityFilter, float32, float64, int32, NDArray, Two-sided 1-sample t-test p-value of non-overlapping rolling Rank ICs vs 0., Keep features with stable, significant, monotonically decaying Rank IC (Train on (+1 more)
+Cohesion: 0.33
+Nodes (6): float32, float64, int32, NDArray, Two-sided 1-sample t-test p-value of non-overlapping rolling Rank ICs vs 0., _rolling_ic_pvalue()
 
 ### Community 117 - "test_runner_tier2_integration.py"
 Cohesion: 0.22
@@ -683,8 +687,8 @@ Cohesion: 0.15
 Nodes (13): Anti-patterns, Edge cases, Import from PlantUML, Multi-block files, Step 1 — Extract the IR, Step 2 — Set the four dials, Step 3 — Pick the target type, Step 4 — Build the semantic model (+5 more)
 
 ### Community 119 - "_rewrite_start_tags"
-Cohesion: 0.17
-Nodes (13): extract_first_svg(), html_tokens(), mask_opaque_html(), normalize_rgba_presentation_attrs(), Match, Split rgba paint and combine its alpha with existing presentation opacity., Yield markup with its SVG context and any opaque text body boundaries.      HTML, Return the first top-level <svg> element, including nested <svg> icons. (+5 more)
+Cohesion: 0.22
+Nodes (10): _decoded_css_property_text(), normalize_rgba_presentation_attrs(), Match, Read opacity spellings conservatively without changing carried CSS., Split rgba paint and combine its alpha with existing presentation opacity., Transform actual start tags, preserving comments and CDATA sections., Rewrite valueless and unquoted HTML attributes as XML (`attr=""`)., _rewrite_start_tags() (+2 more)
 
 ### Community 120 - "Import from draw.io"
 Cohesion: 0.17
@@ -711,7 +715,7 @@ Cohesion: 0.17
 Nodes (11): Anti-patterns, Complexity budget, Examples, Geometry, Input contract, Layout conventions, Polar Chart, Quantitative encoding (+3 more)
 
 ### Community 126 - "Steps"
-Cohesion: 0.14
+Cohesion: 0.17
 Nodes (12): 1. Inputs, 2. Layout grammar, 3. Focal and color rules, 4. Legend, 5. Reproducibility checklist, 6. What `verify-steps.py` requires, 7. Anti-patterns, Copy block (+4 more)
 
 ### Community 127 - "System Architecture & Technical Specifications: Quant AutoML Pipeline"
@@ -719,16 +723,16 @@ Cohesion: 0.17
 Nodes (11): 1. System Overview & Core Philosophy, 2. End-to-End Pipeline Architecture Diagram, 3. Data Flow & Temporal Isolation Architecture, 4.1. Smooth SLSQP Objective ($C^2$ Differentiability), 4.2. Temperature Scaling & 100% Rank Invariance Contract (RULE-03), 4.3. Multi-Horizon Term Structure & FDR Control (RULE-08), 4.4. Friction Cost Matrix & Hysteresis Buffer (RULE-09), 4. Mathematical Formulations & Optimization Engines (+3 more)
 
 ### Community 128 - "._fit"
-Cohesion: 0.19
-Nodes (10): MissingKind, NaNInfTriage, bool_, float32, float64, int32, intp, NDArray (+2 more)
+Cohesion: 0.26
+Nodes (7): MissingKind, bool_, float32, float64, int32, intp, NDArray
 
 ### Community 129 - ".transform"
 Cohesion: 0.50
 Nodes (3): intp, NDArray, Indices (into this stage's input columns) of the columns it keeps, in output ord
 
 ### Community 130 - "._fit"
-Cohesion: 0.29
-Nodes (8): ic_behavior_distance(), ICBehaviorClusterFilter, bool_, float32, float64, int32, intp, NDArray
+Cohesion: 0.26
+Nodes (9): ic_behavior_distance(), ICBehaviorClusterFilter, bool_, float32, float64, int32, intp, NDArray (+1 more)
 
 ### Community 131 - "test_zero_leakage_models.py"
 Cohesion: 0.18
@@ -760,7 +764,7 @@ Nodes (15): BacktestingPyStrategy, Thin backtesting.py adapter: replays pre-comp
 
 ### Community 138 - "test_packaging_converters.py"
 Cohesion: 0.08
-Nodes (46): ABC, GraphProto, ModelProto, ModelError, PackagingError, Base class for model training, tournament, and tuning failures., Base class for ONNX bundle packaging failures., BaseGBDCandidate (+38 more)
+Nodes (45): GraphProto, ModelProto, ModuleType, ModelError, PackagingError, Custom exceptions shared across the quantautoml pipeline., Base class for model training, tournament, and tuning failures., Tournament evaluation or candidate selection failed. (+37 more)
 
 ### Community 139 - "Axonometric plan"
 Cohesion: 0.20
@@ -771,8 +775,8 @@ Cohesion: 0.20
 Nodes (9): Anti-patterns, Anti-patterns (variant-specific), Consultant special (2×2 scenario matrix), Examples, Layout conventions, Layout conventions, Quadrant, Style tokens (in-house) (+1 more)
 
 ### Community 141 - "RegimeSynergyFilter"
-Cohesion: 0.36
-Nodes (5): label_regimes(), float32, int32, int8, NDArray
+Cohesion: 0.43
+Nodes (3): float32, int32, NDArray
 
 ### Community 142 - "Data"
 Cohesion: 0.22
@@ -799,8 +803,8 @@ Cohesion: 0.25
 Nodes (8): Action, alert, api, key, lock, request, response, sync
 
 ### Community 148 - "Core SVG primitives"
-Cohesion: 0.06
-Nodes (27): Accessible SVG contract, Arrow labels — always mask, always with margin, Arrow markers (define all three, always), Background, Core SVG primitives, Legend — horizontal strip at the bottom, Mandatory connector rules, Node box — full pattern (+19 more)
+Cohesion: 0.25
+Nodes (8): Accessible SVG contract, Arrow labels — always mask, always with margin, Arrow markers (define all three, always), Background, Core SVG primitives, Legend — horizontal strip at the bottom, Mandatory connector rules, Node box — full pattern
 
 ### Community 149 - "Architecture"
 Cohesion: 0.25
@@ -823,8 +827,8 @@ Cohesion: 0.25
 Nodes (7): Anti-patterns, Complexity budget, Examples, Honest-data rule, Input contract, Layout conventions, Unit Grid
 
 ### Community 154 - "._fit"
-Cohesion: 0.27
-Nodes (7): MultiMetricVarianceFilter, _peak_var_ratio(), float32, float64, int32, NDArray, P90 of rolling variance / full variance per column, via cumulative sums.
+Cohesion: 0.31
+Nodes (6): _peak_var_ratio(), float32, float64, int32, NDArray, P90 of rolling variance / full variance per column, via cumulative sums.
 
 ### Community 155 - "Environment doctor"
 Cohesion: 0.29
@@ -847,16 +851,16 @@ Cohesion: 0.33
 Nodes (6): Critical rule, Grammar, Sketchy Filter (hand-drawn variant), Tuning, When not to use, When to use
 
 ### Community 161 - "test_pipeline_packaging.py"
-Cohesion: 0.26
-Nodes (8): Series, _num(), DataFrame, float64, NDArray, backtesting.py reports undefined ratios as NaN; surface them as 0.0., Inject positions -> Backtest -> extract metrics -> optional HTML / CSV export., RealWorldBacktestRunner
+Cohesion: 0.16
+Nodes (17): RealWorldConfig, bundle(), _ohlcv(), _oos(), DataFrame, Tier 2 (backtesting.py) end-to-end on a real bundle: HTML + trades.csv, gated by, Tier 2 replays the same positions: it never trades while Tier 1 is flat for the, test_tier2_produces_html_and_csv_on_real_bundle() (+9 more)
 
 ### Community 162 - "Heatmap"
-Cohesion: 0.25
+Cohesion: 0.29
 Nodes (7): Anti-patterns, Cell pattern, Declaring the values, Heatmap, Honest-data rule, Layout conventions, The fill ramp
 
 ### Community 163 - "Segment"
-Cohesion: 0.22
-Nodes (31): IndexArray, DataLeakageError, A look-ahead leakage invariant was violated (RULE-01)., Dataset, Segment, SegmentSummary, SplitMode, SplitReport (+23 more)
+Cohesion: 0.17
+Nodes (37): Enum, IndexArray, DataLeakageError, A look-ahead leakage invariant was violated (RULE-01)., Dataset, Core enums, data containers and report dataclasses for Phase 1., Segment, SegmentSummary (+29 more)
 
 ### Community 164 - "User Story Map"
 Cohesion: 0.29
@@ -879,8 +883,8 @@ Cohesion: 0.29
 Nodes (5): Edge, _has_cycle(), Node, node_ref(), Name a node unambiguously: its id, plus its label when that differs.      Two cl
 
 ### Community 169 - "CalibrationError"
-Cohesion: 0.20
-Nodes (8): Any, Exception, _segment(), test_dataset_defaults_task_type_and_classes_to_none(), test_exceptions_inherit_from_base_error(), test_ingestion_report_to_dict_is_json_serialisable(), test_segment_is_frozen(), test_split_result_optional_parts_for_oof_mode()
+Cohesion: 0.38
+Nodes (5): _segment(), test_dataset_defaults_task_type_and_classes_to_none(), test_ingestion_report_to_dict_is_json_serialisable(), test_segment_is_frozen(), test_split_result_optional_parts_for_oof_mode()
 
 ### Community 170 - "Statistical tools"
 Cohesion: 0.33
@@ -919,12 +923,12 @@ Cohesion: 0.40
 Nodes (5): Annotation Callout (italic-serif aside), Anti-patterns, Colors, Grammar, Rules
 
 ### Community 179 - "People"
-Cohesion: 0.31
-Nodes (7): calc_icir(), Spearman Rank IC, non-overlapping rolling IC (per column / matrix) and ICIR (RUL, Return mean/std (ddof=1, NaN ignored); 0.0 if std == 0, constant series, or < 2, ndarray, test_icir_degenerate_series_returns_zero(), test_icir_regular_series_unchanged(), test_icir_small_but_real_variation_not_zeroed()
+Cohesion: 0.16
+Nodes (15): Bootstrap Shrinkage Engine and Hurdle Fallback Gate (RULE-05)., calc_ic_sharpe(), calc_icir(), Spearman Rank IC, non-overlapping rolling IC (per column / matrix) and ICIR (RUL, Return mean/std (ddof=1, NaN ignored); 0.0 if std == 0, constant series, or < 2, Calculate IC Sharpe = ICIR * sqrt(annualization_factor).      Returns 0.0 if std, test_calc_ic_sharpe_basic(), test_calc_ic_sharpe_degenerate_cases() (+7 more)
 
 ### Community 180 - "PipelineConfig"
-Cohesion: 0.28
-Nodes (11): PipelineConfig, datetime64, Path, Integration test for Phase 3 models: verifying Zero Look-Ahead Leakage (RULE-01), Perturbing Train rows MUST change the outputs, so the invariance test above is m, Write copies of features/labels with perturbed rows; return a config pointing at, _rewrite_sources(), _signature() (+3 more)
+Cohesion: 0.26
+Nodes (12): PipelineConfig, cfg(), datetime64, Path, Integration test for Phase 3 models: verifying Zero Look-Ahead Leakage (RULE-01), Perturbing Train rows MUST change the outputs, so the invariance test above is m, Write copies of features/labels with perturbed rows; return a config pointing at, _rewrite_sources() (+4 more)
 
 ### Community 181 - "State Machine"
 Cohesion: 0.40
@@ -983,8 +987,8 @@ Cohesion: 0.20
 Nodes (10): 1. Yêu Cầu Hệ Thống & Cài Đặt, 2.1. Sinh cấu hình mặc định (nhãn nhị phân `is_peak_10`), 2.2. Đổi nhãn mục tiêu sang nhãn giao dịch có hướng (`allow_entry`), 2.3. Tùy chỉnh kỳ hạn (`horizon-h`, `target-horizon`) và số lượng Trials, 2.4. Sinh cấu hình cho bài toán Không giám sát (Unsupervised Mode), 2.5. Bảng tham số CLI của `scripts/generate_config.py`, 2. Sinh File Cấu Hình `config.toml` Tự Động (`scripts/generate_config.py`), 3. Chạy Toàn Bộ Pipeline (+2 more)
 
 ### Community 195 - "ic.py"
-Cohesion: 0.43
-Nodes (6): calc_ic_sharpe(), Calculate IC Sharpe = ICIR * sqrt(annualization_factor).      Returns 0.0 if std, test_calc_ic_sharpe_basic(), test_calc_ic_sharpe_degenerate_cases(), test_calc_ic_sharpe_ignores_nan(), test_calc_ic_sharpe_invalid_annualization()
+Cohesion: 0.29
+Nodes (7): Anti-patterns, Card states — the type's semantic vocabulary, Complexity budget, Examples, Kanban Board, Layout conventions, Over-limit column
 
 ### Community 196 - "Export block registry (`--registry`)"
 Cohesion: 0.29
@@ -1011,20 +1015,20 @@ Cohesion: 0.40
 Nodes (5): 1. Cây Thư Mục Tổng Thể (Repository Layout), 2. Các Tầng Kiến Trúc & Luồng Dữ Liệu (Layer Architecture), 3. Ma Trận Phân Định Trách Nhiệm Module (Responsibility Matrix), 4. Quy Tắc Ranh Giới & Phụ Thuộc (Boundaries & Coupling Rules), Repository & Codebase Structure: Quant AutoML Pipeline
 
 ### Community 202 - "4. Mathematical Formulations & Optimization Engines"
-Cohesion: 0.24
-Nodes (9): MonkeyPatch, Path, Integration test: Zero Look-Ahead Leakage for Phase 4 Ensemble & Calibration (RU, Audit #2: Temporal causality — Ensemble fits on Cal-A (60-70%), Calibration on C, Audit #1: In OOF_ASSISTED mode (N < 10000), Phase 4 MUST use true out-of-fold pr, Test full pipeline end-to-end integration with ensemble & calibration reports., test_oof_assisted_phase4_uses_true_oof_not_refitted_in_sample(), test_pipeline_with_ensemble_and_calibration() (+1 more)
+Cohesion: 0.10
+Nodes (14): _clip01(), _complexity(), ABC, Modern GBDT Trio model wrappers (LightGBM, CatBoost, XGBoost) with unified contr, Blend of ensemble size, tree structure and learning rate, each scaled to (0, 1]., MonkeyPatch, Path, Integration test: Zero Look-Ahead Leakage for Phase 4 Ensemble & Calibration (RU (+6 more)
 
 ### Community 205 - "test_types.py"
-Cohesion: 0.08
-Nodes (33): ModuleType, PackagingConfig, PreprocessorSpec, Composed description of ``FeatureFunnel.transform`` for ONNX export.      Semant, _preprocessor_spec(), Return the composed, ONNX-exportable description of ``transform``., BundleManifest, ONNXBundleExporter (+25 more)
+Cohesion: 0.20
+Nodes (14): build_preprocessor_onnx(), float32, NDArray, Path, Write an ONNX graph ``X[N, n_in] float32 -> Xp[N, len(final_idx)] float32``., Run ``preprocessor.onnx`` (helper for tests and the precision validator)., run_preprocessor_onnx(), Path (+6 more)
 
 ### Community 206 - "extract_first_svg"
-Cohesion: 0.50
-Nodes (4): Any, Trial, Sample hyperparameters using Optuna trial suggestions., _sample_params()
+Cohesion: 0.33
+Nodes (5): Anti-patterns, Complexity budget, Deployment, Examples, Layout conventions
 
 ### Community 207 - "_fwd"
-Cohesion: 0.50
-Nodes (4): Any, Trial, Fine-grained parameter suggestion for Bayesian TPE optimization., _suggest_tuning_params()
+Cohesion: 0.40
+Nodes (5): extract_first_svg(), html_tokens(), mask_opaque_html(), Yield markup with its SVG context and any opaque text body boundaries.      HTML, Return the first top-level <svg> element, including nested <svg> icons.
 
 ### Community 208 - "Terminal Window (CLI-chrome variant)"
 Cohesion: 0.25
@@ -1053,17 +1057,17 @@ Nodes (4): Component & File Responsibilities (Phase 1 Active), Design Rules & Bo
 ## Knowledge Gaps
 - **951 isolated node(s):** `quantautoml`, `generate_agents_markdown.sh script`, `generate_readme.sh script`, `graphify`, `0. First-time setup — style guide gate` (+946 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `InvalidDataError` connect `types.py` to `InvalidDataError`, `._fit`, `.fit`, `calc_rank_ic`, `make_frames`, `BaseGBDCandidate`, `test_regime_synergy.py`, `test_packaging_converters.py`, `test_clustering.py`, `test_collinearity.py`, `RegimeSynergyFilter`, `test_jmi.py`, `infer_task_type`, `test_ic_stability.py`, `ModelsConfig`, `test_variance.py`, `TemperatureCalibrator`, `._fit`, `create_candidate`, `TaskType`, `Segment`, `config.py`, `Quantitative metrics shared across pipeline layers.`, `People`, `DeepOptunaTuner`, `ic.py`, `FeatureFunnel`, `contingency_mi`, `DataIngestion`, `extract_first_svg`, `_fwd`, `apply_fdr_correction`, `str`, `build_preprocessor_onnx`?**
-  _High betweenness centrality (0.061) - this node is a cross-community bridge._
-- **Why does `evaluate_oos_performance()` connect `evaluate_oos_performance` to `OOSBacktestRunner`, `BacktestError`, `calc_rank_ic`, `Self`, `People`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `FeaturesConfig` connect `types.py` to `._fit`, `OOSBacktestRunner`, `._fit`, `Segment`, `FeatureFunnel`, `contingency_mi`, `make_frames`, `test_regime_synergy.py`, `.transform`, `test_clustering.py`, `test_collinearity.py`, `DataIngestion`, `test_variance.py`, `test_ic_stability.py`, `Self`, `build_preprocessor_onnx`, `._fit`, `float32`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **Why does `InvalidDataError` connect `infer_task_type` to `InvalidDataError`, `FitContext`, `types.py`, `.fit`, `._fit`, `calc_rank_ic`, `make_frames`, `BaseGBDCandidate`, `test_regime_synergy.py`, `test_packaging_converters.py`, `test_clustering.py`, `test_collinearity.py`, `RegimeSynergyFilter`, `test_variance.py`, `test_ic_stability.py`, `ModelsConfig`, `._fit`, `TaskType`, `Segment`, `People`, `DeepOptunaTuner`, `FeatureFunnel`, `4. Mathematical Formulations & Optimization Engines`, `DataIngestion`, `apply_fdr_correction`, `str`, `build_preprocessor_onnx`?**
+  _High betweenness centrality (0.066) - this node is a cross-community bridge._
+- **Why does `evaluate_oos_performance()` connect `evaluate_oos_performance` to `BacktestError`, `config.py`, `calc_rank_ic`, `exceptions.py`, `Self`, `People`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `run_pipeline()` connect `TaskType` to `InvalidDataError`, `FitContext`, `types.py`, `BacktestError`, `Segment`, `.fit`, `FeatureFunnel`, `DeepOptunaTuner`, `load_config`, `make_frames`, `4. Mathematical Formulations & Optimization Engines`, `DataIngestion`, `infer_task_type`, `ModelsConfig`, `PipelineConfig`, `EnsembleConfig`, `TemperatureCalibrator`, `exceptions.py`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Are the 175 inferred relationships involving `InvalidDataError` (e.g. with `DataIngestion` and `.load()`) actually correct?**
   _`InvalidDataError` has 175 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 63 inferred relationships involving `FitContext` (e.g. with `FeatureSelectionError` and `InvalidDataError`) actually correct?**
