@@ -17,8 +17,8 @@ timestamp_col = "Date"
 min_match_ratio = 0.95
 
 # Optional inclusive date range slice applied at the start of ingestion
-date_from = "2020-01-01 00:00:00"
-date_to = "2026-03-31 15:00:00"
+# date_from = "2020-01-01 00:00:00"
+# date_to = "2026-09-31 15:00:00"
 
 [labels]
 # Target label column name used for task inference and training
@@ -109,7 +109,7 @@ min_downside_ic = 0.0
 [realworld]
 # Tier 2 realistic execution via backtesting.py (set enabled = true to run)
 enabled = true
-cash = 1500.0
+cash = 10000.0
 commission = 0.00025
 margin = 1.0
 size = "auto"
