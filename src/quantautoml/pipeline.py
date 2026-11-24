@@ -34,6 +34,7 @@ from quantautoml.ensemble import (
     TemperatureCalibrator,
 )
 from quantautoml.features.funnel import FeatureFunnel
+from quantautoml.models.candidates import create_candidate
 from quantautoml.models.decision_engine import DecisionReport, ModelDecisionEngine
 from quantautoml.models.tournament import ModelTournament, TournamentResult
 from quantautoml.models.tuner import DeepOptunaTuner, TunedCandidate, TuningResult
@@ -190,29 +191,54 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
     if cfg.ensemble is not None and tuning_result is not None:
         cal_b_seg: Segment | None = None
         cal_a_seg: Segment | None = None
+        cal_a_cands: list[TunedCandidate] = tuning_result.tuned_candidates
+        cal_b_cands: list[TunedCandidate] = tuning_result.tuned_candidates
 
         if split.cal_b is not None and split.cal_a is not None:
             cal_b_seg = funnel.transform(split.cal_b) if funnel is not None else split.cal_b
             cal_a_seg = funnel.transform(split.cal_a) if funnel is not None else split.cal_a
-        elif split.oof_folds is not None and len(split.oof_folds) >= 2:
-            cal_a_idx = split.oof_folds[-2][1]
-            cal_b_idx = split.oof_folds[-1][1]
-            raw_a = Segment(
-                X=split.train.X[cal_a_idx],
-                y=None if split.train.y is None else split.train.y[cal_a_idx],
-                labels_aux={k: v[cal_a_idx] for k, v in split.train.labels_aux.items()},
-                timestamps=split.train.timestamps[cal_a_idx],
-                index=split.train.index[cal_a_idx],
+        elif (
+            split.oof_folds is not None
+            and len(split.oof_folds) >= 2
+            and split.train.y is not None
+            and dataset.task_type is not None
+        ):
+            # True out-of-fold models for Cal-A and Cal-B (RULE-01: never use refitted_model on Train).
+            tr_a, cal_a_idx = split.oof_folds[-2]
+            tr_b, cal_b_idx = split.oof_folds[-1]
+            train_transformed = funnel.transform(split.train) if funnel is not None else split.train
+            assert train_transformed.y is not None
+            seed = cfg.models.random_state if cfg.models is not None else cfg.ensemble.random_state
+            cal_a_cands = _fit_oof_candidates(
+                tuning_result.tuned_candidates,
+                train_transformed.X,
+                train_transformed.y,
+                tr_a,
+                dataset.task_type,
+                seed,
             )
-            raw_b = Segment(
-                X=split.train.X[cal_b_idx],
-                y=None if split.train.y is None else split.train.y[cal_b_idx],
-                labels_aux={k: v[cal_b_idx] for k, v in split.train.labels_aux.items()},
-                timestamps=split.train.timestamps[cal_b_idx],
-                index=split.train.index[cal_b_idx],
+            cal_b_cands = _fit_oof_candidates(
+                tuning_result.tuned_candidates,
+                train_transformed.X,
+                train_transformed.y,
+                tr_b,
+                dataset.task_type,
+                seed,
             )
-            cal_a_seg = funnel.transform(raw_a) if funnel is not None else raw_a
-            cal_b_seg = funnel.transform(raw_b) if funnel is not None else raw_b
+            cal_a_seg = Segment(
+                X=train_transformed.X[cal_a_idx],
+                y=train_transformed.y[cal_a_idx],
+                labels_aux={k: v[cal_a_idx] for k, v in train_transformed.labels_aux.items()},
+                timestamps=train_transformed.timestamps[cal_a_idx],
+                index=train_transformed.index[cal_a_idx],
+            )
+            cal_b_seg = Segment(
+                X=train_transformed.X[cal_b_idx],
+                y=train_transformed.y[cal_b_idx],
+                labels_aux={k: v[cal_b_idx] for k, v in train_transformed.labels_aux.items()},
+                timestamps=train_transformed.timestamps[cal_b_idx],
+                index=train_transformed.index[cal_b_idx],
+            )
 
         if (
             cal_b_seg is not None
@@ -224,7 +250,7 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             # 1. Collect candidate predictions on Cal-A (earlier chronological slice)
             cal_a_preds = np.column_stack([
                 _get_candidate_scores(cand, cal_a_seg.X, dataset.task_type)
-                for cand in tuning_result.tuned_candidates
+                for cand in cal_a_cands
             ])
 
             # 2. Fit Bootstrap SLSQP Ensemble on Cal-A
@@ -238,7 +264,7 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             if dataset.task_type == TaskType.MULTICLASS_CLASSIFICATION:
                 all_probs = [
                     _get_candidate_probs(cand, cal_b_seg.X, dataset.task_type)
-                    for cand in tuning_result.tuned_candidates
+                    for cand in cal_b_cands
                 ]
                 cal_b_comb = np.zeros_like(all_probs[0], dtype=np.float32)
                 for w_k, p_k in zip(weights_arr, all_probs):
@@ -246,7 +272,7 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             else:
                 cal_b_preds = np.column_stack([
                     _get_candidate_scores(cand, cal_b_seg.X, dataset.task_type)
-                    for cand in tuning_result.tuned_candidates
+                    for cand in cal_b_cands
                 ])
                 cal_b_comb = (cal_b_preds @ weights_arr).astype(np.float32)
 
@@ -400,6 +426,28 @@ def _identity_spec(feature_names: tuple[str, ...]) -> PreprocessorSpec:
         n_in=len(idx), bool_fill=(), indicator_idx=(), keep_idx=idx, final_idx=idx,
         output_names=tuple(feature_names),
     )
+
+
+def _fit_oof_candidates(
+    candidates: list[TunedCandidate],
+    X_train: np.ndarray,
+    y_train: np.ndarray,
+    tr_idx: np.ndarray,
+    task_type: TaskType,
+    random_state: int,
+) -> list[TunedCandidate]:
+    """Fit fresh clones of tuned candidates strictly on ``tr_idx`` for true OOF predictions."""
+    oof_list: list[TunedCandidate] = []
+    for cand in candidates:
+        model = create_candidate(
+            name=cand.model_name,
+            task_type=task_type,
+            params=cand.best_params,
+            random_state=random_state,
+        )
+        model.fit(X_train[tr_idx], y_train[tr_idx])
+        oof_list.append(cand.model_copy(update={"fitted_model": model}))
+    return oof_list
 
 
 def _model_classes(cand: TunedCandidate) -> list[int]:

@@ -206,3 +206,82 @@ def test_static_5way_ensemble_uses_cal_a_and_calibration_uses_cal_b(tmp_path: Pa
     # Temperature Calibration learned on Cal-B -> must respond to Cal-B mutation
     assert res1.calibration_result.temperature != res2.calibration_result.temperature
 
+
+def test_oof_assisted_phase4_uses_true_oof_not_refitted_in_sample(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Audit #1: In OOF_ASSISTED mode (N < 10000), Phase 4 MUST use true out-of-fold predictions
+    fitted on each fold's train_idx (with horizon_h purging), NEVER refitted_model.predict() on Train.
+    """
+    import polars as pl
+
+    from quantautoml.models.candidates import create_candidate
+
+    n, p = 3000, 5
+    rng = np.random.default_rng(19)
+    base_t = np.datetime64("2024-01-01T00:00:00", "us")
+    timestamps = base_t + np.arange(n).astype("timedelta64[s]")
+    f_dict: dict[str, np.ndarray] = {"timestamp": timestamps}
+    for i in range(p):
+        f_dict[f"feat_{i}"] = rng.standard_normal(n).astype(np.float32)
+    prob = 1.0 / (1.0 + np.exp(-0.8 * f_dict["feat_0"]))
+    y = rng.binomial(1, prob).astype(np.int32)
+
+    fp, lp = tmp_path / "f.parquet", tmp_path / "l.parquet"
+    pl.DataFrame(f_dict).write_parquet(fp)
+    pl.DataFrame({"timestamp": timestamps, "target": y}).write_parquet(lp)
+    cfg_file = tmp_path / "cfg.toml"
+    cfg_file.write_text(
+        f'[data]\nfeatures_path = "{fp}"\nlabels_path = "{lp}"\n'
+        '[labels]\nselected = "target"\n'
+        "[split]\nhorizon_h = 5\n"
+        '[models]\ntournament_trials = 2\ntuning_trials = 2\nn_wf_folds = 2\n'
+        'enabled_models = ["lightgbm"]\n'
+        "[ensemble]\nn_bootstrap = 10\n"
+    )
+
+    seen_ens: list[np.ndarray] = []
+    seen_cal: list[np.ndarray] = []
+    orig_ens_fit = BootstrapShrinkageEngine.fit
+    orig_cal_fit = TemperatureCalibrator.fit
+
+    def spy_ens(self, predictions, y_true, single_model_scores=None):  # type: ignore[no-untyped-def]
+        seen_ens.append(np.asarray(predictions, dtype=np.float32).copy())
+        return orig_ens_fit(self, predictions, y_true, single_model_scores)
+
+    def spy_cal(self, logits_or_probs, y_true):  # type: ignore[no-untyped-def]
+        seen_cal.append(np.asarray(logits_or_probs, dtype=np.float32).copy())
+        return orig_cal_fit(self, logits_or_probs, y_true)
+
+    monkeypatch.setattr(BootstrapShrinkageEngine, "fit", spy_ens)
+    monkeypatch.setattr(TemperatureCalibrator, "fit", spy_cal)
+
+    res = run_pipeline(cfg_file, tmp_path / "out")
+    assert res.split.mode is SplitMode.OOF_ASSISTED
+    assert res.split.oof_folds is not None
+    assert res.tuning_result is not None
+    assert len(seen_ens) == 1 and len(seen_cal) == 1
+
+    tr_a, va_a = res.split.oof_folds[-2]
+    tr_b, va_b = res.split.oof_folds[-1]
+    cand = res.tuning_result.tuned_candidates[0]
+    train_X = res.split.train.X
+    train_y = res.split.train.y
+    assert train_y is not None
+
+    # Predictions passed to Phase 4 must NOT be the leaky in-sample predictions of refitted_model
+    in_sample_a = cand.fitted_model.predict_proba(train_X[va_a])[:, 1].astype(np.float32)
+    in_sample_b = cand.fitted_model.predict_proba(train_X[va_b])[:, 1].astype(np.float32)
+    assert not np.allclose(seen_ens[0][:, 0], in_sample_a, atol=1e-4)
+    assert not np.allclose(seen_cal[0], in_sample_b, atol=1e-4)
+
+    # Instead, they must match a clean OOF model fitted strictly on tr_a / tr_b
+    oof_a = create_candidate(
+        name=cand.model_name, task_type=TaskType.BINARY_CLASSIFICATION,
+        params=cand.best_params, random_state=42,
+    )
+    oof_a.fit(train_X[tr_a], train_y[tr_a])
+    expected_a = oof_a.predict_proba(train_X[va_a])[:, 1].astype(np.float32)
+    np.testing.assert_allclose(seen_ens[0][:, 0], expected_a, atol=1e-6)
+
+

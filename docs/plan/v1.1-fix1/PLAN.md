@@ -12,7 +12,7 @@
 - [x] **Task 1 (Data Slicing):** Thêm `date_from` / `date_to` vào `DataConfig` và cắt dataset ngay đầu bước `DataIngestion` (trước mọi xử lý)
 - [x] **Task 2 (Audit #6):** Cập nhật `FeaturesConfig` và `MultiMetricVarianceFilter` (F2) sang `max_top_freq_ratio` bất biến theo $N$
 - [x] **Task 3 (Audit #2):** Đảo thứ tự nhân quả `Cal-A` (SLSQP Ensemble) → `Cal-B` (Temperature Calibration) trong `pipeline.py`
-- [ ] **Task 4 (Audit #1):** Sinh true OOF predictions cho Phase 4 trong chế độ `OOF_ASSISTED` (loại bỏ rò rỉ in-sample)
+- [x] **Task 4 (Audit #1):** Sinh true OOF predictions cho Phase 4 trong chế độ `OOF_ASSISTED` (loại bỏ rò rỉ in-sample)
 - [ ] **Task 5:** Chạy toàn bộ test suite, cập nhật `graphify` & tài liệu `docs/CONFIGURATION.md` / `docs/FEATURES.md`
 
 ---
@@ -99,7 +99,7 @@
 
 ---
 
-### [ ] Task 4: True Out-of-Fold Predictions cho Phase 4 ở chế độ `OOF_ASSISTED` (Audit #1)
+### [x] Task 4: True Out-of-Fold Predictions cho Phase 4 ở chế độ `OOF_ASSISTED` (Audit #1)
 - **Files to Touch:**
   - Modify: `src/quantautoml/pipeline.py`
   - Modify: `tests/integration/test_zero_leakage_ensemble.py`
