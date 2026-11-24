@@ -57,9 +57,12 @@ class PipelineResult:
 
 
 def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> PipelineResult:
-    cfg = load_config(config) if isinstance(config, (str, Path)) else config
+    src_config_path = Path(config) if isinstance(config, (str, Path)) else None
+    cfg = load_config(src_config_path) if src_config_path is not None else config
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
+    config_snapshot = out / "config.toml"
+    _save_config_snapshot(config_snapshot, cfg, src_config_path)
     phases: list[dict[str, object]] = []
 
     # --- Phase 01: Data Ingestion, Task Inference & Adaptive Temporal Split ---
@@ -380,7 +383,10 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
     else:
         phases.append({"phase": "06_backtest", "status": "skipped", "artifacts": {}})
 
-    _dump_json(out / "00_run_manifest.json", {"phases": phases})
+    _dump_json(
+        out / "00_run_manifest.json",
+        {"config": _rel(config_snapshot, out), "phases": phases},
+    )
 
     return PipelineResult(
         dataset=dataset,
@@ -475,6 +481,50 @@ def _get_candidate_probs(
             return probs[:, 1].astype(np.float32)
         return probs.astype(np.float32)
     return cand.fitted_model.predict(X).astype(np.float32)
+
+
+def _save_config_snapshot(
+    dest: Path, cfg: PipelineConfig, src_path: Path | None
+) -> None:
+    """Persist the run's config.toml inside ``out_dir`` for reproducibility and comparison."""
+    if src_path is not None and src_path.is_file():
+        if src_path.resolve() != dest.resolve():
+            dest.write_text(src_path.read_text(encoding="utf-8"), encoding="utf-8")
+        return
+    dest.write_text(_dict_to_toml(cfg.model_dump(mode="json")), encoding="utf-8")
+
+
+def _toml_scalar(value: object) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        return repr(value)
+    if isinstance(value, str):
+        return json.dumps(value)
+    if isinstance(value, list):
+        return "[" + ", ".join(_toml_scalar(v) for v in value) + "]"
+    return json.dumps(str(value))
+
+
+def _dict_to_toml(data: dict[str, object], prefix: str = "") -> str:
+    lines: list[str] = []
+    tables: list[tuple[str, dict[str, object]]] = []
+    for k, v in data.items():
+        if v is None:
+            continue
+        key = str(k) if str(k).isidentifier() or str(k).isdigit() else json.dumps(str(k))
+        if isinstance(v, dict):
+            tables.append((f"{prefix}.{key}" if prefix else key, v))
+        else:
+            lines.append(f"{key} = {_toml_scalar(v)}")
+    for tbl_name, tbl_val in tables:
+        if lines:
+            lines.append("")
+        lines.append(f"[{tbl_name}]")
+        body = _dict_to_toml(tbl_val, prefix=tbl_name).rstrip("\n")
+        if body:
+            lines.append(body)
+    return "\n".join(lines) + "\n"
 
 
 def _rel(path: Path, root: Path) -> str:

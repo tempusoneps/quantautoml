@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import polars as pl
 
-from quantautoml.common.config import FeaturesConfig
+from quantautoml.common.config import FeaturesConfig, load_config
 from quantautoml.pipeline import run_pipeline
 
 
@@ -27,6 +27,9 @@ def test_run_pipeline_writes_reports_and_segments(tmp_path: Path, make_frames, b
             assert z["X"].dtype == np.float32
             assert z["X"].shape[0] == getattr(result.split, seg).X.shape[0]
     manifest = json.loads((out / "00_run_manifest.json").read_text())
+    assert manifest["config"] == "config.toml"
+    assert (out / "config.toml").is_file()
+    assert load_config(out / "config.toml") == cfg
     phases = {p["phase"]: p for p in manifest["phases"]}
     assert phases["01_data"]["status"] == "completed"
     assert phases["02_features"]["status"] == "skipped"

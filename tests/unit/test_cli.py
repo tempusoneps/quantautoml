@@ -24,9 +24,12 @@ def test_run_command_writes_artifacts(tmp_path: Path, make_frames, capsys) -> No
     labels.write_parquet(lp)
     out = tmp_path / "out"
 
-    code = main(["run", "--config", str(_toml(tmp_path, fp, lp)), "--out", str(out)])
+    cfg_path = _toml(tmp_path, fp, lp)
+    code = main(["run", "--config", str(cfg_path), "--out", str(out)])
 
     assert code == 0
+    assert (out / "config.toml").is_file()
+    assert (out / "config.toml").read_text(encoding="utf-8") == cfg_path.read_text(encoding="utf-8")
     assert (out / "01_data" / "segments" / "train.npz").is_file()
     stdout = capsys.readouterr().out
     assert "mode=oof_assisted" in stdout
