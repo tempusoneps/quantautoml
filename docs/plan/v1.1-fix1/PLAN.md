@@ -13,7 +13,7 @@
 - [x] **Task 2 (Audit #6):** Cập nhật `FeaturesConfig` và `MultiMetricVarianceFilter` (F2) sang `max_top_freq_ratio` bất biến theo $N$
 - [x] **Task 3 (Audit #2):** Đảo thứ tự nhân quả `Cal-A` (SLSQP Ensemble) → `Cal-B` (Temperature Calibration) trong `pipeline.py`
 - [x] **Task 4 (Audit #1):** Sinh true OOF predictions cho Phase 4 trong chế độ `OOF_ASSISTED` (loại bỏ rò rỉ in-sample)
-- [ ] **Task 5:** Chạy toàn bộ test suite, cập nhật `graphify` & tài liệu `docs/CONFIGURATION.md` / `docs/FEATURES.md`
+- [x] **Task 5:** Chạy toàn bộ test suite, cập nhật `graphify` & tài liệu `docs/CONFIGURATION.md` / `docs/FEATURES.md`
 
 ---
 
@@ -124,7 +124,7 @@
 
 ---
 
-### [ ] Task 5: Full Verification, Docs & Graphify Update
+### [x] Task 5: Full Verification, Docs & Graphify Update
 - **Files to Touch:**
   - Modify: `docs/CONFIGURATION.md` (cập nhật tham số `max_top_freq_ratio`, default `min_unique_ratio`, `max_peak_var_ratio`)
   - Modify: `docs/FEATURES.md` (cập nhật đặc tả F2)
@@ -143,9 +143,9 @@
 ---
 
 ## Final Verification Checklist (Phase 1)
-- [ ] `uv run pytest tests/` PASS 100% (không hồi quy).
-- [ ] `date_from` / `date_to` cắt dữ liệu ngay đầu bước `DataIngestion` (trước encode/join/`fwd_ret_h`, zero look-ahead vượt `date_to`).
-- [ ] `OOF_ASSISTED` không còn rò rỉ in-sample vào `BootstrapShrinkageEngine` và `TemperatureCalibrator`.
-- [ ] `STATIC_5WAY` thuần nhân quả: `Cal-A` (Ensemble) → `Cal-B` (Calibration).
-- [ ] F2 giữ lại đúng các feature rời rạc/chu kỳ (`session_progress`, `hour`, `body`, `cluster_kmeans_*`) trên $N = 60{,}000$ và loại đúng cột near-constant ($\ge 99.5\%$).
-- [ ] Sai số ONNX float32 vẫn $< 10^{-4}$ (`RULE-06`) và `predictor.py` hoàn toàn độc lập (`RULE-07`).
+- [x] `uv run pytest tests/` PASS 100% (không hồi quy).
+- [x] `date_from` / `date_to` cắt dữ liệu ngay đầu bước `DataIngestion` (trước encode/join/`fwd_ret_h`, zero look-ahead vượt `date_to`).
+- [x] `OOF_ASSISTED` không còn rò rỉ in-sample vào `BootstrapShrinkageEngine` và `TemperatureCalibrator`.
+- [x] `STATIC_5WAY` thuần nhân quả: `Cal-A` (Ensemble) → `Cal-B` (Calibration).
+- [x] F2 giữ lại đúng các feature rời rạc/chu kỳ (`session_progress`, `hour`, `body`, `cluster_kmeans_*`) trên $N = 60{,}000$ và loại đúng cột near-constant ($\ge 99.5\%$).
+- [x] Sai số ONNX float32 vẫn $< 10^{-4}$ (`RULE-06`) và `predictor.py` hoàn toàn độc lập (`RULE-07`).

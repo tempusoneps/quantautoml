@@ -30,11 +30,11 @@ flowchart LR
   - Integration test chứng minh trong `OOF_ASSISTED`, dự đoán dùng cho Phase 4 **không bao giờ** trùng khớp với `refitted_model.predict(train_subset)` và bất biến khi phá dữ liệu tương lai.
   - Unit & integration test xác nhận `Cal-A` độc lập với mọi biến đổi của `Cal-B` (ensemble weights chỉ phụ thuộc `Cal-A`).
   - Unit test xác nhận biến rời rạc (`session_progress`, `hour`, `body`, `cluster_kmeans`) trên $N = 60{,}000$ không bị F2 loại nhầm, trong khi cột near-constant ($\ge 99.5\%$ một giá trị) bị loại đúng.
-- **Status:** In Progress
+- **Status:** Done
 
 ---
 
-### Phase 2: Statistical Rigor & Objective Alignment *(Planned)*
+### Phase 2: Statistical Rigor & Objective Alignment *(Active)*
 - **Objective:** Khắc phục sai lệch thống kê trong F3+7 (FDR & Monotonicity), ổn định hóa ước lượng `IC Sharpe` trong Walk-Forward CV, và thống nhất định nghĩa Score xuyên suốt từ Tournament đến ONNX Predictor.
 - **Prerequisites:** Phase 1 Done.
 - **Key Deliverables:**
@@ -45,7 +45,7 @@ flowchart LR
   - Test trên chuỗi autoregressive tổng hợp xác nhận BH-FDR không bị false positive tràn lan; test feature đạt đỉnh ở $h=5$ không bị loại bởi monotonicity gate.
   - Test xác nhận model có IC ổn định cao luôn thắng model IC thấp nhưng 5 fold ngẫu nhiên sát nhau.
   - Test multiclass với nhãn không đều (vd `[-2, 0, 5]`) cho score khớp tuyệt đối giữa Python và ONNX Predictor.
-- **Status:** Planned
+- **Status:** In Progress
 
 ---
 

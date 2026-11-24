@@ -18,11 +18,11 @@ Khắc phục toàn bộ **8 điểm yếu và lỗi kỹ thuật định lượ
 
 ## 2. In-Scope (Must Have)
 
-### Phase 1 — Ingestion Date Slicing, Causality, Leakage & Feature Filter Rigor *(Active)*
-- [ ] **Date Range Slicing (`[data]` `date_from` / `date_to`):** Cắt dataset theo khoảng thời gian `[date_from, date_to]` ngay đầu bước `DataIngestion` (trước khi encode feature, join, suy luận nhãn hay tính `fwd_ret_h`), báo cáo rõ trong `01_ingestion_report.json`.
-- [ ] **Audit #1 (`OOF_ASSISTED` Leakage):** Sinh true out-of-fold predictions cho Phase 4 (Ensemble & Calibration) khi $N < 10{,}000$, tuyệt đối không dùng `refitted_model.predict()` trên tập con của `split.train`.
-- [ ] **Audit #2 (Temporal Causality `Cal-A` ↔ `Cal-B`):** Đổi thứ tự nhân quả chuẩn — fit trọng số SLSQP Ensemble trên `Cal-A` (60–70%), sau đó áp trọng số đó lên `Cal-B` (70–80%) để fit Temperature Scaling gần `Val`/`OOS` hơn.
-- [ ] **Audit #6 (F2 `MultiMetricVarianceFilter`):** Thay cổng `unique_ratio = n_unique / N` (phụ thuộc cỡ mẫu $N$, loại nhầm biến rời rạc/chu kỳ) bằng ngưỡng bất biến theo $N$ (`max_top_freq_ratio`, mặc định `0.995`); giữ tương thích ngược cho `min_unique_ratio` (mặc định `0.0`); hiệu chuẩn lại hoặc vô hiệu hóa dead gate `max_peak_var_ratio = 50`.
+### Phase 1 — Ingestion Date Slicing, Causality, Leakage & Feature Filter Rigor *(Done)*
+- [x] **Date Range Slicing (`[data]` `date_from` / `date_to`):** Cắt dataset theo khoảng thời gian `[date_from, date_to]` ngay đầu bước `DataIngestion` (trước khi encode feature, join, suy luận nhãn hay tính `fwd_ret_h`), báo cáo rõ trong `01_ingestion_report.json`.
+- [x] **Audit #1 (`OOF_ASSISTED` Leakage):** Sinh true out-of-fold predictions cho Phase 4 (Ensemble & Calibration) khi $N < 10{,}000$, tuyệt đối không dùng `refitted_model.predict()` trên tập con của `split.train`.
+- [x] **Audit #2 (Temporal Causality `Cal-A` ↔ `Cal-B`):** Đổi thứ tự nhân quả chuẩn — fit trọng số SLSQP Ensemble trên `Cal-A` (60–70%), sau đó áp trọng số đó lên `Cal-B` (70–80%) để fit Temperature Scaling gần `Val`/`OOS` hơn.
+- [x] **Audit #6 (F2 `MultiMetricVarianceFilter`):** Thay cổng `unique_ratio = n_unique / N` (phụ thuộc cỡ mẫu $N$, loại nhầm biến rời rạc/chu kỳ) bằng ngưỡng bất biến theo $N$ (`max_top_freq_ratio`, mặc định `0.995`); giữ tương thích ngược cho `min_unique_ratio` (mặc định `0.0`); hiệu chuẩn lại hoặc vô hiệu hóa dead gate `max_peak_var_ratio = 50`.
 
 ### Phase 2 — Statistical Rigor & Objective Alignment *(Planned)*
 - [ ] **Audit #3 (F3+7 FDR & Monotonicity):** Tính p-value BH-FDR trên chuỗi `rolling_ic` không chồng lấn (tránh t-stat ảo do overlapping returns); đổi cổng monotonicity thành kiểm tra suy giảm từ `target_horizon` trở đi thay vì ép đỉnh tại $h=1$.

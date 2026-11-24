@@ -27,6 +27,8 @@ features_path   = "datasets/feature.parquet"
 labels_path     = "datasets/label.csv"   # bỏ trống / lược bỏ -> Unsupervised
 timestamp_col   = "Date"
 min_match_ratio = 0.95
+# date_from     = "2022-01-01"           # tùy chọn: cắt dữ liệu từ mốc này (ISO-8601, inclusive)
+# date_to       = "2024-12-31"           # tùy chọn: cắt dữ liệu tới mốc này (inclusive hết ngày nếu YYYY-MM-DD)
 
 [labels]
 selected             = "is_peak_10"      # cột nhãn mục tiêu; hoặc "allow_entry", "direction_filter"
@@ -42,6 +44,8 @@ horizon_h = 21                           # số nến Purging & Embargo ở mọ
 | `data.labels_path` | `None` | Không | Đường dẫn tới file nhãn (`.parquet` hoặc `.csv`); nếu lược bỏ $\to$ chạy chế độ `UNSUPERVISED`. |
 | `data.timestamp_col` | `"timestamp"` | Không | Tên cột thời gian ở cả hai file. Được chuẩn hóa tự động về UTC `datetime64[us]` và kiểm tra tăng dần nghiêm ngặt. |
 | `data.min_match_ratio` | `0.95` | Không | Tỷ lệ khớp timestamp tối thiểu `(0.0, 1.0]` khi inner-join `features` và `labels`. Nếu thấp hơn sẽ ném `TimestampAlignmentError`. |
+| `data.date_from` | `None` | Không | Mốc thời gian bắt đầu (ISO-8601 `YYYY-MM-DD` hoặc `YYYY-MM-DDTHH:MM:SS[Z]`, inclusive). Cắt ngay đầu bước Ingestion trước mọi xử lý (encode/join/`fwd_ret_h`). |
+| `data.date_to` | `None` | Không | Mốc thời gian kết thúc (ISO-8601, inclusive; nếu dạng `YYYY-MM-DD` thì tính tới `23:59:59.999999` UTC). Đảm bảo `date_from <= date_to`. |
 | `labels.selected` | `None` | Có (nếu có `labels_path`) | Tên cột nhãn dùng để suy luận loại bài toán (`binary_classification` hoặc `multiclass_classification`) và huấn luyện mô hình. |
 | `labels.ignore_other_columns` | `false` | Không | Khi đặt `true`, bộ nạp dữ liệu chỉ giữ lại đúng cột `labels.selected` và bỏ qua mọi cột khác trong file nhãn (rất hữu ích khi file `label.csv` chứa nhiều cột chữ/boolean khác không dùng tới). Các cột `fwd_ret_*` cho Phase 2 sẽ được tự động tính từ cột giá `Close`. |
 | `labels.mapping` | `None` | Không | Bảng `[labels.mapping]` ánh xạ nhãn dạng **chuỗi văn bản** sang **số có hướng** trước khi suy luận bài toán (xem mục `[labels.mapping]` bên dưới). |
@@ -88,9 +92,10 @@ rolling_window = 63
 dcor_threshold = 0.85
 cluster_distance = 0.30
 max_nan_ratio = 0.60
-min_unique_ratio = 0.01
+min_unique_ratio = 0.0
+max_top_freq_ratio = 0.995
 min_cv = 1e-6
-max_peak_var_ratio = 50.0
+# max_peak_var_ratio = 5.0               # tùy chọn (mặc định None = tắt)
 max_features = 30
 monotonic_tolerance = 0.05
 mi_floor = 0.0
@@ -103,9 +108,10 @@ synergy_delta = 0.01
 | `features.target_horizon` | — | Thuộc `ic_horizons` | F3–F5 | Kỳ hạn mục tiêu chính ($h_{\text{target}}$) để chấm điểm IC và ICIR. |
 | `features.price_col` | `"Close"` | Tên cột trong `X` | Ingestion | Tên cột giá đóng cửa trong file features dùng để tự suy `fwd_ret_*`. |
 | `features.max_nan_ratio` | `0.60` | `(0.0, 1.0]` | **F1 (Triage)** | Loại bỏ ngay các cột có tỷ lệ giá trị thiếu (`NaN`/`Inf`) vượt quá 60% trên tập Train. |
-| `features.min_unique_ratio` | `0.01` | `[0.0, 1.0]` | **F2 (Variance)** | Tỷ lệ giá trị duy nhất tối thiểu $n_{\text{unique}} / N_{\text{train}}$ (miễn trừ cho biến nhị phân 2 giá trị). |
+| `features.min_unique_ratio` | `0.0` | `[0.0, 1.0]` | **F2 (Variance)** | Tỷ lệ giá trị duy nhất tối thiểu $n_{\text{unique}} / N_{\text{train}}$ (tùy chọn opt-in; mặc định `0.0` để tránh loại nhầm biến rời rạc/chu kỳ khi $N$ lớn). |
+| `features.max_top_freq_ratio` | `0.995` | `(0.0, 1.0]` | **F2 (Variance)** | Tỷ lệ xuất hiện tối đa của giá trị phổ biến nhất (bất biến theo cỡ mẫu $N$); loại các cột gần như hằng số ($\ge 99.5\%$ một giá trị). |
 | `features.min_cv` | `1e-6` | `>= 0.0` | **F2 (Variance)** | Hệ số biến thiên tối thiểu $|\sigma / \mu|$; loại bỏ các cột gần như hằng số. |
-| `features.max_peak_var_ratio` | `50.0` | `> 0.0` | **F2 (Variance)** | Tỷ số tối đa giữa phân vị 90 của phương sai trượt (`rolling_window`) và phương sai toàn tập Train. |
+| `features.max_peak_var_ratio` | `None` | `> 0.0` hoặc `None` | **F2 (Variance)** | Tùy chọn: tỷ số tối đa giữa phân vị 90 của phương sai trượt (`rolling_window`) và phương sai toàn tập Train (mặc định tắt). |
 | `features.rolling_window` | `63` | `>= 2` | **F2, F3+7, F5, F6** | Kích thước cửa sổ cuộn (nến) để tính Rolling Variance, Rolling Rank IC và phân loại Regime. |
 | `features.icir_min` | `0.30` | float | **F3+7 (IC Stability)** | Ngưỡng $|\text{ICIR}(h_{\text{target}})|$ tối thiểu để đặc trưng được giữ lại. |
 | `features.fdr_alpha` | `0.05` | `(0.0, 0.05]` | **F3+7 (FDR Gate)** | Mức ý nghĩa kiểm soát tỷ lệ phát hiện sai Benjamini-Hochberg (RULE-08, tối đa 5%). |

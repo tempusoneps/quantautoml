@@ -46,11 +46,13 @@ flowchart TD
 ---
 
 ### 2.2. Tầng F2: Multi-Metric Variance Check (`variance.py`)
-- **Mục tiêu:** Loại bỏ các đặc trưng hằng số, gần như không biến thiên, hoặc có biến động phương sai cục bộ bất thường.
+- **Mục tiêu:** Loại bỏ các đặc trưng hằng số, gần như hằng số (bất biến theo cỡ mẫu $N$), hoặc có biến động phương sai cục bộ bất thường.
 - **Quy tắc & Ngưỡng:**
+  - **Cột hằng số:** Nếu $n_{\text{unique}} < 2$ $\to$ Loại.
+  - **Tỷ lệ giá trị phổ biến nhất (Near-Constant, bất biến theo $N$):** Nếu $\text{top\_freq\_ratio} = \frac{\max_v \text{count}(X_j = v)}{N_{\text{valid}}} > \text{max\_top\_freq\_ratio}$ (mặc định $0.995$) $\to$ Loại. Giữ lại đầy đủ các đặc trưng rời rạc/chu kỳ/lượng tử hóa (`session_progress`, `hour`, `body`, `cluster_kmeans_*`) ngay cả khi $N$ lớn.
+  - **Tỷ lệ giá trị duy nhất (tùy chọn opt-in):** Chỉ áp dụng khi `min_unique_ratio > 0.0` (mặc định `0.0`): nếu $n_{\text{unique}} > 2$ và $\frac{n_{\text{unique}}}{N} < \text{min\_unique\_ratio}$ $\to$ Loại.
   - **Hệ số biến thiên:** $|CV| = \frac{\sigma}{\max(|\mu|, \epsilon)} < \text{min\_cv}$ ($10^{-6}$) $\to$ Loại.
-  - **Tỷ lệ giá trị duy nhất:** Nếu $n_{\text{unique}} < 2$ $\to$ Loại. Nếu $n_{\text{unique}} > 2$ và $\frac{n_{\text{unique}}}{N} < \text{min\_unique\_ratio}$ ($0.01$) $\to$ Loại. *(Lưu ý: Biến nhị phân cân bằng có $n_{\text{unique}}=2$ được miễn trừ quy tắc unique_ratio)*.
-  - **Đột biến phương sai cuộn:** $\text{peak\_var\_ratio} = \frac{\text{Percentile}_{90}(\text{Var}_{w=63})}{\text{Var}_{\text{train}}} > \text{max\_peak\_var\_ratio}$ ($50.0$) $\to$ Loại.
+  - **Đột biến phương sai cuộn (tùy chọn):** Khi `max_peak_var_ratio` được cấu hình (mặc định `None`): $\text{peak\_var\_ratio} = \frac{\text{Percentile}_{90}(\text{Var}_{w=63})}{\text{Var}_{\text{train}}} > \text{max\_peak\_var\_ratio}$ $\to$ Loại.
 
 ---
 
