@@ -42,7 +42,7 @@ class SmoothSLSQPOptimizer:
         predictions: NDArray[np.float32],
         y_true: NDArray[np.float32 | np.int32],
     ) -> NDArray[np.float32]:
-        """Optimize ensemble weights on Cal-B predictions.
+        """Optimize ensemble weights on Cal-A predictions (chronologically before Calibration).
 
         Parameters
         ----------

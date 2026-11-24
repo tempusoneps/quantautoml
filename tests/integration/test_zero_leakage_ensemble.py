@@ -151,3 +151,58 @@ def test_pipeline_with_ensemble_and_calibration(tmp_path: Path) -> None:
     # Check generated report files
     assert (out_dir / "04_ensemble" / "01_ensemble_report.json").exists()
     assert (out_dir / "04_ensemble" / "02_calibration_report.json").exists()
+
+
+def test_static_5way_ensemble_uses_cal_a_and_calibration_uses_cal_b(tmp_path: Path) -> None:
+    """Audit #2: Temporal causality — Ensemble fits on Cal-A (60-70%), Calibration on Cal-B (70-80%).
+
+    Mutating Cal-B rows MUST NOT alter ensemble weights, while it MUST alter calibration temperature.
+    """
+    import polars as pl
+
+    n, p = 12000, 5
+    rng = np.random.default_rng(7)
+    base_t = np.datetime64("2024-01-01T00:00:00", "us")
+    timestamps = base_t + np.arange(n).astype("timedelta64[s]")
+
+    f_dict: dict[str, np.ndarray] = {"timestamp": timestamps}
+    for i in range(p):
+        f_dict[f"feat_{i}"] = rng.standard_normal(n).astype(np.float32)
+    prob = 1.0 / (1.0 + np.exp(-0.7 * f_dict["feat_0"]))
+    y = rng.binomial(1, prob).astype(np.int32)
+
+    def _run_with(f_data: dict[str, np.ndarray], y_data: np.ndarray, tag: str):
+        fp = tmp_path / f"f_{tag}.parquet"
+        lp = tmp_path / f"l_{tag}.parquet"
+        pl.DataFrame(f_data).write_parquet(fp)
+        pl.DataFrame({"timestamp": timestamps, "target": y_data}).write_parquet(lp)
+        cfg_file = tmp_path / f"cfg_{tag}.toml"
+        cfg_file.write_text(
+            f'[data]\nfeatures_path = "{fp}"\nlabels_path = "{lp}"\n'
+            '[labels]\nselected = "target"\n'
+            "[split]\nhorizon_h = 5\n"
+            '[models]\ntournament_trials = 2\ntuning_trials = 2\nn_wf_folds = 2\n'
+            'enabled_models = ["lightgbm", "xgboost"]\n'
+            "[ensemble]\nn_bootstrap = 10\n"
+        )
+        return run_pipeline(cfg_file, tmp_path / f"out_{tag}")
+
+    res1 = _run_with(f_dict, y, "base")
+    assert res1.split.cal_b is not None
+    assert res1.ensemble_result is not None
+    assert res1.calibration_result is not None
+
+    # Mutate ONLY Cal-B labels (flip them) — Cal-A & Train are untouched
+    y_mut = y.copy()
+    cal_b_idx = res1.split.cal_b.index
+    y_mut[cal_b_idx] = 1 - y_mut[cal_b_idx]
+    res2 = _run_with(f_dict, y_mut, "mut_cal_b")
+    assert res2.ensemble_result is not None
+    assert res2.calibration_result is not None
+
+    # Ensemble learned on Cal-A -> strictly invariant to Cal-B mutation
+    assert res1.ensemble_result.weights == res2.ensemble_result.weights
+    assert res1.ensemble_result.ensemble_ic_sharpe == res2.ensemble_result.ensemble_ic_sharpe
+    # Temperature Calibration learned on Cal-B -> must respond to Cal-B mutation
+    assert res1.calibration_result.temperature != res2.calibration_result.temperature
+

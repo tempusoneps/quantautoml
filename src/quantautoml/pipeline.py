@@ -221,41 +221,41 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             and cal_a_seg.y is not None
         ):
             ensemble_dir = out / "04_ensemble"
-            # 1. Collect candidate predictions on Cal-B
-            cal_b_preds = np.column_stack([
-                _get_candidate_scores(cand, cal_b_seg.X, dataset.task_type)
+            # 1. Collect candidate predictions on Cal-A (earlier chronological slice)
+            cal_a_preds = np.column_stack([
+                _get_candidate_scores(cand, cal_a_seg.X, dataset.task_type)
                 for cand in tuning_result.tuned_candidates
             ])
 
-            # 2. Fit Bootstrap SLSQP Ensemble on Cal-B
+            # 2. Fit Bootstrap SLSQP Ensemble on Cal-A
             ensemble_engine = BootstrapShrinkageEngine(cfg.ensemble)
-            ensemble_result = ensemble_engine.fit(cal_b_preds, cal_b_seg.y)
+            ensemble_result = ensemble_engine.fit(cal_a_preds, cal_a_seg.y)
             ensemble_path = ensemble_dir / "01_ensemble_report.json"
             _dump_json(ensemble_path, ensemble_result.model_dump())
 
-            # 3. Combine predictions on Cal-A using optimal weights
+            # 3. Combine predictions on Cal-B (later chronological slice, closest to Val/OOS)
             weights_arr = np.array(ensemble_result.weights, dtype=np.float32)
             if dataset.task_type == TaskType.MULTICLASS_CLASSIFICATION:
                 all_probs = [
-                    _get_candidate_probs(cand, cal_a_seg.X, dataset.task_type)
+                    _get_candidate_probs(cand, cal_b_seg.X, dataset.task_type)
                     for cand in tuning_result.tuned_candidates
                 ]
-                cal_a_comb = np.zeros_like(all_probs[0], dtype=np.float32)
+                cal_b_comb = np.zeros_like(all_probs[0], dtype=np.float32)
                 for w_k, p_k in zip(weights_arr, all_probs):
-                    cal_a_comb += w_k * p_k
+                    cal_b_comb += w_k * p_k
             else:
-                cal_a_preds = np.column_stack([
-                    _get_candidate_scores(cand, cal_a_seg.X, dataset.task_type)
+                cal_b_preds = np.column_stack([
+                    _get_candidate_scores(cand, cal_b_seg.X, dataset.task_type)
                     for cand in tuning_result.tuned_candidates
                 ])
-                cal_a_comb = (cal_a_preds @ weights_arr).astype(np.float32)
+                cal_b_comb = (cal_b_preds @ weights_arr).astype(np.float32)
 
-            # 4. Temperature Calibration on Cal-A
+            # 4. Temperature Calibration on Cal-B
             calibrator = TemperatureCalibrator(
                 task_type=dataset.task_type,
                 random_state=cfg.ensemble.random_state,
             )
-            calibrator.fit(cal_a_comb, cal_a_seg.y)
+            calibrator.fit(cal_b_comb, cal_b_seg.y)
             calibration_result = calibrator.get_result()
             calibration_path = ensemble_dir / "02_calibration_report.json"
             _dump_json(calibration_path, calibration_result.model_dump())

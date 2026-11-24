@@ -57,7 +57,7 @@ class TemperatureCalibrator:
         logits_or_probs: NDArray[np.float32],
         y_true: NDArray[np.int32 | np.float32],
     ) -> Self:
-        """Fit optimal temperature scalar T > 0 on Cal-A.
+        """Fit optimal temperature scalar T > 0 on Cal-B (chronologically after Ensemble).
 
         Parameters
         ----------

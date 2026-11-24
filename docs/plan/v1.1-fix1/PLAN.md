@@ -11,7 +11,7 @@
 
 - [x] **Task 1 (Data Slicing):** Thêm `date_from` / `date_to` vào `DataConfig` và cắt dataset ngay đầu bước `DataIngestion` (trước mọi xử lý)
 - [x] **Task 2 (Audit #6):** Cập nhật `FeaturesConfig` và `MultiMetricVarianceFilter` (F2) sang `max_top_freq_ratio` bất biến theo $N$
-- [ ] **Task 3 (Audit #2):** Đảo thứ tự nhân quả `Cal-A` (SLSQP Ensemble) → `Cal-B` (Temperature Calibration) trong `pipeline.py`
+- [x] **Task 3 (Audit #2):** Đảo thứ tự nhân quả `Cal-A` (SLSQP Ensemble) → `Cal-B` (Temperature Calibration) trong `pipeline.py`
 - [ ] **Task 4 (Audit #1):** Sinh true OOF predictions cho Phase 4 trong chế độ `OOF_ASSISTED` (loại bỏ rò rỉ in-sample)
 - [ ] **Task 5:** Chạy toàn bộ test suite, cập nhật `graphify` & tài liệu `docs/CONFIGURATION.md` / `docs/FEATURES.md`
 
@@ -76,7 +76,7 @@
 
 ---
 
-### [ ] Task 3: Khôi phục thứ tự nhân quả `Cal-A` (Ensemble) → `Cal-B` (Calibration) (Audit #2)
+### [x] Task 3: Khôi phục thứ tự nhân quả `Cal-A` (Ensemble) → `Cal-B` (Calibration) (Audit #2)
 - **Files to Touch:**
   - Modify: `src/quantautoml/pipeline.py`
   - Modify: `src/quantautoml/ensemble/calibration.py` (docstring)
