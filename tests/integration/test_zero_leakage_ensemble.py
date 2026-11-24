@@ -285,3 +285,73 @@ def test_oof_assisted_phase4_uses_true_oof_not_refitted_in_sample(
     np.testing.assert_allclose(seen_ens[0][:, 0], expected_a, atol=1e-6)
 
 
+def test_refit_on_train_cal_uses_train_cal_only_and_is_invariant_to_val_oos(tmp_path: Path) -> None:
+    """v1.1-fix2 Phase 2: refit_on_train_cal=True refits final models on Train+Cal-A+Cal-B
+    after locking params/weights/temperature, never touches Val/OOS, and passes ONNX < 1e-4.
+    """
+    import polars as pl
+
+    from quantautoml.packaging.predictor_loader import load_predictor
+
+    n, p = 12000, 5
+    rng = np.random.default_rng(31)
+    base_t = np.datetime64("2024-01-01T00:00:00", "us")
+    timestamps = base_t + np.arange(n).astype("timedelta64[s]")
+
+    f_dict: dict[str, np.ndarray] = {"timestamp": timestamps}
+    for i in range(p):
+        f_dict[f"feat_{i}"] = rng.standard_normal(n).astype(np.float32)
+    prob = 1.0 / (1.0 + np.exp(-0.8 * f_dict["feat_0"]))
+    y = rng.binomial(1, prob).astype(np.int32)
+
+    def _run_cfg(y_arr: np.ndarray, *, refit: bool, tag: str):
+        fp = tmp_path / f"rf_f_{tag}.parquet"
+        lp = tmp_path / f"rf_l_{tag}.parquet"
+        pl.DataFrame(f_dict).write_parquet(fp)
+        pl.DataFrame({"timestamp": timestamps, "target": y_arr}).write_parquet(lp)
+        cfg_file = tmp_path / f"rf_cfg_{tag}.toml"
+        refit_str = "true" if refit else "false"
+        cfg_file.write_text(
+            f'[data]\nfeatures_path = "{fp}"\nlabels_path = "{lp}"\n'
+            '[labels]\nselected = "target"\n'
+            "[split]\nhorizon_h = 5\n"
+            "[models]\ntournament_trials = 2\ntuning_trials = 2\nn_wf_folds = 2\n"
+            f'device = "cpu"\nrefit_on_train_cal = {refit_str}\nenabled_models = ["lightgbm"]\n'
+            "[ensemble]\nn_bootstrap = 10\n"
+            "[packaging]\nlatency_repeats = 5\n",
+            encoding="utf-8",
+        )
+        out = tmp_path / f"rf_out_{tag}"
+        return run_pipeline(cfg_file, out), out
+
+    res_base, out_base = _run_cfg(y, refit=False, tag="base")
+    res_refit, out_refit = _run_cfg(y, refit=True, tag="refit")
+    assert res_refit.bundle_manifest is not None
+    assert res_refit.bundle_manifest.max_abs_diff < 1e-4
+
+    # Ensemble & Calibration reports are locked BEFORE refit -> identical to refit=False
+    assert res_refit.ensemble_result == res_base.ensemble_result
+    assert res_refit.calibration_result == res_base.calibration_result
+
+    # Bundle predictions differ from train-only model (proves refit actually occurred on Train+Cal)
+    pred_base = load_predictor(out_base / "05_packaging" / "bundle" / "predictor.py").Predictor(
+        out_base / "05_packaging" / "bundle"
+    )
+    pred_refit = load_predictor(out_refit / "05_packaging" / "bundle" / "predictor.py").Predictor(
+        out_refit / "05_packaging" / "bundle"
+    )
+    val_X = res_refit.split.val.X
+    assert not np.allclose(pred_base.predict(val_X), pred_refit.predict(val_X), atol=1e-5)
+
+    # Zero-Leakage (RULE-01): mutating Val & OOS labels MUST NOT change refitted bundle predictions
+    y_mut = y.copy()
+    y_mut[res_refit.split.val.index] = 1 - y_mut[res_refit.split.val.index]
+    y_mut[res_refit.split.oos.index] = 1 - y_mut[res_refit.split.oos.index]
+    res_mut, out_mut = _run_cfg(y_mut, refit=True, tag="refit_mut")
+    assert res_mut.bundle_manifest is not None
+    pred_mut = load_predictor(out_mut / "05_packaging" / "bundle" / "predictor.py").Predictor(
+        out_mut / "05_packaging" / "bundle"
+    )
+    np.testing.assert_array_equal(pred_refit.predict(val_X), pred_mut.predict(val_X))
+
+

@@ -82,3 +82,10 @@ def test_models_config_ic_window_default_and_custom(write_toml, valid_toml: str)
 def test_models_config_ic_window_below_20_rejected(w: int) -> None:
     with pytest.raises(pydantic.ValidationError):
         ModelsConfig(ic_window=w)
+
+
+def test_models_config_refit_on_train_cal_default_and_toml(write_toml, valid_toml: str) -> None:
+    assert ModelsConfig().refit_on_train_cal is False
+    assert ModelsConfig(refit_on_train_cal=True).refit_on_train_cal is True
+    cfg = load_config(write_toml(valid_toml + "\n[models]\nrefit_on_train_cal = true\n"))
+    assert cfg.models is not None and cfg.models.refit_on_train_cal is True

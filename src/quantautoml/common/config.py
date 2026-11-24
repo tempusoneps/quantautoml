@@ -120,6 +120,7 @@ class ModelsConfig(_Strict):
     ic_window: int | None = Field(default=None, ge=20)
     random_state: int = Field(default=42)
     device: Literal["auto", "cpu", "cuda"] = "auto"
+    refit_on_train_cal: bool = False
     enabled_models: list[str] = Field(default_factory=lambda: ["lightgbm", "xgboost", "catboost"])
 
     @field_validator("enabled_models")

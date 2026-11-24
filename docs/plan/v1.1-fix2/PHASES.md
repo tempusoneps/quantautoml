@@ -32,12 +32,12 @@ flowchart LR
 
 ---
 
-### Phase 2: Regime Freshness & Multi-Window Walk-Forward OOS *(Queued after `v1.1-optimize3`)*
+### Phase 2: Regime Freshness & Multi-Window Walk-Forward OOS *(Done)*
 - **Objective:** Khắc phục việc bỏ trống 20% dữ liệu gần OOS nhất (Cal-A/Cal-B) và loại bỏ rủi ro đánh giá OOS trên 1 đoạn duy nhất.
-- **Prerequisites:** Phase 1 Done.
+- **Prerequisites:** Phase 1 Done (`v1.1-optimize3` Done).
 - **Key Deliverables:**
-  1. Tùy chọn `models.refit_on_train_cal: bool = False` (opt-in) trong `pipeline.py`.
-  2. Module `src/quantautoml/backtest/walkforward.py` hỗ trợ chạy nghiệm thu trên nhiều cửa sổ OOS nối tiếp có purging/embargo `horizon_h`.
+  1. Tùy chọn `models.refit_on_train_cal: bool = False` (opt-in) trong `common/config.py` và `pipeline.py` (refit model trên `Train + Cal-A + Cal-B` sau khi đã khóa `best_params`, `weights`, `temperature`, tuyệt đối không chạm `Val`/`OOS`).
+  2. Module `src/quantautoml/backtest/walkforward.py` (`generate_walkforward_windows`, `WalkForwardOOSRunner`, `WalkForwardOOSReport`) hỗ trợ chạy nghiệm thu trên nhiều cửa sổ OOS nối tiếp có purging/embargo đúng `horizon_h`.
 - **Independent Testability:**
-  - Zero-leakage test chứng minh `refit_on_train_cal` không bao giờ chạm `Val`/`OOS`; Walk-Forward OOS test xác nhận mọi ranh giới cách nhau đúng `horizon_h` nến.
-- **Status:** Planned
+  - Zero-leakage test chứng minh `refit_on_train_cal` không bao giờ chạm `Val`/`OOS` và giữ ONNX precision `< 1e-4`; Walk-Forward OOS test xác nhận mọi ranh giới cách nhau đúng `horizon_h` nến.
+- **Status:** Done

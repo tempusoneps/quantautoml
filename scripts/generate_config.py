@@ -232,6 +232,7 @@ def build_config_content(
                 "# ic_window = 500  # optional; None = adaptive rolling IC window (<= 500)",
                 "random_state = 42",
                 'device = "auto"  # "auto" (CUDA for XGBoost/CatBoost if available), "cpu", or "cuda"',
+                "refit_on_train_cal = false  # true: refit final models on Train+Cal-A+Cal-B after locking weights & T",
                 'enabled_models = ["lightgbm", "xgboost", "catboost"]',
                 "",
                 "[ensemble]",

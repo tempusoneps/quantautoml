@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/pipeline.py": {
-    "mtime": 1795507681.2776945,
-    "ast_hash": "7e2fc3930ca13c4b675664bd959a4997",
+    "mtime": 1795521086.0764375,
+    "ast_hash": "358a20f3c2ff9e94381fa9c5d05b5179",
     "semantic_hash": ""
   },
   "src/quantautoml/cli.py": {
@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/common/config.py": {
-    "mtime": 1795520043.5675247,
-    "ast_hash": "04a3f12c11b7f6208b30afd0b14c56e7",
+    "mtime": 1795521083.9575117,
+    "ast_hash": "a002822b82b4ebe6a870a86925a375b2",
     "semantic_hash": ""
   },
   "src/quantautoml/common/exceptions.py": {
@@ -60,8 +60,8 @@
     "semantic_hash": ""
   },
   "scripts/generate_config.py": {
-    "mtime": 1795520049.1999483,
-    "ast_hash": "fbcb7949094a1850328afb73342d0217",
+    "mtime": 1795521091.198278,
+    "ast_hash": "aaae415b6d0ac2a6889eed49473b13e8",
     "semantic_hash": ""
   },
   "tests/conftest.py": {
@@ -135,13 +135,13 @@
     "semantic_hash": ""
   },
   "docs/CONFIGURATION.md": {
-    "mtime": 1795520052.3849301,
-    "ast_hash": "5f8c92db9d87ae165d76ed62554b3d9b",
+    "mtime": 1795521094.699373,
+    "ast_hash": "4e7f3a242406476578ffda63f05c753b",
     "semantic_hash": ""
   },
   "docs/STRUCTURE.md": {
-    "mtime": 1795520309.525241,
-    "ast_hash": "40be8d0ace2e2d7118d3b481dd5e6a16",
+    "mtime": 1795521096.0032556,
+    "ast_hash": "a18dc090a09b7cf98e9f57e888d40a44",
     "semantic_hash": ""
   },
   "docs/plan/PHASES.md": {
@@ -455,8 +455,8 @@
     "semantic_hash": ""
   },
   "tests/integration/test_zero_leakage_ensemble.py": {
-    "mtime": 1795489091.1810038,
-    "ast_hash": "10b322ada7ffd486c093992086c8d568",
+    "mtime": 1795521024.557658,
+    "ast_hash": "69a582fcbdbf9a43ea447c7c8b73c13c",
     "semantic_hash": ""
   },
   "tests/integration/test_zero_leakage_funnel.py": {
@@ -550,8 +550,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_models_config.py": {
-    "mtime": 1795519453.22408,
-    "ast_hash": "7c6a4f95cb9b01283a02c31cab00fa26",
+    "mtime": 1795521022.913738,
+    "ast_hash": "8de56c77040d432d115454a07d57b6b3",
     "semantic_hash": ""
   },
   "tests/unit/test_regime_synergy.py": {
@@ -720,8 +720,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/backtest/__init__.py": {
-    "mtime": 1795520239.4097805,
-    "ast_hash": "655dda944bdfdc2c5746563c923c592d",
+    "mtime": 1795521089.202005,
+    "ast_hash": "7bdaa8d9a96663d76b526962e971035a",
     "semantic_hash": ""
   },
   "src/quantautoml/backtest/buffer.py": {
@@ -2560,18 +2560,18 @@
     "semantic_hash": ""
   },
   "docs/plan/v1.1-fix2/PHASES.md": {
-    "mtime": 1795519003.602326,
-    "ast_hash": "3525ceacad1ecfd0e7f8f23cf853817b",
+    "mtime": 1795521139.355088,
+    "ast_hash": "df2f3814a9f0c2fb377ff9a8b0e5f0ab",
     "semantic_hash": ""
   },
   "docs/plan/v1.1-fix2/PLAN.md": {
-    "mtime": 1795507751.96888,
-    "ast_hash": "d66914e87ac8b05186ef963bda51ca78",
+    "mtime": 1795521142.71655,
+    "ast_hash": "fa34ead90bbf7ebe16d7991f06a1d984",
     "semantic_hash": ""
   },
   "docs/plan/v1.1-fix2/SCOPE.md": {
-    "mtime": 1795507756.166631,
-    "ast_hash": "055078a155005477c600d42b7a435770",
+    "mtime": 1795521140.923579,
+    "ast_hash": "cb4b0fd837f6274c6138583f5ee176e7",
     "semantic_hash": ""
   },
   "docs/plan/v1.1-fix2/STRUCTURE.md": {
@@ -2627,6 +2627,16 @@
   "tests/unit/test_backtest_diagnostics.py": {
     "mtime": 1795520166.3201382,
     "ast_hash": "01c66cf2698834be1d29b90bb73178d1",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/backtest/walkforward.py": {
+    "mtime": 1795521087.6655025,
+    "ast_hash": "a1469782377a9fac6aa617ab361b4594",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_walkforward_oos.py": {
+    "mtime": 1795521026.193708,
+    "ast_hash": "fd41b97f1cfce27bfee884f1f7320a25",
     "semantic_hash": ""
   }
 }

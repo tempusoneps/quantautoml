@@ -24,9 +24,9 @@ Tiếp nối `v1.1-fix1` và `f2b_stationarity`, mục tiêu của `v1.1-fix2` l
 - [x] **GPU Acceleration (`models.device`):** Thêm `models.device: Literal["auto", "cpu", "cuda"] = "auto"` vào `ModelsConfig`; bật CUDA tự động cho **XGBoost** (`tree_method="hist"`, `device="cuda"`) và **CatBoost** (`task_type="GPU"`, `bootstrap_type="Bernoulli"`), giữ **LightGBM** trên CPU đa nhân; tự động fallback về CPU khi không có GPU hoặc `device="cpu"`.
 - [x] **Unit & Integration Tests:** Kiểm chứng giới hạn tham số mới cho cả dataset nhỏ (`n=250`) và lớn (`n=50_000`), kiểm chứng `device="cpu"` / `"auto"` / `"cuda"` (kèm ONNX float32 parity `< 1e-4`), xác nhận 0 hồi quy toàn suite.
 
-### Phase 2 — Regime Freshness & Multi-Window Walk-Forward OOS *(Planned)*
-- [ ] **Optional `Train + Cal` Refit:** Tùy chọn cấu hình refit model cuối trên `Train + Cal-A + Cal-B` sau khi đã khóa siêu tham số, trọng số và Temperature (giúp model thấy 20% dữ liệu mới nhất trước OOS).
-- [ ] **Multi-Window Walk-Forward OOS (`backtest/walkforward.py`):** Đánh giá chiến lược trên nhiều cửa sổ OOS nối tiếp thay vì chỉ 1 đoạn 10% cuối cùng.
+### Phase 2 — Regime Freshness & Multi-Window Walk-Forward OOS *(Done)*
+- [x] **Optional `Train + Cal` Refit:** Tùy chọn cấu hình refit model cuối trên `Train + Cal-A + Cal-B` sau khi đã khóa siêu tham số, trọng số và Temperature (giúp model thấy 20% dữ liệu mới nhất trước OOS).
+- [x] **Multi-Window Walk-Forward OOS (`backtest/walkforward.py`):** Đánh giá chiến lược trên nhiều cửa sổ OOS nối tiếp thay vì chỉ 1 đoạn 10% cuối cùng.
 
 ---
 

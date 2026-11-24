@@ -315,6 +315,34 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
         and ensemble_result is not None
         and calibration_result is not None
     ):
+        packaging_candidates = tuning_result.tuned_candidates
+        if (
+            cfg.models is not None
+            and cfg.models.refit_on_train_cal
+            and split.cal_a is not None
+            and split.cal_b is not None
+            and split.train.y is not None
+            and split.cal_a.y is not None
+            and split.cal_b.y is not None
+            and dataset.task_type is not None
+        ):
+            # Opt-in Train+Cal refit (v1.1-fix2 Phase 2): params, weights, and temperature
+            # are already locked; Val and OOS remain strictly untouched (RULE-01).
+            train_t = funnel.transform(split.train) if funnel is not None else split.train
+            cal_a_t = funnel.transform(split.cal_a) if funnel is not None else split.cal_a
+            cal_b_t = funnel.transform(split.cal_b) if funnel is not None else split.cal_b
+            assert train_t.y is not None and cal_a_t.y is not None and cal_b_t.y is not None
+            X_refit = np.concatenate([train_t.X, cal_a_t.X, cal_b_t.X], axis=0)
+            y_refit = np.concatenate([train_t.y, cal_a_t.y, cal_b_t.y], axis=0)
+            packaging_candidates = _fit_oof_candidates(
+                tuning_result.tuned_candidates,
+                X_refit,
+                y_refit,
+                np.arange(len(X_refit), dtype=np.int64),
+                dataset.task_type,
+                cfg.models.random_state,
+                device=cfg.models.device,
+            )
         # Packaging only reads Train (statistics) and Val (precision check); it never fits.
         bundle_manifest = ONNXBundleExporter(cfg.packaging).export(
             out_dir=bundle_dir,
@@ -323,12 +351,12 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
                 if funnel is not None
                 else _identity_spec(dataset.feature_names)
             ),
-            candidates=tuning_result.tuned_candidates,
+            candidates=packaging_candidates,
             ensemble=ensemble_result,
             calibration=calibration_result,
             task_type=dataset.task_type,
             input_features=dataset.feature_names,
-            classes=_model_classes(tuning_result.tuned_candidates[0]),
+            classes=_model_classes(packaging_candidates[0]),
             X_train_raw=split.train.X,
             X_val_raw=split.val.X,
             X_val_model=funnel.transform(split.val).X if funnel is not None else split.val.X,

@@ -138,6 +138,7 @@ complexity_penalty       = 0.05
 # ic_window              = 500             # tùy chọn (mặc định None = thích ứng tối đa 500 nến)
 random_state             = 42
 device                   = "auto"        # "auto" (GPU cho XGBoost/CatBoost nếu có CUDA), "cpu", hoặc "cuda"
+refit_on_train_cal       = false         # true: refit model cuối trên Train+Cal-A+Cal-B sau khi khóa trọng số & T
 enabled_models           = ["lightgbm", "xgboost", "catboost"]
 ```
 
@@ -153,6 +154,7 @@ enabled_models           = ["lightgbm", "xgboost", "catboost"]
 | `models.ic_window` | `None` | `>= 20` hoặc `None` | Cửa sổ rolling IC không chồng lấn trong từng fold Walk-Forward (`fold_subwindow_ics`). Khi `None`, tự động thích ứng theo cỡ fold `max(20, min(500, n // 4))`; khi chỉ định tường minh, clamp theo `n // 4` trên fold nhỏ. |
 | `models.random_state` | `42` | `int` | Hạt giống ngẫu nhiên đảm bảo tính tái lập 100%. |
 | `models.device` | `"auto"` | `"auto"` \| `"cpu"` \| `"cuda"` | Thiết bị huấn luyện GBDT: `"auto"` tự động bật GPU CUDA cho XGBoost & CatBoost nếu có GPU NVIDIA (giữ LightGBM trên CPU); `"cpu"` ép chạy 100% CPU. |
+| `models.refit_on_train_cal` | `false` | `bool` | Tùy chọn opt-in (`STATIC_5WAY`): sau khi khóa siêu tham số, trọng số SLSQP và Temperature $T$, refit lại bản sao model cuối trên `Train + Cal-A + Cal-B` (giữ nguyên `FeatureFunnel` trên `Train`, tuyệt đối không chạm `Val`/`OOS`). |
 | `models.enabled_models` | `["lightgbm", "xgboost", "catboost"]` | Tập con hợp lệ | Danh sách các họ mô hình GBDT tham gia đấu loại. |
 
 ---

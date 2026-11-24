@@ -81,7 +81,8 @@ quantautoml/
 │           ├── buffer.py             # Dải đệm trễ Hysteresis Buffer Bands (Causal EMA + min_hold_bars)
 │           ├── evaluator.py          # Tính toán Net Sharpe, Daily Sharpe, DSR, MDD, OOS IC và Downside IC
 │           ├── runner.py             # Kịch bản chạy backtest độc lập trên tập OOS
-│           └── diagnostics.py        # Chẩn đoán read-only đa segment/regime (close vs next_open)
+│           ├── diagnostics.py        # Chẩn đoán read-only đa segment/regime (close vs next_open)
+│           └── walkforward.py        # Nghiệm thu đa cửa sổ Walk-Forward OOS có Purging & Embargo
 ├── tests/                            # Bộ kiểm thử tự động (Pytest)
 │   ├── conftest.py                   # Pytest fixtures tạo dữ liệu tài chính giả lập
 │   ├── unit/                         # Unit tests cho từng module riêng lẻ

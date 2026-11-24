@@ -11,6 +11,13 @@ from quantautoml.backtest.evaluator import OOSMetrics, evaluate_oos_performance
 from quantautoml.backtest.friction import FrictionCostModel
 from quantautoml.backtest.realworld_runner import RealWorldBacktestRunner, RealWorldMetrics
 from quantautoml.backtest.runner import OOSBacktestRunner
+from quantautoml.backtest.walkforward import (
+    WalkForwardOOSReport,
+    WalkForwardOOSRunner,
+    WalkForwardWindowResult,
+    WalkForwardWindowSpec,
+    generate_walkforward_windows,
+)
 
 __all__ = [
     "ExecutionDiagnostic",
@@ -21,7 +28,12 @@ __all__ = [
     "RealWorldBacktestRunner",
     "RealWorldMetrics",
     "SegmentDiagnostic",
+    "WalkForwardOOSReport",
+    "WalkForwardOOSRunner",
+    "WalkForwardWindowResult",
+    "WalkForwardWindowSpec",
     "diagnose_run_dir",
     "evaluate_bundle_segments",
     "evaluate_oos_performance",
+    "generate_walkforward_windows",
 ]
