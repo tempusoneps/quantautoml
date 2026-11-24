@@ -74,3 +74,52 @@ def test_run_command_uses_default_config_and_out(
 
     assert code == 0
     assert (tmp_path / "runs" / "default" / "01_data" / "segments" / "train.npz").is_file()
+
+
+def test_diagnose_command_writes_report_and_returns_zero(tmp_path: Path, capsys) -> None:
+    import json
+
+    import numpy as np
+    from bundle_helper import make_bundle
+
+    names = ["x0", "x1", "x2", "x3", "Open", "Close"]
+    run_dir = tmp_path / "run_diag"
+    make_bundle(run_dir / "05_packaging", names=names)
+    (run_dir / "01_data" / "segments").mkdir(parents=True, exist_ok=True)
+    (run_dir / "01_data" / "02_task.json").write_text(
+        json.dumps({"task_type": "binary_classification", "classes": [0, 1], "feature_names": names}),
+        encoding="utf-8",
+    )
+    (run_dir / "config.toml").write_text(
+        '[data]\nfeatures_path = "f.parquet"\n[split]\nhorizon_h = 5\n'
+        "[backtest]\nrank_window = 50\nic_window = 100\n",
+        encoding="utf-8",
+    )
+    rng = np.random.default_rng(3)
+    n = 300
+    X = rng.normal(size=(n, 6)).astype(np.float32)
+    close = 100.0 * np.cumprod(1.0 + 0.001 * rng.normal(size=n))
+    X[:, 4] = close.astype(np.float32)
+    X[:, 5] = close.astype(np.float32)
+    y = (X[:, 0] > 0).astype(np.int32)
+    ts = np.datetime64("2024-01-01T00:00:00", "us") + np.arange(n) * np.timedelta64(5, "m")
+    np.savez(
+        run_dir / "01_data" / "segments" / "oos.npz",
+        X=X,
+        y=y,
+        timestamps=ts,
+        index=np.arange(n, dtype=np.int64),
+    )
+
+    code = main(["diagnose", "--run-dir", str(run_dir)])
+    assert code == 0
+    out_file = run_dir / "06_backtest" / "03_regime_diagnostics.json"
+    assert out_file.is_file()
+    stdout = capsys.readouterr().out
+    assert "oos" in stdout
+
+
+def test_diagnose_command_returns_nonzero_on_missing_run_dir(tmp_path: Path, capsys) -> None:
+    code = main(["diagnose", "--run-dir", str(tmp_path / "does_not_exist")])
+    assert code == 1
+    assert "error" in capsys.readouterr().err.lower()

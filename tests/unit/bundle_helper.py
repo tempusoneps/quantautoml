@@ -53,7 +53,9 @@ class BundleFixture:
         return cal.calibrate(np.asarray(comb, dtype=np.float32))
 
 
-def make_bundle(tmp_path: Path, n_classes: int = 2, seed: int = 0) -> BundleFixture:
+def make_bundle(
+    tmp_path: Path, n_classes: int = 2, seed: int = 0, names: list[str] | None = None
+) -> BundleFixture:
     rng = np.random.default_rng(seed)
     n = 600
     X = rng.normal(size=(n, 6)).astype(np.float32)
@@ -73,7 +75,7 @@ def make_bundle(tmp_path: Path, n_classes: int = 2, seed: int = 0) -> BundleFixt
         export_candidate_onnx(m, Xp.shape[1], out / f"model_{k}.onnx")
     classes = list(range(n_classes))
     schema = FeatureSchemaContract.from_train(
-        INPUT_NAMES, list(SPEC.output_names), Xp, task, classes, 1e-8
+        list(INPUT_NAMES if names is None else names), list(SPEC.output_names), Xp, task, classes, 1e-8
     )
     (out / "features_schema.json").write_text(schema.to_json())
     (out / "ensemble_meta.json").write_text(json.dumps({

@@ -9,6 +9,7 @@ import json
 import time
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 import pandas as pd
@@ -76,30 +77,23 @@ class OOSBacktestRunner:
             signal_ema_span=cfg.signal_ema_span,
             min_hold_bars=cfg.min_hold_bars,
         ).positions(scores)
-        if cfg.execution_price == "next_open" and open_px is not None:
-            # Decision at bar t enters at Open[t+1] and marks/exits at Open[t+2] (matches Tier 2).
-            market = open_px[2:] / open_px[1:-1] - 1.0
-            pos = positions[:-2]
-            eval_scores, eval_y, eval_ts = scores[:-2], oos.y[:-2], oos.timestamps[:-2]
-        else:
-            # Position decided at bar t earns the return from Close[t] to Close[t+1].
-            market = close[1:] / close[:-1] - 1.0
-            pos = positions[:-1]
-            eval_scores, eval_y, eval_ts = scores[:-1], oos.y[:-1], oos.timestamps[:-1]
-        friction = FrictionCostModel(cfg.fee_bps, cfg.slippage_bps)
-        gross = pos * market
-        metrics = evaluate_oos_performance(
-            scores=eval_scores, y=eval_y, gross_returns=gross,
-            net_returns=friction.net_returns(gross, pos), turnover=friction.turnover(pos),
-            market_returns=market, periods_per_year=_periods_per_year(oos.timestamps),
-            latency_ms=latency_ms, cfg=cfg, latency_budget_ms=latency_budget_ms,
-            timestamps=eval_ts,
+        metrics, periods_per_year, n_gaps = evaluate_segment_execution(
+            scores=scores,
+            positions=positions,
+            y=oos.y,
+            timestamps=oos.timestamps,
+            close_px=close,
+            open_px=open_px,
+            execution_price=cfg.execution_price,
+            cfg=cfg,
+            latency_ms=latency_ms,
+            latency_budget_ms=latency_budget_ms,
         )
         if out_path is not None:
             report = metrics.model_dump()
             report |= {
-                "periods_per_year": _periods_per_year(oos.timestamps),
-                "n_overnight_gaps": _count_gaps(oos.timestamps),
+                "periods_per_year": periods_per_year,
+                "n_overnight_gaps": n_gaps,
                 "config": cfg.model_dump(),
             }
             Path(out_path).write_text(json.dumps(report, indent=2), encoding="utf-8")
@@ -124,6 +118,50 @@ class OOSBacktestRunner:
         if not (np.isfinite(px).all() and (px > 0).all()):
             raise BacktestError(f"price column '{col}' must be finite and > 0 on every OOS bar")
         return px
+
+
+def evaluate_segment_execution(
+    *,
+    scores: NDArray[np.float32],
+    positions: NDArray[np.float64],
+    y: NDArray[np.int32],
+    timestamps: NDArray[np.datetime64],
+    close_px: NDArray[np.float64],
+    open_px: NDArray[np.float64] | None,
+    execution_price: Literal["close", "next_open"],
+    cfg: BacktestConfig,
+    latency_ms: float | None = None,
+    latency_budget_ms: float = 5.0,
+) -> tuple[OOSMetrics, float, int]:
+    """Shared execution return-alignment and metric evaluation for Tier 1 and diagnostics."""
+    if execution_price == "next_open":
+        if open_px is None:
+            raise BacktestError(f"open price series required for execution_price='next_open'")
+        market = open_px[2:] / open_px[1:-1] - 1.0
+        pos = positions[:-2]
+        eval_scores, eval_y, eval_ts = scores[:-2], y[:-2], timestamps[:-2]
+    else:
+        market = close_px[1:] / close_px[:-1] - 1.0
+        pos = positions[:-1]
+        eval_scores, eval_y, eval_ts = scores[:-1], y[:-1], timestamps[:-1]
+    periods_per_year = _periods_per_year(timestamps)
+    n_gaps = _count_gaps(timestamps)
+    friction = FrictionCostModel(cfg.fee_bps, cfg.slippage_bps)
+    gross = pos * market
+    metrics = evaluate_oos_performance(
+        scores=eval_scores,
+        y=eval_y,
+        gross_returns=gross,
+        net_returns=friction.net_returns(gross, pos),
+        turnover=friction.turnover(pos),
+        market_returns=market,
+        periods_per_year=periods_per_year,
+        latency_ms=latency_ms,
+        cfg=cfg,
+        latency_budget_ms=latency_budget_ms,
+        timestamps=eval_ts,
+    )
+    return metrics, periods_per_year, n_gaps
 
 
 def _latency_ms(predictor: object, row: NDArray[np.float32], repeats: int) -> float:

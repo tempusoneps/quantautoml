@@ -8,29 +8,42 @@ Khi chạy lệnh `uv run quantautoml run --config config.toml --out runs/defaul
 
 ```
 runs/default/
-├── ingestion_report.json        # Báo cáo nạp dữ liệu, đồng bộ UTC, ép kiểu float32 & suy diễn fwd_ret_*
-├── task.json                    # Loại bài toán (binary/multiclass/unsupervised), danh sách lớp và 824 cột thô
-├── split_report.json            # Báo cáo chia tập dữ liệu (Static 5-way hoặc OOF) & số dòng Purging/Embargo
-├── train.npz                    # Dữ liệu phân đoạn Train (X, y, timestamps, index)
-├── cal_a.npz                    # Dữ liệu phân đoạn Cal-A (dùng cho Temperature Calibration)
-├── cal_b.npz                    # Dữ liệu phân đoạn Cal-B (dùng cho SLSQP Ensemble Optimization)
-├── val.npz                      # Dữ liệu phân đoạn Validation (dùng kiểm tra sai số số học ONNX < 1e-4)
-├── oos.npz                      # Dữ liệu phân đoạn Out-of-Sample (chỉ đọc bởi OOSBacktestRunner)
-├── funnel_report.json           # Nhật ký chi tiết 7 tầng lọc đặc trưng (F1 -> F8): số cột vào/ra & lý do loại
-├── selected_features.json       # Danh sách các đặc trưng tinh tuyển cuối cùng (Golden Feature Set)
-├── tournament_report.json       # Kết quả đấu loại 30 trials x 3 mô hình (LightGBM, CatBoost, XGBoost)
-├── decision_report.json         # Quyết định chọn Single Best Model hay Ensemble (Diversity, Marginal Gain, WF)
-├── tuning_report.json           # Kết quả tối ưu siêu tham số chuyên sâu bằng Optuna TPE + Hyperband
-├── ensemble_report.json         # Trọng số tối ưu SLSQP (Bootstrap N=200 + Shrinkage 1/K + Hurdle 5% check)
-├── calibration_report.json      # Tham số nhiệt độ T > 0, ECE trước/sau hiệu chuẩn & xác nhận bảo toàn Rank IC
-├── backtest_report.json         # Báo cáo nghiệm thu mù OOS (Rank IC, ICIR, Gross/Net Sharpe, MDD, Latency, Gates)
-└── bundle/                      # Gói mô hình ONNX độc lập sẵn sàng triển khai Production
-    ├── bundle_manifest.json     # Danh mục file trong bundle & sai số max_abs_diff thực tế trên tập Val
-    ├── ensemble_meta.json       # Trọng số mô hình, tham số nhiệt độ T, ngưỡng drift_z_threshold
-    ├── features_schema.json     # Hợp đồng dữ liệu (input_features, model_features, train_mean, train_std)
-    ├── preprocessor.onnx        # Đồ thị ONNX tiền xử lý (xử lý Inf/NaN, bool fill, sinh cột is_nan_*, trích cột)
-    ├── model_0.onnx             # Các mô hình GBDT đã biên dịch sang ONNX
-    └── predictor.py             # Engine suy luận độc lập (~75 dòng thuần numpy + onnxruntime)
+├── 00_run_manifest.json                     # Danh mục trạng thái & artifacts của toàn bộ 6 giai đoạn
+├── config.toml                              # Bản sao cấu hình chính xác đã dùng cho lần chạy
+├── 01_data/
+│   ├── 01_ingestion_report.json             # Báo cáo nạp dữ liệu, đồng bộ UTC, ép kiểu float32 & suy diễn fwd_ret_*
+│   ├── 02_task.json                         # Loại bài toán (binary/multiclass/unsupervised), danh sách lớp & tên cột thô
+│   ├── 03_split_report.json                 # Báo cáo chia tập dữ liệu (Static 5-way hoặc OOF) & số dòng Purging/Embargo
+│   └── segments/
+│       ├── train.npz                        # Dữ liệu phân đoạn Train (X, y, timestamps, index)
+│       ├── cal_a.npz                        # Dữ liệu phân đoạn Cal-A (SLSQP Ensemble Optimization)
+│       ├── cal_b.npz                        # Dữ liệu phân đoạn Cal-B (Temperature Calibration)
+│       ├── val.npz                          # Dữ liệu phân đoạn Validation (kiểm tra sai số số học ONNX < 1e-4)
+│       └── oos.npz                          # Dữ liệu phân đoạn Out-of-Sample (chỉ đọc bởi OOSBacktestRunner)
+├── 02_features/
+│   ├── 01_funnel_report.json                # Nhật ký chi tiết 8 tầng lọc đặc trưng (F1 -> F8): số cột vào/ra & lý do loại
+│   └── 02_selected_features.json            # Danh sách các đặc trưng tinh tuyển cuối cùng (Golden Feature Set)
+├── 03_models/
+│   ├── 01_tournament_report.json            # Kết quả đấu loại 30 trials x 3 mô hình (LightGBM, CatBoost, XGBoost)
+│   ├── 02_decision_report.json              # Quyết định chọn Single Best Model hay Ensemble (Diversity, Marginal Gain, WF)
+│   └── 03_tuning_report.json                # Kết quả tối ưu siêu tham số chuyên sâu bằng Optuna TPE + Hyperband
+├── 04_ensemble/
+│   ├── 01_ensemble_report.json              # Trọng số tối ưu SLSQP (Block Bootstrap + Shrinkage 1/K + OOB Hurdle 5%, ic_window_used)
+│   └── 02_calibration_report.json           # Tham số nhiệt độ T > 0, ECE trước/sau hiệu chuẩn & xác nhận Rank Invariance
+├── 05_packaging/
+│   └── bundle/                              # Gói mô hình ONNX độc lập sẵn sàng triển khai Production
+│       ├── bundle_manifest.json             # Danh mục file trong bundle & sai số max_abs_diff thực tế trên tập Val
+│       ├── ensemble_meta.json               # Trọng số mô hình, tham số nhiệt độ T, ngưỡng drift_z_threshold
+│       ├── features_schema.json             # Hợp đồng dữ liệu (input_features, model_features, train_mean, train_std)
+│       ├── preprocessor.onnx                # Đồ thị ONNX tiền xử lý (Inf/NaN, bool fill, sinh cột is_nan_*, trích cột)
+│       ├── model_0.onnx                     # Các mô hình GBDT đã biên dịch sang ONNX
+│       └── predictor.py                     # Engine suy luận độc lập (~78 dòng thuần numpy + onnxruntime)
+└── 06_backtest/
+    ├── 01_backtest_report.json              # Báo cáo nghiệm thu mù OOS (Rank IC, ICIR, Gross/Net/Daily Sharpe, DSR, MDD, Gates)
+    ├── 02_realworld_report.json             # (Tùy chọn Tier 2) Báo cáo mô phỏng khớp lệnh Open[t+1] qua backtesting.py
+    ├── 03_regime_diagnostics.json           # (Sinh bởi `quantautoml diagnose`) Chẩn đoán read-only đa segment (close vs next_open)
+    ├── backtest_report.html                 # (Tùy chọn Tier 2) Biểu đồ nến HTML tương tác
+    └── trades.csv                           # (Tùy chọn Tier 2) Nhật ký giao dịch chi tiết
 ```
 
 ---

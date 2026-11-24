@@ -49,7 +49,7 @@ flowchart LR
 
 ---
 
-### Phase 3: Cross-Regime Diagnostic & Realistic Execution Verification *(Active)*
+### Phase 3: Cross-Regime Diagnostic & Realistic Execution Verification *(Done)*
 - **Objective:** Đánh giá độ ổn định của model bundle qua nhiều regime biến động khác nhau (`cal_a`, `cal_b`, `val`, `oos`) và kiểm chứng độ nhạy thực thi (`close` vs `next_open` và Tier 2 `backtesting.py`).
 - **Prerequisites:** Phase 2 Done.
 - **Key Deliverables:**
@@ -59,4 +59,4 @@ flowchart LR
   4. Thử nghiệm thực tế trên `tb5_label` với `execution_price = "next_open"` và Tier 2 (`RealWorldBacktestRunner`; lưu ý Tier 2 chỉ tự chạy qua `OOSBacktestRunner` khi Tier 1 `accepted=true`).
 - **Independent Testability:**
   - Chạy `evaluate_bundle_segments` trên bundle mẫu tạo ra bảng metric đầy đủ cho từng segment (hoặc `skipped` có lý do rõ ràng) mà không thay đổi bất kỳ byte nào trong bundle.
-- **Status:** In Progress
+- **Status:** Done

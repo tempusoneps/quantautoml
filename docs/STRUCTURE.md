@@ -78,9 +78,10 @@ quantautoml/
 │       └── backtest/                 # Tầng nghiệm thu chiến lược mù độc lập trên tập OOS
 │           ├── __init__.py
 │           ├── friction.py           # Mô hình hóa ma trận chi phí (Taker Fee + Slippage) & Turnover
-│           ├── buffer.py             # Dải đệm trễ Hysteresis Buffer Bands kiểm soát vòng quay danh mục
-│           ├── evaluator.py          # Tính toán Net Sharpe, MDD, OOS IC và Downside IC
-│           └── runner.py             # Kịch bản chạy backtest độc lập trên tập OOS
+│           ├── buffer.py             # Dải đệm trễ Hysteresis Buffer Bands (Causal EMA + min_hold_bars)
+│           ├── evaluator.py          # Tính toán Net Sharpe, Daily Sharpe, DSR, MDD, OOS IC và Downside IC
+│           ├── runner.py             # Kịch bản chạy backtest độc lập trên tập OOS
+│           └── diagnostics.py        # Chẩn đoán read-only đa segment/regime (close vs next_open)
 ├── tests/                            # Bộ kiểm thử tự động (Pytest)
 │   ├── conftest.py                   # Pytest fixtures tạo dữ liệu tài chính giả lập
 │   ├── unit/                         # Unit tests cho từng module riêng lẻ
