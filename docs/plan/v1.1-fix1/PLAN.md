@@ -12,7 +12,7 @@
 - [x] **Task 1 (Audit #3):** F3+7 `ICStabilityFilter` — 1-sample t-test trên `rolling_ic` không chồng lấn cho BH-FDR & monotonicity gate kiểm tra suy giảm từ `target_horizon` trở đi
 - [x] **Task 2 (Audit #4):** `ModelTournament` & `DeepOptunaTuner` — tính `IC Sharpe` trên sub-window rolling IC nội bộ trong mỗi fold + đồng bộ thang đo `trial.report()` với `objective()` của `HyperbandPruner`
 - [x] **Task 3 (Audit #5):** Thống nhất Multiclass expected-class score (`cand.fitted_model.predict(X)` dùng đúng `classes_`) trong `pipeline.py` và kiểm chứng khớp tuyệt đối với `predictor.py`
-- [ ] **Task 4:** Chạy toàn bộ test suite (`uv run pytest tests/`), cập nhật `docs/FEATURES.md`, `graphify update .`, và chuyển Phase 2 → Done
+- [x] **Task 4:** Chạy toàn bộ test suite (`uv run pytest tests/`), cập nhật `docs/FEATURES.md`, `graphify update .`, và chuyển Phase 2 → Done
 
 ---
 
@@ -82,7 +82,7 @@
 
 ---
 
-### [ ] Task 4: Full Verification, Docs & Phase 2 Handoff
+### [x] Task 4: Full Verification, Docs & Phase 2 Handoff
 - **Files to Touch:**
   - Modify: `docs/FEATURES.md` (cập nhật đặc tả F3+7)
   - Modify: `docs/plan/v1.1-fix1/PHASES.md`, `docs/plan/v1.1-fix1/SCOPE.md`, `docs/plan/v1.1-fix1/PLAN.md`
@@ -99,7 +99,7 @@
 ---
 
 ## Final Verification Checklist (Phase 2)
-- [ ] `uv run pytest tests/` PASS 100%.
-- [ ] F3+7 dùng 1-sample t-test trên `rolling_ic` cho BH-FDR và kiểm tra monotonicity từ `target_horizon` trở đi.
-- [ ] `ModelTournament` và `DeepOptunaTuner` tính `IC Sharpe` trên sub-window rolling ICs; `HyperbandPruner` nhận đúng thang đo của `objective()`.
-- [ ] Multiclass score thống nhất `probs @ classes_` xuyên suốt từ Tournament → Tuner → Cal-A → Cal-B → ONNX Predictor.
+- [x] `uv run pytest tests/` PASS 100%.
+- [x] F3+7 dùng 1-sample t-test trên `rolling_ic` cho BH-FDR và kiểm tra monotonicity từ `target_horizon` trở đi.
+- [x] `ModelTournament` và `DeepOptunaTuner` tính `IC Sharpe` trên sub-window rolling ICs; `HyperbandPruner` nhận đúng thang đo của `objective()`.
+- [x] Multiclass score thống nhất `probs @ classes_` xuyên suốt từ Tournament → Tuner → Cal-A → Cal-B → ONNX Predictor.

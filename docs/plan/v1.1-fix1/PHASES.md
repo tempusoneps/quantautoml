@@ -34,7 +34,7 @@ flowchart LR
 
 ---
 
-### Phase 2: Statistical Rigor & Objective Alignment *(Active)*
+### Phase 2: Statistical Rigor & Objective Alignment *(Done)*
 - **Objective:** Khắc phục sai lệch thống kê trong F3+7 (FDR & Monotonicity), ổn định hóa ước lượng `IC Sharpe` trong Walk-Forward CV, và thống nhất định nghĩa Score xuyên suốt từ Tournament đến ONNX Predictor.
 - **Prerequisites:** Phase 1 Done.
 - **Key Deliverables:**
@@ -45,11 +45,11 @@ flowchart LR
   - Test trên chuỗi autoregressive tổng hợp xác nhận BH-FDR không bị false positive tràn lan; test feature đạt đỉnh ở $h=5$ không bị loại bởi monotonicity gate.
   - Test xác nhận model có IC ổn định cao luôn thắng model IC thấp nhưng 5 fold ngẫu nhiên sát nhau.
   - Test multiclass với nhãn không đều (vd `[-2, 0, 5]`) cho score khớp tuyệt đối giữa Python và ONNX Predictor.
-- **Status:** In Progress
+- **Status:** Done
 
 ---
 
-### Phase 3: Time-Series Bootstrap & Production Backtest Realism *(Planned)*
+### Phase 3: Time-Series Bootstrap & Production Backtest Realism *(Active)*
 - **Objective:** Nâng cấp thống kê bất định của trọng số Ensemble và độ tin cậy nghiệm thu OOS theo chuẩn quỹ định lượng thực chiến.
 - **Prerequisites:** Phase 2 Done.
 - **Key Deliverables:**
@@ -59,4 +59,4 @@ flowchart LR
 - **Independent Testability:**
   - Test xác nhận Block Bootstrap giữ nguyên cấu trúc block liên tiếp và Hurdle gate không bị lạc quan giả trên dữ liệu nhiễu thuần.
   - Test so sánh Daily Net Sharpe trên dữ liệu có overnight gap; test Walk-Forward OOS đảm bảo mọi cửa sổ tuân thủ purging/embargo $h$ nến.
-- **Status:** Planned
+- **Status:** In Progress

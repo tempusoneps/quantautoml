@@ -24,10 +24,10 @@ Khắc phục toàn bộ **8 điểm yếu và lỗi kỹ thuật định lượ
 - [x] **Audit #2 (Temporal Causality `Cal-A` ↔ `Cal-B`):** Đổi thứ tự nhân quả chuẩn — fit trọng số SLSQP Ensemble trên `Cal-A` (60–70%), sau đó áp trọng số đó lên `Cal-B` (70–80%) để fit Temperature Scaling gần `Val`/`OOS` hơn.
 - [x] **Audit #6 (F2 `MultiMetricVarianceFilter`):** Thay cổng `unique_ratio = n_unique / N` (phụ thuộc cỡ mẫu $N$, loại nhầm biến rời rạc/chu kỳ) bằng ngưỡng bất biến theo $N$ (`max_top_freq_ratio`, mặc định `0.995`); giữ tương thích ngược cho `min_unique_ratio` (mặc định `0.0`); hiệu chuẩn lại hoặc vô hiệu hóa dead gate `max_peak_var_ratio = 50`.
 
-### Phase 2 — Statistical Rigor & Objective Alignment *(Planned)*
-- [ ] **Audit #3 (F3+7 FDR & Monotonicity):** Tính p-value BH-FDR trên chuỗi `rolling_ic` không chồng lấn (tránh t-stat ảo do overlapping returns); đổi cổng monotonicity thành kiểm tra suy giảm từ `target_horizon` trở đi thay vì ép đỉnh tại $h=1$.
-- [ ] **Audit #4 (CV `IC Sharpe` & HyperbandPruner):** Tính `IC Sharpe` từ chuỗi rolling IC nội bộ trong mỗi fold (tăng số điểm quan sát từ 5 lên ~30–100); đồng bộ thang đo giữa `trial.report()` và giá trị trả về của `objective()`.
-- [ ] **Audit #5 (Multiclass Score & Ensemble Scaling):** Dùng đúng vector `classes` thật xuyên suốt Tournament → Tuner → Cal-A/Cal-B → `predictor.py`; chuẩn hóa thang đo (logit/calibrated probs) trước khi trộn trọng số để khớp giữa bước tối ưu SLSQP và bước suy luận ONNX.
+### Phase 2 — Statistical Rigor & Objective Alignment *(Done)*
+- [x] **Audit #3 (F3+7 FDR & Monotonicity):** Tính p-value BH-FDR trên chuỗi `rolling_ic` không chồng lấn (tránh t-stat ảo do overlapping returns); đổi cổng monotonicity thành kiểm tra suy giảm từ `target_horizon` trở đi thay vì ép đỉnh tại $h=1$.
+- [x] **Audit #4 (CV `IC Sharpe` & HyperbandPruner):** Tính `IC Sharpe` từ chuỗi rolling IC nội bộ trong mỗi fold (tăng số điểm quan sát từ 5 lên ~30–100); đồng bộ thang đo giữa `trial.report()` và giá trị trả về của `objective()`.
+- [x] **Audit #5 (Multiclass Score & Ensemble Scaling):** Dùng đúng vector `classes` thật xuyên suốt Tournament → Tuner → Cal-A/Cal-B → `predictor.py`; chuẩn hóa thang đo (logit/calibrated probs) trước khi trộn trọng số để khớp giữa bước tối ưu SLSQP và bước suy luận ONNX.
 
 ### Phase 3 — Time-Series Bootstrap & Production Backtest Realism *(Planned)*
 - [ ] **Audit #7 (Block Bootstrap & OOF Hurdle):** Chuyển `BootstrapShrinkageEngine` sang Moving Block Bootstrap (block length $\ge 2h$); đánh giá cổng Hurdle `+5%` (`RULE-05`) trên dự đoán OOF nội bộ thay vì in-sample.

@@ -57,13 +57,13 @@ flowchart TD
 ---
 
 ### 2.3. Tầng F3+7: IC Stability, FDR Gate & Term Structure (`ic_stability.py`)
-- **Mục tiêu:** Đảm bảo khả năng dự báo bền vững theo thời gian, kiểm soát đa giả thuyết (FDR) và kiểm tra tính đơn điệu của cấu trúc kỳ hạn.
+- **Mục tiêu:** Đảm bảo khả năng dự báo bền vững theo thời gian, kiểm soát đa giả thuyết (FDR) an toàn trước tự tương quan chuỗi, và kiểm tra tính đơn điệu suy giảm của cấu trúc kỳ hạn.
 - **Quy tắc & Ngưỡng:**
-  1. **ICIR trên Target Horizon:** $\text{ICIR}(h_{\text{target}}) = \frac{\text{Mean}(\text{Rolling\_IC})}{\text{Std}(\text{Rolling\_IC})} > \text{icir\_min}$ ($0.30$) với cửa sổ cuộn $w=63$. Dấu của IC phải đồng nhất qua các kỳ hạn.
-  2. **Kiểm soát đa giả thuyết Benjamini-Hochberg (RULE-08):**
+  1. **ICIR trên Target Horizon:** $\text{ICIR}(h_{\text{target}}) = \frac{\text{Mean}(\text{Rolling\_IC})}{\text{Std}(\text{Rolling\_IC})} > \text{icir\_min}$ ($0.30$) với cửa sổ cuộn không chồng lấn $w=63$. Dấu của IC phải đồng nhất qua các kỳ hạn.
+  2. **Kiểm soát đa giả thuyết Benjamini-Hochberg (RULE-08):** Tính $p$-value bằng kiểm định **1-sample t-test trên chuỗi `Rolling_IC` không chồng lấn** tại $h_{\text{target}}$ (tránh thổi phồng t-stat do overlapping forward returns), sau đó áp Benjamini-Hochberg:
      $$p_{(1)} \le p_{(2)} \le \dots \le p_{(M)}, \quad k = \max \left\{ i : p_{(i)} \le \frac{i}{M} \alpha \right\} \quad (\alpha = 0.05)$$
      Chỉ giữ các feature có $p \le p_{(k)}$.
-  3. **Cấu trúc kỳ hạn đơn điệu (Term Structure Monotonicity):** Trên các horizons $\{1, 5, 10, 21\}$, mức độ thông tin phải suy giảm tự nhiên:
+  3. **Cấu trúc kỳ hạn đơn điệu (Term Structure Monotonicity):** Từ `target_horizon` trở đi ($h_i \ge h_{\text{target}}$), mức độ thông tin phải suy giảm tự nhiên (không loại nhầm alpha trung hạn khi $h < h_{\text{target}}$ bị nhiễu microstructure):
      $$|\text{ICIR}(h_i)| \ge |\text{ICIR}(h_{i+1})| - \epsilon_{\text{tolerance}} \quad (\epsilon = 0.05)$$
 
 ---
