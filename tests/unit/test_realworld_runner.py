@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-pytest.importorskip("backtesting")
+pytest.importorskip("tempusonebt")
 
 from quantautoml.backtest.realworld_runner import (  # noqa: E402
     RealWorldBacktestRunner,

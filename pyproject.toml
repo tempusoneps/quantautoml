@@ -33,8 +33,8 @@ quantautoml = "quantautoml.cli:main"
 
 [dependency-groups]
 dev = [
-    "backtesting>=0.6.6",
     "pytest>=8.0.0",
+    "tempusonebt",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -47,3 +47,4 @@ addopts = "-q"
 [tool.uv.sources]
 autofcholv = { git = "https://github.com/tempusoneps/autofcholv.git", branch = "develop" }
 labelohlcv = { git = "https://github.com/tempusoneps/labelohlcv.git", branch = "develop" }
+tempusonebt = { git = "https://github.com/tempusoneps/tempusonebt.git" }

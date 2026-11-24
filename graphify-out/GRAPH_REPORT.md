@@ -1,7 +1,7 @@
 # Graph Report - quantautoml  (2026-11-24)
 
 ## Corpus Check
-- 287 files · ~883,025 words
+- 287 files · ~883,040 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d237a162`
+- Built from commit: `d62989df`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -435,8 +435,8 @@ Cohesion: 0.22
 Nodes (8): 1. Vai Trò & Tôn Chỉ Kỹ Thuật (Persona & Core Philosophy), 2.1. Giao Thức Khởi Động Phiên Làm Việc (Session Onboarding & State Discovery Protocol), 2.2. Giao Thức Quản Lý Vòng Đời Trạng Thái (State Lifecycle Management), 2.3. Các bước bắt buộc khi thực hiện task:, 2. Quy Trình Làm Việc Tiêu Chuẩn Cho Agent (Workflow), 3. Nguyên Tắc An Toàn Định Lượng (Quant Safety Directives), 4. Hướng Dẫn Debug & Xử Lý Sự Cố (Root-Cause Debugging), AI Agent Guidelines — Quant AutoML Pipeline
 
 ### Community 39 - "Quantitative metrics shared across pipeline layers."
-Cohesion: 0.11
-Nodes (24): _aggregate_report(), generate_walkforward_windows(), BaseModel, Path, Multi-Window Walk-Forward OOS evaluator with strict Purging & Embargo (RULE-01)., Evaluates a strategy across multiple sequential OOS windows with purging (RULE-0, Slice ``dataset`` chronologically, enforce zero-leakage invariants, and aggregat, Chronological boundaries for one expanding walk-forward OOS window.      ``train (+16 more)
+Cohesion: 0.12
+Nodes (22): _aggregate_report(), generate_walkforward_windows(), BaseModel, Path, Multi-Window Walk-Forward OOS evaluator with strict Purging & Embargo (RULE-01)., Evaluates a strategy across multiple sequential OOS windows with purging (RULE-0, Slice ``dataset`` chronologically, enforce zero-leakage invariants, and aggregat, Per-window OOS evaluation summary. (+14 more)
 
 ### Community 40 - "graphify reference: query, path, explain"
 Cohesion: 0.33
@@ -583,8 +583,8 @@ Cohesion: 0.12
 Nodes (24): HysteresisBuffer, float32, float64, NDArray, Apply causal EMA smoothing (span=1 returns input unchanged; NaN/Inf-safe)., Percentile in [0, 1] of ``scores[t]`` within ``scores[t-w+1 : t+1]``; NaN before, State machine over percentiles: +1 long, -1 short, 0 flat (also while pct is NaN, _buf() (+16 more)
 
 ### Community 88 - "validate_numerical_precision"
-Cohesion: 0.26
-Nodes (25): IndexArray, DataLeakageError, A look-ahead leakage invariant was violated (RULE-01)., Dataset, Segment, SegmentSummary, SplitMode, SplitReport (+17 more)
+Cohesion: 0.23
+Nodes (27): IndexArray, Chronological boundaries for one expanding walk-forward OOS window.      ``train, WalkForwardWindowSpec, DataLeakageError, A look-ahead leakage invariant was violated (RULE-01)., Dataset, Segment, SegmentSummary (+19 more)
 
 ### Community 89 - "apply_fdr_correction"
 Cohesion: 0.17
@@ -780,7 +780,7 @@ Nodes (16): _calib(), _ensemble(), _export(), fx(), Path, ONNXBundleExporter: fi
 
 ### Community 137 - "test_backtest_strategy.py"
 Cohesion: 0.16
-Nodes (15): BacktestingPyStrategy, Thin backtesting.py adapter: replays pre-computed positions (Tier 2)., Issues Market orders following the pre-computed ``_position`` column.      The o, Strategy, _ohlcv(), DataFrame, Unit tests for BacktestingPyStrategy (adapter for pre-computed positions)., With size_mode='start_cash', trade size is computed from initial_cash rather tha (+7 more)
+Nodes (15): BacktestingPyStrategy, Thin tempusonebt adapter: replays pre-computed positions (Tier 2)., Issues Market orders following the pre-computed ``_position`` column.      The o, Strategy, _ohlcv(), DataFrame, Unit tests for BacktestingPyStrategy (adapter for pre-computed positions)., With size_mode='start_cash', trade size is computed from initial_cash rather tha (+7 more)
 
 ### Community 138 - "bootstrap.py"
 Cohesion: 0.15
@@ -1000,7 +1000,7 @@ Nodes (12): 1. Tham số Đóng gói ONNX (`[packaging]`), 2. Tham số Kiểm t
 
 ### Community 193 - "calc_rolling_ic"
 Cohesion: 0.17
-Nodes (11): 1. True OOF Predictions trong `OOF_ASSISTED` Mode (Audit #1), 3. Thay thế `unique_ratio` trong F2 `MultiMetricVarianceFilter` (Audit #6), 4. P-value cho BH-FDR trong F3+7 (Audit #3 — Phase 2), 5. Bar-level Sharpe vs Daily-Aggregated Net Sharpe (Audit #8 — Phase 3), Architectural & Quantitative Trade-offs — `v1.1-fix1`, Các phương án cân nhắc:, Các phương án cân nhắc:, Các phương án cân nhắc: (+3 more)
+Nodes (11): 2. Thứ tự `Cal-A` và `Cal-B` (Audit #2), 3. Thay thế `unique_ratio` trong F2 `MultiMetricVarianceFilter` (Audit #6), 4. P-value cho BH-FDR trong F3+7 (Audit #3 — Phase 2), 5. Bar-level Sharpe vs Daily-Aggregated Net Sharpe (Audit #8 — Phase 3), Architectural & Quantitative Trade-offs — `v1.1-fix1`, Các phương án cân nhắc:, Các phương án cân nhắc:, Các phương án cân nhắc: (+3 more)
 
 ### Community 194 - "2. Sinh File Cấu Hình `config.toml` Tự Động (`scripts/generate_config.py`)"
 Cohesion: 0.20
@@ -1156,7 +1156,7 @@ Nodes (4): Component & File Responsibilities (Phase 1 Active), Design Rules & Bo
 
 ### Community 233 - "2. Thứ tự `Cal-A` và `Cal-B` (Audit #2)"
 Cohesion: 0.67
-Nodes (3): 2. Thứ tự `Cal-A` và `Cal-B` (Audit #2), Các phương án cân nhắc:, Kết luận:
+Nodes (3): 1. True OOF Predictions trong `OOF_ASSISTED` Mode (Audit #1), Các phương án cân nhắc:, Kết luận:
 
 ## Knowledge Gaps
 - **1003 isolated node(s):** `quantautoml`, `generate_agents_markdown.sh script`, `generate_readme.sh script`, `graphify`, `0. First-time setup — style guide gate` (+998 more)

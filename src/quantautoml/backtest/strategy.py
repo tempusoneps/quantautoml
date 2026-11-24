@@ -1,11 +1,13 @@
-"""Thin backtesting.py adapter: replays pre-computed positions (Tier 2)."""
+"""Thin tempusonebt adapter: replays pre-computed positions (Tier 2)."""
 
 from __future__ import annotations
 
 try:
-    from backtesting import Strategy
+    from tempusonebt import Strategy
 except ImportError as e:
-    raise ImportError("backtesting package required: uv add --dev backtesting") from e
+    raise ImportError(
+        'tempusonebt package required: uv add --dev "tempusonebt @ git+https://github.com/tempusoneps/tempusonebt.git"'
+    ) from e
 
 
 class BacktestingPyStrategy(Strategy):  # type: ignore[misc]
@@ -15,7 +17,7 @@ class BacktestingPyStrategy(Strategy):  # type: ignore[misc]
     Positions are computed once in Tier 1 (HysteresisBuffer); nothing is re-derived here.
 
     Supported ``size_mode`` values:
-    - ``"auto"`` (default): full compounded equity (``backtesting.py`` default).
+    - ``"auto"`` (default): full compounded equity (``tempusonebt`` default).
     - ``"start_cash"`` or ``"_start_cash"``: fixed notional budget equal to ``initial_cash``
       (capped by currently available equity so orders are never rejected on drawdowns).
     - ``int >= 1`` (or numeric string ``"1"``, ``"5"``): fixed number of contracts/units.

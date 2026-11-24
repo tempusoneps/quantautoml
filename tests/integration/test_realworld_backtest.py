@@ -1,4 +1,4 @@
-"""Tier 2 (backtesting.py) end-to-end on a real bundle: HTML + trades.csv, gated by Tier 1."""
+"""Tier 2 (tempusonebt) end-to-end on a real bundle: HTML + trades.csv, gated by Tier 1."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 from bundle_helper import make_bundle
 
-pytest.importorskip("backtesting")
+pytest.importorskip("tempusonebt")
 
 from quantautoml.backtest import OOSBacktestRunner  # noqa: E402
 from quantautoml.common.config import BacktestConfig, RealWorldConfig  # noqa: E402

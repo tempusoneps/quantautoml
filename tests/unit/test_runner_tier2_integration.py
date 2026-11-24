@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 from bundle_helper import make_bundle
 
-pytest.importorskip("backtesting")
+pytest.importorskip("tempusonebt")
 
 from quantautoml.backtest import OOSBacktestRunner, OOSMetrics, RealWorldMetrics  # noqa: E402
 from quantautoml.common.config import BacktestConfig, RealWorldConfig  # noqa: E402

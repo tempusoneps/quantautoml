@@ -61,21 +61,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "backtesting"
-version = "0.6.6"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "bokeh" },
-    { name = "numpy" },
-    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14'" },
-    { name = "pandas", version = "3.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/be/20/235f1785fe312793b33449e448cb71b1a20af7bf9b526327bb24dbd3f5fd/backtesting-0.6.6.tar.gz", hash = "sha256:844af11c961fa0f47bfddb04b448416f93b02b731faadfa3df8b98a44081fd0b", size = 197242, upload-time = "2026-07-22T14:39:24.89Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/31/cac88cccbe547adb9f2b4f589c833a394f357ce04c28eff14f334d656b06/backtesting-0.6.6-py3-none-any.whl", hash = "sha256:d2fc29ab6e10fbf44b05570720cef144d6d0d2ec8e183977114f2be9c5089b78", size = 190843, upload-time = "2026-07-22T14:39:23.626Z" },
-]
-
-[[package]]
 name = "bokeh"
 version = "3.10.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1572,8 +1557,8 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "backtesting" },
     { name = "pytest" },
+    { name = "tempusonebt" },
 ]
 
 [package.metadata]
@@ -1599,8 +1584,8 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "backtesting", specifier = ">=0.6.6" },
     { name = "pytest", specifier = ">=8.0.0" },
+    { name = "tempusonebt", git = "https://github.com/tempusoneps/tempusonebt.git" },
 ]
 
 [[package]]
@@ -1829,6 +1814,17 @@ dependencies = [
     { name = "pandas", version = "3.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/e0/9a/37d92a6b470dc9088612c2399a68f1a9ac22872d4e1eff416818e22ab11b/ta-0.11.0.tar.gz", hash = "sha256:de86af43418420bd6b088a2ea9b95483071bf453c522a8441bc2f12bcf8493fd", size = 25308, upload-time = "2023-11-02T13:53:35.434Z" }
+
+[[package]]
+name = "tempusonebt"
+version = "0.1.dev19+gac16196cb"
+source = { git = "https://github.com/tempusoneps/tempusonebt.git#ac16196cb83cbd7a23133304c20257b9497f238f" }
+dependencies = [
+    { name = "bokeh" },
+    { name = "numpy" },
+    { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14'" },
+    { name = "pandas", version = "3.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14'" },
+]
 
 [[package]]
 name = "threadpoolctl"

@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-pytest.importorskip("backtesting")
+pytest.importorskip("tempusonebt")
 
-from backtesting import Backtest  # noqa: E402
+from tempusonebt import Backtest  # noqa: E402
 
 from quantautoml.backtest.strategy import BacktestingPyStrategy  # noqa: E402
 

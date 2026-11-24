@@ -1,6 +1,6 @@
-"""Tier 2 realistic execution: replays Tier 1 positions through backtesting.py.
+"""Tier 2 realistic execution: replays Tier 1 positions through tempusonebt.
 
-``backtesting`` is an optional dev dependency, so it is imported lazily inside ``run()``.
+``tempusonebt`` is an optional dev dependency, so it is imported lazily inside ``run()``.
 Nothing is fitted here (RULE-01); positions come from Tier 1 and are never recomputed.
 """
 
@@ -46,9 +46,11 @@ class RealWorldBacktestRunner:
     ) -> RealWorldMetrics:
         """Inject positions -> Backtest -> extract metrics -> optional HTML / CSV export."""
         try:
-            from backtesting import Backtest
+            from tempusonebt import Backtest
         except ImportError as e:
-            raise ImportError("backtesting package required: uv add --dev backtesting") from e
+            raise ImportError(
+                'tempusonebt package required: uv add --dev "tempusonebt @ git+https://github.com/tempusoneps/tempusonebt.git"'
+            ) from e
         from quantautoml.backtest.strategy import BacktestingPyStrategy
 
         cfg = self.cfg
@@ -124,6 +126,6 @@ class RealWorldBacktestRunner:
 
 
 def _num(value: object) -> float:
-    """backtesting.py reports undefined ratios as NaN; surface them as 0.0."""
+    """tempusonebt reports undefined ratios as NaN; surface them as 0.0."""
     x = float(value)  # type: ignore[arg-type]
     return 0.0 if math.isnan(x) else x

@@ -277,7 +277,7 @@ def build_config_content(
                 "min_downside_ic = 0.0",
                 "",
                 "[realworld]",
-                '# Tier 2 realistic execution via backtesting.py (set enabled = true to run)',
+                '# Tier 2 realistic execution via tempusonebt (set enabled = true to run)',
                 "enabled = false",
                 "cash = 1000000.0",
                 "commission = 0.00025",
