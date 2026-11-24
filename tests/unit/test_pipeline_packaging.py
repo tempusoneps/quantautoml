@@ -100,3 +100,26 @@ def test_pipeline_packaging_gets_train_and_val_only(tmp_path: Path, monkeypatch)
     assert seen["X_train_raw"] is result.split.train.X
     assert seen["X_val_raw"] is result.split.val.X
     assert not any(np.shares_memory(a, result.split.oos.X) for a in seen.values())
+
+
+def test_get_candidate_scores_uses_actual_multiclass_labels() -> None:
+    """Audit #5: _get_candidate_scores must use actual fitted_model.classes_ (e.g. [-2, 0, 5])
+    matching BaseGBDCandidate.predict and ONNX Predictor.predict, not np.arange(C).
+    """
+    from quantautoml.common.types import TaskType
+    from quantautoml.models.candidates import LightGBMCandidate
+    from quantautoml.models.tuner import TunedCandidate
+    from quantautoml.pipeline import _get_candidate_scores
+
+    rng = np.random.default_rng(7)
+    X = rng.standard_normal((120, 4)).astype(np.float32)
+    y = rng.choice(np.array([-2, 0, 5], dtype=np.int32), size=120)
+    model = LightGBMCandidate(TaskType.MULTICLASS_CLASSIFICATION, {"n_estimators": 10}, random_state=42)
+    model.fit(X, y)
+    cand = TunedCandidate(
+        model_name="lightgbm", best_params={"n_estimators": 10},
+        best_score=0.1, best_ic_sharpe=0.1, complexity_score=0.1, fitted_model=model,
+    )
+    scores = _get_candidate_scores(cand, X, TaskType.MULTICLASS_CLASSIFICATION)
+    expected = model.predict(X)
+    np.testing.assert_allclose(scores, expected, atol=1e-6)

@@ -11,7 +11,7 @@
 
 - [x] **Task 1 (Audit #3):** F3+7 `ICStabilityFilter` — 1-sample t-test trên `rolling_ic` không chồng lấn cho BH-FDR & monotonicity gate kiểm tra suy giảm từ `target_horizon` trở đi
 - [x] **Task 2 (Audit #4):** `ModelTournament` & `DeepOptunaTuner` — tính `IC Sharpe` trên sub-window rolling IC nội bộ trong mỗi fold + đồng bộ thang đo `trial.report()` với `objective()` của `HyperbandPruner`
-- [ ] **Task 3 (Audit #5):** Thống nhất Multiclass expected-class score (`cand.fitted_model.predict(X)` dùng đúng `classes_`) trong `pipeline.py` và kiểm chứng khớp tuyệt đối với `predictor.py`
+- [x] **Task 3 (Audit #5):** Thống nhất Multiclass expected-class score (`cand.fitted_model.predict(X)` dùng đúng `classes_`) trong `pipeline.py` và kiểm chứng khớp tuyệt đối với `predictor.py`
 - [ ] **Task 4:** Chạy toàn bộ test suite (`uv run pytest tests/`), cập nhật `docs/FEATURES.md`, `graphify update .`, và chuyển Phase 2 → Done
 
 ---
@@ -65,7 +65,7 @@
 
 ---
 
-### [ ] Task 3: Unified Multiclass Score (`probs @ classes_`) in Pipeline (Audit #5)
+### [x] Task 3: Unified Multiclass Score (`probs @ classes_`) in Pipeline (Audit #5)
 - **Files to Touch:**
   - Modify: `src/quantautoml/pipeline.py`
   - Modify: `tests/unit/test_pipeline_packaging.py`

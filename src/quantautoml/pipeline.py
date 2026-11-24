@@ -460,17 +460,8 @@ def _get_candidate_scores(
     X: np.ndarray,
     task_type: TaskType | None,
 ) -> np.ndarray:
-    if task_type == TaskType.BINARY_CLASSIFICATION:
-        probs = cand.fitted_model.predict_proba(X)
-        if probs.ndim == 2 and probs.shape[1] >= 2:
-            return probs[:, 1].astype(np.float32)
-        return probs.ravel().astype(np.float32)
-    elif task_type == TaskType.MULTICLASS_CLASSIFICATION:
-        probs = cand.fitted_model.predict_proba(X)
-        classes = np.arange(probs.shape[1], dtype=np.float32)
-        return (probs @ classes).astype(np.float32)
-    else:
-        return cand.fitted_model.predict(X).astype(np.float32)
+    """Unified continuous ranking score matching BaseGBDCandidate.predict & Predictor.predict."""
+    return cand.fitted_model.predict(X).astype(np.float32)
 
 
 def _get_candidate_probs(
