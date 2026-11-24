@@ -128,9 +128,10 @@ def test_features_section_parses(write_toml, valid_toml: str) -> None:
     assert cfg.features.dcor_threshold == 0.85
     assert cfg.features.cluster_distance == 0.30
     assert cfg.features.max_nan_ratio == 0.6
-    assert cfg.features.min_unique_ratio == 0.01
+    assert cfg.features.min_unique_ratio == 0.0
+    assert cfg.features.max_top_freq_ratio == 0.995
     assert cfg.features.min_cv == 1e-6
-    assert cfg.features.max_peak_var_ratio == 50.0
+    assert cfg.features.max_peak_var_ratio is None
     assert cfg.features.max_features == 30
     assert cfg.features.monotonic_tolerance == 0.05
 

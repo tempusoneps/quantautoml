@@ -27,10 +27,12 @@ class MultiMetricVarianceFilter(BaseFeatureFilter):
         full-Train variance (``0.0`` if that variance is zero),
       * ``unique_ratio = n_unique / n_valid``.
 
-    A column is dropped if ``n_unique < 2``, or (``n_unique > 2`` and
+    A column is dropped if ``n_unique < 2``, or
+    ``top_freq_ratio > max_top_freq_ratio`` (sample-size-invariant near-constant check),
+    or (``min_unique_ratio > 0`` and ``n_unique > 2`` and
     ``unique_ratio < min_unique_ratio``), or ``|cv| < min_cv``, or
-    ``peak_var_ratio > max_peak_var_ratio``. All-NaN columns are dropped. Transform only
-    selects columns.
+    (``max_peak_var_ratio is not None`` and ``peak_var_ratio > max_peak_var_ratio``).
+    All-NaN columns are dropped. Transform only selects columns.
 
     Note:
         ``peak_var_ratio`` is bounded: within-window variances average to at most about
@@ -75,8 +77,10 @@ class MultiMetricVarianceFilter(BaseFeatureFilter):
                 metrics[name] = (float("nan"), float("nan"), 0.0)
                 dropped[name] = "all NaN"
                 continue
-            n_unique = int(np.unique(valid).size)
+            _, counts = np.unique(valid, return_counts=True)
+            n_unique = int(counts.size)
             unique_ratio = n_unique / valid.size
+            top_freq_ratio = float(counts.max()) / valid.size
             mean = float(valid.mean(dtype=np.float64))
             cv = float(valid.std(dtype=np.float64)) / max(abs(mean), _EPS)
             metrics[name] = (cv, float(peak[j]), unique_ratio)
@@ -84,14 +88,26 @@ class MultiMetricVarianceFilter(BaseFeatureFilter):
             reason: str | None = None
             if n_unique < 2:
                 reason = f"n_unique {n_unique} < 2"
-            elif n_unique > 2 and unique_ratio < self.cfg.min_unique_ratio:
+            elif top_freq_ratio > self.cfg.max_top_freq_ratio:
+                reason = (
+                    f"top_freq_ratio {top_freq_ratio:.4g} > max_top_freq_ratio "
+                    f"{self.cfg.max_top_freq_ratio}"
+                )
+            elif (
+                self.cfg.min_unique_ratio > 0.0
+                and n_unique > 2
+                and unique_ratio < self.cfg.min_unique_ratio
+            ):
                 reason = (
                     f"unique_ratio {unique_ratio:.4g} < min_unique_ratio "
                     f"{self.cfg.min_unique_ratio}"
                 )
             elif abs(cv) < self.cfg.min_cv:
                 reason = f"|cv| {abs(cv):.4g} < min_cv {self.cfg.min_cv}"
-            elif peak[j] > self.cfg.max_peak_var_ratio:
+            elif (
+                self.cfg.max_peak_var_ratio is not None
+                and peak[j] > self.cfg.max_peak_var_ratio
+            ):
                 reason = (
                     f"peak_var_ratio {peak[j]:.4g} > max_peak_var_ratio "
                     f"{self.cfg.max_peak_var_ratio}"

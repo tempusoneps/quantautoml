@@ -65,11 +65,34 @@ def test_balanced_binary_kept() -> None:
     assert f.metrics_["flag"][2] == pytest.approx(2 / N)
 
 
-def test_low_unique_ratio_multivalued_dropped() -> None:
+def test_low_unique_ratio_multivalued_dropped_when_explicit() -> None:
     col = (np.arange(N) % 3).astype(np.float32)  # 3 uniques / 1000 = 0.003 < 0.01
-    f = _fit({"c": col})
+    f = _fit({"c": col}, _cfg(min_unique_ratio=0.01))
     assert f.output_names_ == ()
     assert f.report_ is not None and "unique_ratio" in f.report_.dropped["c"]
+
+
+def test_discrete_periodic_feature_survives_large_n() -> None:
+    n_big = 60_000
+    session_progress = ((np.arange(n_big) % 50) / 49.0).astype(np.float32)
+    color = ((np.arange(n_big) % 3) - 1).astype(np.float32)
+    f = _fit({"session_progress": session_progress, "color": color})
+    assert f.output_names_ == ("session_progress", "color")
+
+
+def test_near_constant_feature_dropped_by_top_freq_ratio() -> None:
+    col = np.zeros(N, dtype=np.float32)
+    col[:3] = [1.0, 2.0, 3.0]  # 99.7% zeros > default 0.995
+    f = _fit({"almost_const": col, "good": _normal(14)})
+    assert f.output_names_ == ("good",)
+    assert f.report_ is not None and "top_freq_ratio" in f.report_.dropped["almost_const"]
+
+
+def test_peak_var_ratio_disabled_when_none() -> None:
+    x = _normal(2)
+    x[100:260] = 5.0 + (x[100:260] - 5.0) * 40.0
+    f = _fit({"burst": x}, _cfg(max_peak_var_ratio=None))
+    assert f.output_names_ == ("burst",)
 
 
 def test_variance_burst_dropped_by_peak_var_ratio() -> None:

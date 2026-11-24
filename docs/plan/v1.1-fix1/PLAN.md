@@ -10,7 +10,7 @@
 ## Execution Order Overview
 
 - [x] **Task 1 (Data Slicing):** Thêm `date_from` / `date_to` vào `DataConfig` và cắt dataset ngay đầu bước `DataIngestion` (trước mọi xử lý)
-- [ ] **Task 2 (Audit #6):** Cập nhật `FeaturesConfig` và `MultiMetricVarianceFilter` (F2) sang `max_top_freq_ratio` bất biến theo $N$
+- [x] **Task 2 (Audit #6):** Cập nhật `FeaturesConfig` và `MultiMetricVarianceFilter` (F2) sang `max_top_freq_ratio` bất biến theo $N$
 - [ ] **Task 3 (Audit #2):** Đảo thứ tự nhân quả `Cal-A` (SLSQP Ensemble) → `Cal-B` (Temperature Calibration) trong `pipeline.py`
 - [ ] **Task 4 (Audit #1):** Sinh true OOF predictions cho Phase 4 trong chế độ `OOF_ASSISTED` (loại bỏ rò rỉ in-sample)
 - [ ] **Task 5:** Chạy toàn bộ test suite, cập nhật `graphify` & tài liệu `docs/CONFIGURATION.md` / `docs/FEATURES.md`
@@ -47,7 +47,7 @@
 
 ---
 
-### [ ] Task 2: F2 `MultiMetricVarianceFilter` — Sample-Size-Invariant Near-Constant Filter (Audit #6)
+### [x] Task 2: F2 `MultiMetricVarianceFilter` — Sample-Size-Invariant Near-Constant Filter (Audit #6)
 - **Files to Touch:**
   - Modify: `src/quantautoml/common/config.py`
   - Modify: `src/quantautoml/features/variance.py`
