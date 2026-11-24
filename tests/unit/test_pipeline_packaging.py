@@ -62,17 +62,17 @@ def run(tmp_path_factory):
 
 def test_pipeline_writes_bundle_when_packaging_configured(run) -> None:
     result, out, *_ = run
-    names = {p.name for p in (out / "bundle").iterdir()}
+    names = {p.name for p in (out / "05_packaging" / "bundle").iterdir()}
     assert {"preprocessor.onnx", "model_0.onnx", "ensemble_meta.json", "features_schema.json",
             "predictor.py", "bundle_manifest.json"} <= names
     assert result.bundle_manifest is not None
     assert result.backtest_metrics is None  # no [backtest] section -> no backtest stage
-    assert not (out / "backtest_report.json").exists()
+    assert not (out / "06_backtest").exists()
 
 
 def test_pipeline_bundle_precision_ok(run) -> None:
     _, out, *_ = run
-    manifest = json.loads((out / "bundle" / "bundle_manifest.json").read_text())
+    manifest = json.loads((out / "05_packaging" / "bundle" / "bundle_manifest.json").read_text())
     assert manifest["max_abs_diff"] < 1e-4
 
 
@@ -81,7 +81,7 @@ def test_pipeline_skips_bundle_without_packaging_section(tmp_path: Path) -> None
     cfg = tmp_path / "cfg.toml"
     cfg.write_text(PIPELINE_TOML.format(feat=feat, lab=lab))
     result = run_pipeline(cfg, tmp_path / "out")
-    assert result.bundle_manifest is None and not (tmp_path / "out" / "bundle").exists()
+    assert result.bundle_manifest is None and not (tmp_path / "out" / "05_packaging").exists()
 
 
 def test_pipeline_packaging_gets_train_and_val_only(tmp_path: Path, monkeypatch) -> None:

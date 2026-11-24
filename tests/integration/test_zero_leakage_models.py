@@ -84,8 +84,13 @@ def _signature(res: PipelineResult) -> dict[str, object]:
 
 def test_models_depend_only_on_train(cfg: PipelineConfig, tmp_path: Path) -> None:
     res1 = run_pipeline(cfg, tmp_path / "run1")
-    for name in ("tournament_report.json", "decision_report.json", "tuning_report.json"):
-        assert (tmp_path / "run1" / name).is_file()
+    report_names = (
+        "01_tournament_report.json",
+        "02_decision_report.json",
+        "03_tuning_report.json",
+    )
+    for name in report_names:
+        assert (tmp_path / "run1" / "03_models" / name).is_file()
 
     cutoff = res1.split.train.timestamps[-1]
     cfg2 = _rewrite_sources(cfg, tmp_path, cutoff=cutoff, perturb_train=False)
@@ -99,8 +104,11 @@ def test_models_depend_only_on_train(cfg: PipelineConfig, tmp_path: Path) -> Non
     assert not np.array_equal(res1.split.val.y, res2.split.val.y)
 
     assert _signature(res1) == _signature(res2)
-    for name in ("tournament_report.json", "decision_report.json", "tuning_report.json"):
-        assert (tmp_path / "run1" / name).read_bytes() == (tmp_path / "run2" / name).read_bytes()
+    for name in report_names:
+        assert (
+            (tmp_path / "run1" / "03_models" / name).read_bytes()
+            == (tmp_path / "run2" / "03_models" / name).read_bytes()
+        )
 
 
 def test_leakage_check_has_teeth(cfg: PipelineConfig, tmp_path: Path) -> None:

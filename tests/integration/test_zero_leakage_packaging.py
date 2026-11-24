@@ -79,8 +79,8 @@ def run_a(tmp_path_factory):
 
 def test_end_to_end_raw_data_to_bundle_and_report(run_a) -> None:
     result, out = run_a
-    assert (out / "bundle" / "predictor.py").exists()
-    rep = json.loads((out / "backtest_report.json").read_text())
+    assert (out / "05_packaging" / "bundle" / "predictor.py").exists()
+    rep = json.loads((out / "06_backtest" / "01_backtest_report.json").read_text())
     assert result.backtest_metrics is not None
     assert rep["accepted"] == result.backtest_metrics.accepted
     assert {"rank_ic", "net_sharpe", "max_drawdown", "downside_ic", "gates"} <= set(rep)
@@ -91,7 +91,10 @@ def test_oos_cannot_influence_bundle(run_a, tmp_path: Path) -> None:
     feat, lab = _write(tmp_path, mutate=result_a.split.oos.index)
     run_pipeline(_cfg(tmp_path, feat, lab), tmp_path / "out")
     for name in ("ensemble_meta.json", "features_schema.json"):
-        assert (out_a / "bundle" / name).read_text() == (tmp_path / "out" / "bundle" / name).read_text()
+        assert (
+            (out_a / "05_packaging" / "bundle" / name).read_text()
+            == (tmp_path / "out" / "05_packaging" / "bundle" / name).read_text()
+        )
 
 
 def test_packaging_and_backtest_never_call_fit(tmp_path: Path, monkeypatch) -> None:

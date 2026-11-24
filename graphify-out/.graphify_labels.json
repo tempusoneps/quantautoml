@@ -162,7 +162,6 @@
   "160": "Terminal Window (CLI-chrome variant)",
   "161": "Fishbone / Ishikawa (root-cause)",
   "162": "Heatmap",
-  "163": "Kanban Board",
   "164": "User Story Map",
   "165": "UML Class Diagram",
   "166": "Waterfall Chart",
@@ -179,7 +178,6 @@
   "177": "._fit",
   "178": "Annotation Callout (italic-serif aside)",
   "179": "People",
-  "180": "Deployment",
   "181": "State Machine",
   "182": "Venn / Set Overlap",
   "183": "export_png.py",
@@ -198,11 +196,9 @@
   "196": "Export block registry (`--registry`)",
   "197": "SBGN",
   "198": "System Architecture & Technical Specifications: Quant AutoML Pipeline",
-  "199": "test_zero_leakage_ensemble.py",
   "200": "Danh Mục Báo Cáo & Artifacts Đầu Ra (`OUTPUTS`)",
   "201": "Repository & Codebase Structure: Quant AutoML Pipeline",
   "202": "4. Mathematical Formulations & Optimization Engines",
   "203": "Quant AutoML Pipeline",
-  "204": "generate_readme.sh",
-  "205": "_fwd"
+  "204": "generate_readme.sh"
 }

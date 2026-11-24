@@ -149,5 +149,5 @@ def test_pipeline_with_ensemble_and_calibration(tmp_path: Path) -> None:
     assert res.calibration_result is not None
 
     # Check generated report files
-    assert (out_dir / "ensemble_report.json").exists()
-    assert (out_dir / "calibration_report.json").exists()
+    assert (out_dir / "04_ensemble" / "01_ensemble_report.json").exists()
+    assert (out_dir / "04_ensemble" / "02_calibration_report.json").exists()

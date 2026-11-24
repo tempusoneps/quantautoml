@@ -27,7 +27,7 @@ def test_run_command_writes_artifacts(tmp_path: Path, make_frames, capsys) -> No
     code = main(["run", "--config", str(_toml(tmp_path, fp, lp)), "--out", str(out)])
 
     assert code == 0
-    assert (out / "train.npz").is_file()
+    assert (out / "01_data" / "segments" / "train.npz").is_file()
     stdout = capsys.readouterr().out
     assert "mode=oof_assisted" in stdout
     assert "start=" in stdout

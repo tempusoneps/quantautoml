@@ -1,8 +1,16 @@
-"""Pipeline: runs every implemented stage; later stages are skipped until implemented.
+"""Pipeline: runs every implemented stage and writes phase-ordered artifacts.
 
-Stages: ingestion -> task inference -> split -> (only when ``cfg.features`` is set)
-FeatureFunnel fitted on Train, which adds ``funnel_report.json`` and
-``selected_features.json`` to ``out_dir``. Segment ``.npz`` files keep the unfiltered X.
+Output layout under ``out_dir``::
+
+    00_run_manifest.json
+    01_data/       (01_ingestion_report.json, 02_task.json, 03_split_report.json, segments/*.npz)
+    02_features/   (01_funnel_report.json, 02_selected_features.json)
+    03_models/     (01_tournament_report.json, 02_decision_report.json, 03_tuning_report.json)
+    04_ensemble/   (01_ensemble_report.json, 02_calibration_report.json)
+    05_packaging/  (bundle/)
+    06_backtest/   (01_backtest_report.json, 02_realworld_report.json, backtest_report.html, trades.csv)
+
+Skipped phase directories are not created. Segment ``.npz`` files keep the unfiltered X.
 """
 
 from __future__ import annotations
@@ -51,35 +59,71 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
     cfg = load_config(config) if isinstance(config, (str, Path)) else config
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
+    phases: list[dict[str, object]] = []
 
+    # --- Phase 01: Data Ingestion, Task Inference & Adaptive Temporal Split ---
+    data_dir = out / "01_data"
+    segments_dir = data_dir / "segments"
     dataset = DataIngestion(cfg).load()
     split = AdaptiveTimeSeriesSplitter().split(dataset, cfg.split.horizon_h)
 
-    _dump_json(out / "ingestion_report.json", dataset.report.to_dict())
-    _dump_json(out / "split_report.json", split.report.to_dict())
+    ingestion_path = data_dir / "01_ingestion_report.json"
+    task_path = data_dir / "02_task.json"
+    split_path = data_dir / "03_split_report.json"
+    _dump_json(ingestion_path, dataset.report.to_dict())
     _dump_json(
-        out / "task.json",
+        task_path,
         {
             "task_type": dataset.task_type.value,
             "classes": None if dataset.classes_ is None else dataset.classes_.tolist(),
             "feature_names": list(dataset.feature_names),
         },
     )
+    _dump_json(split_path, split.report.to_dict())
     segments = {"train": split.train, "val": split.val, "oos": split.oos}
     if split.cal_a is not None and split.cal_b is not None:
         segments |= {"cal_a": split.cal_a, "cal_b": split.cal_b}
     for name, seg in segments.items():
-        _save_segment(out / f"{name}.npz", seg)
+        _save_segment(segments_dir / f"{name}.npz", seg)
+    phases.append(
+        {
+            "phase": "01_data",
+            "status": "completed",
+            "artifacts": {
+                "ingestion_report": _rel(ingestion_path, out),
+                "task": _rel(task_path, out),
+                "split_report": _rel(split_path, out),
+                "segments_dir": _rel(segments_dir, out),
+            },
+        }
+    )
 
+    # --- Phase 02: Leakage-Free Feature Funnel ---
     funnel: FeatureFunnel | None = None
     if cfg.features is not None:
+        feat_dir = out / "02_features"
         funnel = FeatureFunnel(cfg.features).fit(split, dataset)
-        _dump_json(out / "funnel_report.json", [asdict(r) for r in funnel.reports_])
+        funnel_path = feat_dir / "01_funnel_report.json"
+        selected_path = feat_dir / "02_selected_features.json"
+        _dump_json(funnel_path, [asdict(r) for r in funnel.reports_])
         _dump_json(
-            out / "selected_features.json",
+            selected_path,
             {"selected_features": list(funnel.selected_features_)},
         )
+        phases.append(
+            {
+                "phase": "02_features",
+                "status": "completed",
+                "artifacts": {
+                    "funnel_report": _rel(funnel_path, out),
+                    "selected_features": _rel(selected_path, out),
+                },
+            }
+        )
+    else:
+        phases.append({"phase": "02_features", "status": "skipped", "artifacts": {}})
 
+    # --- Phase 03: Model Tournament, Decision Engine & Deep Optuna Tuning ---
     tournament_result: TournamentResult | None = None
     decision_report: DecisionReport | None = None
     tuning_result: TuningResult | None = None
@@ -88,17 +132,20 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
         if split.train.y is None:
             raise InvalidDataError("Cannot train models without labels (UNSUPERVISED task)")
 
+        models_dir = out / "03_models"
         train_seg = funnel.transform(split.train) if funnel is not None else split.train
 
         tournament = ModelTournament(cfg.models, dataset.task_type)
         tournament_result = tournament.run(
             train_seg.X, train_seg.y, embargo_bars=cfg.split.horizon_h
         )
-        _dump_json(out / "tournament_report.json", tournament_result.model_dump())
+        tournament_path = models_dir / "01_tournament_report.json"
+        _dump_json(tournament_path, tournament_result.model_dump())
 
         decision_engine = ModelDecisionEngine(cfg.models)
         decision_report = decision_engine.evaluate(tournament_result, train_seg.y)
-        _dump_json(out / "decision_report.json", decision_report.model_dump())
+        decision_path = models_dir / "02_decision_report.json"
+        _dump_json(decision_path, decision_report.model_dump())
 
         tuner = DeepOptunaTuner(cfg.models, dataset.task_type)
         tuning_result = tuner.tune(
@@ -120,8 +167,23 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             ],
             "study_summaries": tuning_result.study_summaries,
         }
-        _dump_json(out / "tuning_report.json", tuning_payload)
+        tuning_path = models_dir / "03_tuning_report.json"
+        _dump_json(tuning_path, tuning_payload)
+        phases.append(
+            {
+                "phase": "03_models",
+                "status": "completed",
+                "artifacts": {
+                    "tournament_report": _rel(tournament_path, out),
+                    "decision_report": _rel(decision_path, out),
+                    "tuning_report": _rel(tuning_path, out),
+                },
+            }
+        )
+    else:
+        phases.append({"phase": "03_models", "status": "skipped", "artifacts": {}})
 
+    # --- Phase 04: Convex Ensemble Optimization & Temperature Calibration ---
     ensemble_result: EnsembleWeightsResult | None = None
     calibration_result: CalibrationResult | None = None
 
@@ -158,6 +220,7 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             and cal_a_seg is not None
             and cal_a_seg.y is not None
         ):
+            ensemble_dir = out / "04_ensemble"
             # 1. Collect candidate predictions on Cal-B
             cal_b_preds = np.column_stack([
                 _get_candidate_scores(cand, cal_b_seg.X, dataset.task_type)
@@ -167,7 +230,8 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             # 2. Fit Bootstrap SLSQP Ensemble on Cal-B
             ensemble_engine = BootstrapShrinkageEngine(cfg.ensemble)
             ensemble_result = ensemble_engine.fit(cal_b_preds, cal_b_seg.y)
-            _dump_json(out / "ensemble_report.json", ensemble_result.model_dump())
+            ensemble_path = ensemble_dir / "01_ensemble_report.json"
+            _dump_json(ensemble_path, ensemble_result.model_dump())
 
             # 3. Combine predictions on Cal-A using optimal weights
             weights_arr = np.array(ensemble_result.weights, dtype=np.float32)
@@ -193,8 +257,25 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             )
             calibrator.fit(cal_a_comb, cal_a_seg.y)
             calibration_result = calibrator.get_result()
-            _dump_json(out / "calibration_report.json", calibration_result.model_dump())
+            calibration_path = ensemble_dir / "02_calibration_report.json"
+            _dump_json(calibration_path, calibration_result.model_dump())
+            phases.append(
+                {
+                    "phase": "04_ensemble",
+                    "status": "completed",
+                    "artifacts": {
+                        "ensemble_report": _rel(ensemble_path, out),
+                        "calibration_report": _rel(calibration_path, out),
+                    },
+                }
+            )
+        else:
+            phases.append({"phase": "04_ensemble", "status": "skipped", "artifacts": {}})
+    else:
+        phases.append({"phase": "04_ensemble", "status": "skipped", "artifacts": {}})
 
+    # --- Phase 05: ONNX Model Bundle Packaging ---
+    bundle_dir = out / "05_packaging" / "bundle"
     bundle_manifest: BundleManifest | None = None
     if (
         cfg.packaging is not None
@@ -204,7 +285,7 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
     ):
         # Packaging only reads Train (statistics) and Val (precision check); it never fits.
         bundle_manifest = ONNXBundleExporter(cfg.packaging).export(
-            out_dir=out / "bundle",
+            out_dir=bundle_dir,
             preprocessor_spec=(
                 funnel.preprocessor_spec()
                 if funnel is not None
@@ -220,11 +301,27 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             X_val_raw=split.val.X,
             X_val_model=funnel.transform(split.val).X if funnel is not None else split.val.X,
         )
+        phases.append(
+            {
+                "phase": "05_packaging",
+                "status": "completed",
+                "artifacts": {
+                    "bundle_dir": _rel(bundle_dir, out),
+                    "bundle_manifest": _rel(bundle_dir / "bundle_manifest.json", out),
+                },
+            }
+        )
+    else:
+        phases.append({"phase": "05_packaging", "status": "skipped", "artifacts": {}})
 
+    # --- Phase 06: Friction-Aware Blind OOS Backtesting ---
     backtest_metrics: OOSMetrics | None = None
     realworld_metrics: RealWorldMetrics | None = None
     if cfg.backtest is not None and cfg.packaging is not None and bundle_manifest is not None:
         # Blind OOS acceptance: the only stage allowed to read split.oos for evaluation.
+        backtest_dir = out / "06_backtest"
+        backtest_dir.mkdir(parents=True, exist_ok=True)
+        backtest_path = backtest_dir / "01_backtest_report.json"
         others = [split.train, split.val] + [s for s in (split.cal_a, split.cal_b) if s is not None]
         ohlcv_df = None
         rw_cfg = cfg.realworld
@@ -233,23 +330,31 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             if ohlcv_df is not None:
                 rw_cfg = rw_cfg.model_copy(
                     update={
-                        "out_html": rw_cfg.out_html or str(out / "backtest_report.html"),
-                        "out_trades_csv": rw_cfg.out_trades_csv or str(out / "trades.csv"),
+                        "out_html": rw_cfg.out_html or str(backtest_dir / "backtest_report.html"),
+                        "out_trades_csv": rw_cfg.out_trades_csv or str(backtest_dir / "trades.csv"),
                     }
                 )
         backtest_metrics, realworld_metrics = OOSBacktestRunner(cfg.backtest).run(
-            bundle_dir=out / "bundle",
+            bundle_dir=bundle_dir,
             oos=split.oos,
             feature_names=dataset.feature_names,
             other_segments=others,
-            out_path=out / "backtest_report.json",
+            out_path=backtest_path,
             latency_repeats=cfg.packaging.latency_repeats,
             latency_budget_ms=cfg.packaging.latency_budget_ms,
             ohlcv_df=ohlcv_df,
             realworld_cfg=rw_cfg,
         )
+        bt_artifacts: dict[str, str] = {"backtest_report": _rel(backtest_path, out)}
         if realworld_metrics is not None:
-            _dump_json(out / "realworld_report.json", realworld_metrics.model_dump())
+            realworld_path = backtest_dir / "02_realworld_report.json"
+            _dump_json(realworld_path, realworld_metrics.model_dump())
+            bt_artifacts["realworld_report"] = _rel(realworld_path, out)
+        phases.append({"phase": "06_backtest", "status": "completed", "artifacts": bt_artifacts})
+    else:
+        phases.append({"phase": "06_backtest", "status": "skipped", "artifacts": {}})
+
+    _dump_json(out / "00_run_manifest.json", {"phases": phases})
 
     return PipelineResult(
         dataset=dataset,
@@ -333,11 +438,17 @@ def _get_candidate_probs(
     return cand.fitted_model.predict(X).astype(np.float32)
 
 
+def _rel(path: Path, root: Path) -> str:
+    return path.relative_to(root).as_posix()
+
+
 def _dump_json(path: Path, payload: dict[str, object] | list[dict[str, object]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
 def _save_segment(path: Path, seg: Segment) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
     arrays: dict[str, np.ndarray] = {
         "X": seg.X,
         "timestamps": seg.timestamps,
