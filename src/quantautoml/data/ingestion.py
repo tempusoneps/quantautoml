@@ -9,7 +9,7 @@ import numpy as np
 import polars as pl
 from numpy.typing import NDArray
 
-from quantautoml.common.config import FeaturesConfig, PipelineConfig
+from quantautoml.common.config import FeaturesConfig, PipelineConfig, parse_iso_bound
 from quantautoml.common.exceptions import InvalidDataError, TimestampAlignmentError
 from quantautoml.common.types import Dataset, IngestionReport
 from quantautoml.data.task_inference import infer_task_type
@@ -33,6 +33,9 @@ class DataIngestion:
         cfg = self._cfg
         ts_col = cfg.data.timestamp_col
         features, f_tz, f_unit = self._read_frame(cfg.data.features_path, ts_col)
+        features = self._slice_date_range(
+            features, ts_col, cfg.data.date_from, cfg.data.date_to, "features"
+        )
         n_feature_rows = features.height
 
         feature_cols = [c for c in features.columns if c != ts_col]
@@ -46,6 +49,9 @@ class DataIngestion:
         n_label_rows = 0
         if cfg.data.labels_path is not None:
             labels, l_tz, l_unit = self._read_frame(cfg.data.labels_path, ts_col)
+            labels = self._slice_date_range(
+                labels, ts_col, cfg.data.date_from, cfg.data.date_to, "labels"
+            )
             n_label_rows = labels.height
             label_cols = [c for c in labels.columns if c != ts_col]
             if cfg.labels.ignore_other_columns and cfg.labels.selected in label_cols:
@@ -151,6 +157,8 @@ class DataIngestion:
             bool_columns_cast=bool_cols,
             string_columns_encoded=string_maps,
             mid_nan_count=mid_nan_count,
+            date_from=cfg.data.date_from,
+            date_to=cfg.data.date_to,
         )
         return Dataset(
             X=x32,
@@ -230,6 +238,29 @@ class DataIngestion:
         if np.any(values[1:] < values[:-1]):
             raise TimestampAlignmentError(f"timestamps in {path} are not monotonically increasing")
         return df, (_NAIVE if tz is None else tz), str(original_unit)
+
+    @staticmethod
+    def _slice_date_range(
+        df: pl.DataFrame,
+        ts_col: str,
+        date_from: str | None,
+        date_to: str | None,
+        kind: str,
+    ) -> pl.DataFrame:
+        """Keep only rows with ``date_from <= ts <= date_to`` (UTC) before any processing."""
+        if date_from is None and date_to is None:
+            return df
+        cond = pl.lit(True)
+        if date_from is not None:
+            cond = cond & (pl.col(ts_col) >= parse_iso_bound(date_from, end_of_day=False))
+        if date_to is not None:
+            cond = cond & (pl.col(ts_col) <= parse_iso_bound(date_to, end_of_day=True))
+        sliced = df.filter(cond)
+        if sliced.height == 0:
+            raise InvalidDataError(
+                f"{kind} has no rows in date range [{date_from!r}, {date_to!r}]"
+            )
+        return sliced
 
     @staticmethod
     def _encode_features(

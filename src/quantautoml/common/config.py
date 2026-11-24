@@ -4,10 +4,29 @@ from __future__ import annotations
 
 import math
 import tomllib
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+
+def parse_iso_bound(value: str, *, end_of_day: bool = False) -> datetime:
+    """Parse an ISO-8601 date or datetime string into a UTC-aware ``datetime``.
+
+    A date-only string (``YYYY-MM-DD``) becomes ``00:00:00+00:00`` when ``end_of_day=False``
+    or ``23:59:59.999999+00:00`` when ``end_of_day=True``. Naive datetimes are assumed UTC.
+    """
+    s = value.strip()
+    if not s:
+        raise ValueError("date bound must not be empty")
+    is_date_only = len(s) == 10 and "T" not in s and "t" not in s and " " not in s
+    dt = datetime.fromisoformat(s)
+    if is_date_only and end_of_day:
+        dt = dt.replace(hour=23, minute=59, second=59, microsecond=999_999)
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
 
 
 class _Strict(BaseModel):
@@ -19,6 +38,16 @@ class DataConfig(_Strict):
     labels_path: Path | None = None
     timestamp_col: str = "timestamp"
     min_match_ratio: float = Field(default=0.95, gt=0.0, le=1.0)
+    date_from: str | None = None
+    date_to: str | None = None
+
+    @model_validator(mode="after")
+    def _validate_date_range(self) -> Self:
+        start = parse_iso_bound(self.date_from, end_of_day=False) if self.date_from is not None else None
+        end = parse_iso_bound(self.date_to, end_of_day=True) if self.date_to is not None else None
+        if start is not None and end is not None and start > end:
+            raise ValueError(f"data.date_from ({self.date_from!r}) must be <= data.date_to ({self.date_to!r})")
+        return self
 
 
 class LabelsConfig(_Strict):

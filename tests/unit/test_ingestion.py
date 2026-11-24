@@ -434,3 +434,93 @@ def test_mapping_allows_mapping_mid_nan_to_number_while_preserving_trailing_nan_
     assert ds.y[7] == 1
     assert not np.any(ds.y == -1)
 
+
+def test_ingestion_slices_date_from_and_date_to_inclusive(make_frames, build_config) -> None:
+    # 100 hourly bars starting 2024-01-01T00:00:00 -> 2024-01-05T03:00:00
+    f, l = make_frames(n=100)
+    # Remove trailing NaNs on labels so exact slice length is transparent
+    l = l.with_columns(pl.col("y_dir").fill_null(0).alias("y_dir"))
+    base = build_config(f, l, horizon_h=21)
+    cfg = base.model_copy(
+        update={
+            "data": base.data.model_copy(
+                update={"date_from": "2024-01-02", "date_to": "2024-01-03"}
+            )
+        }
+    )
+    ds = _load(cfg)
+    # 2024-01-02T00:00:00 .. 2024-01-03T23:00:00 inclusive = 48 hourly bars
+    assert ds.X.shape[0] == 48
+    assert ds.timestamps[0] == np.datetime64("2024-01-02T00:00:00", "us")
+    assert ds.timestamps[-1] == np.datetime64("2024-01-03T23:00:00", "us")
+    assert ds.report.date_from == "2024-01-02"
+    assert ds.report.date_to == "2024-01-03"
+
+
+def test_ingestion_supports_one_sided_date_bounds(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    l = l.with_columns(pl.col("y_dir").fill_nan(0).fill_null(0).alias("y_dir"))
+    base = build_config(f, l, horizon_h=21)
+
+    ds_from = _load(
+        base.model_copy(update={"data": base.data.model_copy(update={"date_from": "2024-01-04T00:00:00Z"})})
+    )
+    assert ds_from.timestamps[0] == np.datetime64("2024-01-04T00:00:00", "us")
+    assert ds_from.X.shape[0] == 28  # 24h on Jan 4 + 4h on Jan 5 (00..03)
+
+    ds_to = _load(
+        base.model_copy(update={"data": base.data.model_copy(update={"date_to": "2024-01-01T11:00:00"})})
+    )
+    assert ds_to.timestamps[-1] == np.datetime64("2024-01-01T11:00:00", "us")
+    assert ds_to.X.shape[0] == 12
+
+
+def test_ingestion_date_slice_happens_before_encoding_join_and_fwd_ret(
+    make_frames, build_config
+) -> None:
+    from quantautoml.common.config import FeaturesConfig
+
+    f, l = make_frames(n=100)
+    # Add a string category & extreme Close value strictly outside [2024-01-02, 2024-01-03]
+    ts = f["timestamp"]
+    in_window = (ts >= pl.datetime(2024, 1, 2, time_zone="UTC")) & (
+        ts < pl.datetime(2024, 1, 4, time_zone="UTC")
+    )
+    f = f.with_columns(
+        pl.when(in_window).then(pl.lit("in_cat")).otherwise(pl.lit("out_cat")).alias("cat"),
+        pl.when(in_window).then(100.0).otherwise(999999.0).alias("Close"),
+    )
+    # Drop all labels outside the window — min_match_ratio must still pass inside window
+    l = l.filter(in_window).with_columns(pl.col("y_dir").fill_null(0).alias("y_dir"))
+
+    base = build_config(f, l, selected="y_dir", ignore_other_columns=True, horizon_h=5)
+    cfg = base.model_copy(
+        update={
+            "data": base.data.model_copy(
+                update={"date_from": "2024-01-02", "date_to": "2024-01-03", "min_match_ratio": 1.0}
+            ),
+            "features": FeaturesConfig(ic_horizons={1: "fwd_ret_1"}, target_horizon=1),
+        }
+    )
+    ds = _load(cfg)
+    assert ds.X.shape[0] == 48
+    # Out-of-range string category must never enter the ordinal map
+    assert ds.report.string_columns_encoded["cat"] == {"in_cat": 0}
+    # Forward return at last bar of slice must be NaN (cannot look past date_to into Close=999999)
+    assert np.isnan(ds.labels_aux["fwd_ret_1"][-1])
+
+
+def test_ingestion_empty_after_date_slice_raises(make_frames, build_config) -> None:
+    f, l = make_frames(n=100)
+    base = build_config(f, l)
+    cfg = base.model_copy(
+        update={
+            "data": base.data.model_copy(
+                update={"date_from": "2025-01-01", "date_to": "2025-01-10"}
+            )
+        }
+    )
+    with pytest.raises(InvalidDataError, match="date_from|date_to|no rows"):
+        _load(cfg)
+
+

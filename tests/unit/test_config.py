@@ -19,6 +19,39 @@ def test_defaults_are_applied(write_toml, valid_toml: str) -> None:
     cfg = load_config(write_toml(valid_toml))
     assert cfg.data.timestamp_col == "timestamp"
     assert cfg.data.min_match_ratio == 0.95
+    assert cfg.data.date_from is None
+    assert cfg.data.date_to is None
+
+
+@pytest.mark.parametrize(
+    ("d_from", "d_to", "ok"),
+    [
+        ("2024-01-01", "2024-12-31", True),
+        ("2024-01-01", "2024-01-01", True),
+        ("2024-01-01T09:00:00", "2024-01-01T15:00:00Z", True),
+        ("2024-01-01", None, True),
+        (None, "2024-12-31", True),
+        ("2024-06-01", "2024-01-01", False),
+        ("not-a-date", None, False),
+        (None, "2024/01/01", False),
+    ],
+)
+def test_data_config_date_range_validation(
+    write_toml, valid_toml: str, d_from: str | None, d_to: str | None, ok: bool
+) -> None:
+    lines = []
+    if d_from is not None:
+        lines.append(f'date_from = "{d_from}"')
+    if d_to is not None:
+        lines.append(f'date_to = "{d_to}"')
+    toml = valid_toml.replace("[labels]", "\n".join(lines) + "\n\n[labels]")
+    if ok:
+        cfg = load_config(write_toml(toml))
+        assert cfg.data.date_from == d_from
+        assert cfg.data.date_to == d_to
+    else:
+        with pytest.raises(pydantic.ValidationError):
+            load_config(write_toml(toml))
 
 
 def test_missing_horizon_is_rejected(write_toml) -> None:

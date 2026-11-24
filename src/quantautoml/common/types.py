@@ -43,6 +43,8 @@ class IngestionReport:
     bool_columns_cast: list[str] = field(default_factory=list)
     string_columns_encoded: dict[str, dict[str, int]] = field(default_factory=dict)
     mid_nan_count: int = 0
+    date_from: str | None = None
+    date_to: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
