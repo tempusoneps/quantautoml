@@ -35,12 +35,12 @@ Dựa trên phân tích thực nghiệm đối chiếu hai run liên tiếp [`ru
 - [x] Đồng bộ `scripts/generate_config.py` và `docs/CONFIGURATION.md`.
 - [x] Unit tests theo TDD trong `test_models_config.py`, `test_ensemble_config.py`, `test_tournament.py`, `test_tuner.py`, `test_bootstrap_shrinkage.py` bao phủ cả mẫu nhỏ (`n=100..250`), chuỗi intraday dài (`n=4500..7500`), truyền `cfg.ic_window` qua `DeepOptunaTuner`, và kiểm tra biên `ic_window < 3`.
 
-### Phase 2 — Causal Signal Smoothing & Minimum Holding Period *(In Progress)*
-- [ ] Thêm `signal_ema_span: int = 1` (`ge=1`) và `min_hold_bars: int = 0` (`ge=0`) vào `BacktestConfig`.
-- [ ] Hiện thực hóa `smooth_scores()` (EMA nhân quả an toàn với `NaN`/`±inf`, identity khi `span == 1`), nâng cấp `rolling_percentile()` thành NaN-safe (không biến `NaN` thành percentile âm giả kích hoạt lệnh Short), và thêm logic `min_hold_bars` trong `HysteresisBuffer` (`src/quantautoml/backtest/buffer.py`); nối từ `OOSBacktestRunner` (vẫn giữ **raw** `scores` khi chấm `rank_ic`/`icir`/`downside_ic` theo `RULE-02`).
-- [ ] Unit tests trong `test_backtest_config.py`, `test_buffer.py`, và `test_runner.py` bảo đảm **Zero Look-Ahead Leakage** (`positions[:t+1]` bất biến khi thay đổi `scores[t+1:]`), xử lý biên `NaN` ở `positions()`, biên `min_hold_bars`, truyền tham số từ `OOSBacktestRunner`, và giảm turnover trên chuỗi nhiễu.
+### Phase 2 — Causal Signal Smoothing & Minimum Holding Period *(Done)*
+- [x] Thêm `signal_ema_span: int = 1` (`ge=1`) và `min_hold_bars: int = 0` (`ge=0`) vào `BacktestConfig`.
+- [x] Hiện thực hóa `smooth_scores()` (EMA nhân quả an toàn với `NaN`/`±inf`, identity khi `span == 1`), nâng cấp `rolling_percentile()` thành NaN-safe (không biến `NaN` thành percentile âm giả kích hoạt lệnh Short), và thêm logic `min_hold_bars` trong `HysteresisBuffer` (`src/quantautoml/backtest/buffer.py`); nối từ `OOSBacktestRunner` (vẫn giữ **raw** `scores` khi chấm `rank_ic`/`icir`/`downside_ic` theo `RULE-02`).
+- [x] Unit tests trong `test_backtest_config.py`, `test_buffer.py`, và `test_runner.py` bảo đảm **Zero Look-Ahead Leakage** (`positions[:t+1]` bất biến khi thay đổi `scores[t+1:]`), xử lý biên `NaN` ở `positions()`, biên `min_hold_bars`, truyền tham số từ `OOSBacktestRunner`, và giảm turnover trên chuỗi nhiễu.
 
-### Phase 3 — Cross-Regime Diagnostic & Realistic Execution Verification *(Planned)*
+### Phase 3 — Cross-Regime Diagnostic & Realistic Execution Verification *(In Progress)*
 - [ ] Thêm tiện ích chẩn đoán đa segment (`src/quantautoml/backtest/diagnostics.py`, read-only, zero-leakage, dùng chung helper tính return/metric với `runner.py`) + lệnh CLI `quantautoml diagnose --run-dir <dir>` đo Rank IC, ICIR, Gross/Net Sharpe (`close` vs `next_open`) trên `cal_a`, `cal_b`, `val`, `oos`, xuất `06_backtest/03_regime_diagnostics.json`. Dùng `SegmentDiagnostic` tách biệt khỏi `OOSMetrics` để không báo trượt gate `"latency"` giả khi `latency_ms=None`; tự skip mượt khi segment thiếu/ngắn/giá `NaN`/`<= 0`/thiếu `y`, và fallback về `BacktestConfig()` mặc định nếu `config.toml` không có `[backtest]`.
 - [ ] Unit/CLI tests trong `test_backtest_diagnostics.py` và `test_cli.py`; cập nhật `docs/OUTPUTS.md` (đồng bộ cây `01_data/`..`06_backtest/`) và `docs/STRUCTURE.md`.
 - [ ] Chạy nghiệm thu so sánh `execution_price = "next_open"` và Tier 2 (`RealWorldBacktestRunner`) trên `tb5_label` (ghi rõ bộ tham số `config.toml` dùng cho benchmark và lưu ý Tier 2 chỉ tự kích hoạt trong `OOSBacktestRunner` khi Tier 1 `accepted == true`).

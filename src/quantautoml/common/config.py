@@ -168,6 +168,8 @@ class BacktestConfig(_Strict):
     slippage_bps: float = Field(default=1.0, ge=0.0)
     top_pct: float = Field(default=0.20, gt=0.0, lt=0.5)
     exit_pct: float = Field(default=0.30, gt=0.0, lt=0.5)
+    signal_ema_span: int = Field(default=1, ge=1)
+    min_hold_bars: int = Field(default=0, ge=0)
     rank_window: int = Field(default=2000, ge=20)
     ic_window: int = Field(default=500, ge=20)
     min_rank_ic: float = 0.035

@@ -206,6 +206,8 @@ fee_bps           = 4.0
 slippage_bps      = 1.0
 top_pct           = 0.20
 exit_pct          = 0.30
+signal_ema_span   = 1                    # EMA nhân quả làm mượt score (1 = tắt; >= 1)
+min_hold_bars     = 0                    # Số nến nắm giữ vị thế tối thiểu (0 = tắt; >= 0)
 rank_window       = 2000
 ic_window         = 500
 min_rank_ic       = 0.035
@@ -237,6 +239,8 @@ min_downside_ic   = 0.0
 | `backtest.slippage_bps` | `1.0` | `>= 0.0` | Độ trượt giá khớp lệnh (Slippage) tính theo **Basis Points**. Tổng chi phí mỗi đơn vị turnover là `(fee_bps + slippage_bps) / 10000`. |
 | `backtest.top_pct` | `0.20` | `(0.0, 0.5)` | **Ngưỡng mở vị thế (Entry Percentile):** Mở Long (`+1`) khi phân vị tín hiệu $\ge 1 - \text{top\_pct}$ (`0.80`, tức Top 20%); mở Short (`-1`) khi phân vị $\le \text{top\_pct}$ (`0.20`, tức Bottom 20%). |
 | `backtest.exit_pct` | `0.30` | `[top_pct, 0.5)` | **Ngưỡng đóng vị thế (Hysteresis Exit Percentile):** Đang Long chỉ đóng về Flat (`0`) khi phân vị tụt xuống $< 1 - \text{exit\_pct}$ (`0.70`); đang Short chỉ đóng khi phân vị vượt lên $> \text{exit\_pct}$ (`0.30`). Khoảng đệm `[0.20, 0.30]` giúp triệt tiêu nhiễu đảo lệnh liên tục quanh ngưỡng. |
+| `backtest.signal_ema_span` | `1` | `>= 1` | **Làm mượt tín hiệu nhân quả (Causal EMA):** Hệ số $\alpha = 2 / (\text{span} + 1)$ áp lên điểm tín hiệu trước khi tính phân vị trong `HysteresisBuffer` (`1` = giữ nguyên bản; an toàn với `NaN`/`±inf`). Đánh giá `Rank IC`/`ICIR`/`Downside IC` vẫn dùng raw score gốc (`RULE-02`). |
+| `backtest.min_hold_bars` | `0` | `>= 0` | **Thời gian nắm giữ tối thiểu:** Khi mở vị thế (`0 → ±1`), bắt buộc giữ tối thiểu `min_hold_bars` nến liên tiếp trước khi cho phép thoát/đảo lệnh (`0` = tắt; gặp `NaN` vẫn thoát về phẳng an toàn). |
 | `backtest.rank_window` | `2000` | `>= 20` | Số cây nến quá khứ trong cửa sổ trượt nhân quả dùng để tính phân vị tín hiệu cho `HysteresisBuffer`. |
 | `backtest.ic_window` | `500` | `>= 20` | Cửa sổ trượt (số nến) trên tập OOS để tính chuỗi Rolling Rank IC (cho `ICIR`) và lợi suất thị trường trượt (cho `Downside IC`). |
 | `backtest.min_rank_ic` | `0.035` | float | **Hard Gate 1:** Rank IC tối thiểu trên toàn tập OOS (`rank_ic > 0.035`). |

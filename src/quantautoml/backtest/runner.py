@@ -69,7 +69,13 @@ class OOSBacktestRunner:
         scores = np.asarray(predictor.predict(oos.X), dtype=np.float32)
         latency_ms = _latency_ms(predictor, oos.X[:1], latency_repeats)
 
-        positions = HysteresisBuffer(cfg.top_pct, cfg.exit_pct, cfg.rank_window).positions(scores)
+        positions = HysteresisBuffer(
+            cfg.top_pct,
+            cfg.exit_pct,
+            cfg.rank_window,
+            signal_ema_span=cfg.signal_ema_span,
+            min_hold_bars=cfg.min_hold_bars,
+        ).positions(scores)
         if cfg.execution_price == "next_open" and open_px is not None:
             # Decision at bar t enters at Open[t+1] and marks/exits at Open[t+2] (matches Tier 2).
             market = open_px[2:] / open_px[1:-1] - 1.0

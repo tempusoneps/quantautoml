@@ -38,3 +38,23 @@ def test_pct_must_be_below_half() -> None:
 def test_extra_field_forbidden() -> None:
     with pytest.raises(ValidationError):
         BacktestConfig(foo=1)  # type: ignore[call-arg]
+
+
+def test_signal_ema_span_and_min_hold_bars_defaults_and_custom() -> None:
+    cfg = BacktestConfig()
+    assert cfg.signal_ema_span == 1
+    assert cfg.min_hold_bars == 0
+    custom = BacktestConfig(signal_ema_span=5, min_hold_bars=5)
+    assert custom.signal_ema_span == 5
+    assert custom.min_hold_bars == 5
+
+
+@pytest.mark.parametrize("span", [0, -2])
+def test_invalid_signal_ema_span_rejected(span: int) -> None:
+    with pytest.raises(ValidationError):
+        BacktestConfig(signal_ema_span=span)
+
+
+def test_negative_min_hold_bars_rejected() -> None:
+    with pytest.raises(ValidationError):
+        BacktestConfig(min_hold_bars=-1)

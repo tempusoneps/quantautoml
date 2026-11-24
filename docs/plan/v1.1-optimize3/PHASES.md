@@ -35,7 +35,7 @@ flowchart LR
 
 ---
 
-### Phase 2: Causal Signal Smoothing & Minimum Holding Period *(Active)*
+### Phase 2: Causal Signal Smoothing & Minimum Holding Period *(Done)*
 - **Objective:** Giảm hao hụt Sharpe do chi phí ma sát (`mean_turnover ~ 0.037/bar`) bằng cách làm mượt điểm tín hiệu nhân quả và áp đặt thời gian giữ vị thế tối thiểu phù hợp horizon của nhãn (`tb5_label`).
 - **Prerequisites:** Phase 1 Done.
 - **Key Deliverables:**
@@ -45,11 +45,11 @@ flowchart LR
 - **Independent Testability:**
   - Causality test: thay đổi `scores[t+1:]` bất kỳ không làm thay đổi `positions[:t+1]` dù 1 bit.
   - Backward-compatibility test: với `signal_ema_span=1, min_hold_bars=0`, đầu ra giống hệt bit-for-bit phiên bản trước.
-- **Status:** In Progress
+- **Status:** Done
 
 ---
 
-### Phase 3: Cross-Regime Diagnostic & Realistic Execution Verification *(Planned)*
+### Phase 3: Cross-Regime Diagnostic & Realistic Execution Verification *(Active)*
 - **Objective:** Đánh giá độ ổn định của model bundle qua nhiều regime biến động khác nhau (`cal_a`, `cal_b`, `val`, `oos`) và kiểm chứng độ nhạy thực thi (`close` vs `next_open` và Tier 2 `backtesting.py`).
 - **Prerequisites:** Phase 2 Done.
 - **Key Deliverables:**
@@ -59,4 +59,4 @@ flowchart LR
   4. Thử nghiệm thực tế trên `tb5_label` với `execution_price = "next_open"` và Tier 2 (`RealWorldBacktestRunner`; lưu ý Tier 2 chỉ tự chạy qua `OOSBacktestRunner` khi Tier 1 `accepted=true`).
 - **Independent Testability:**
   - Chạy `evaluate_bundle_segments` trên bundle mẫu tạo ra bảng metric đầy đủ cho từng segment (hoặc `skipped` có lý do rõ ràng) mà không thay đổi bất kỳ byte nào trong bundle.
-- **Status:** Planned
+- **Status:** In Progress

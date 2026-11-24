@@ -164,3 +164,21 @@ def test_runner_next_open_execution_uses_open_t_plus_1(bundle) -> None:
     assert m.n_bars == len(oos.X) - 2
     assert m.daily_net_sharpe is not None
     assert m.deflated_sharpe_ratio is not None
+
+
+def test_runner_forwards_ema_and_min_hold_while_evaluating_raw_scores(bundle) -> None:
+    oos = _oos(signal=True)
+    m_raw = _run(bundle, oos, cfg=BacktestConfig(rank_window=100, ic_window=300))
+    m_smooth = _run(
+        bundle,
+        oos,
+        cfg=BacktestConfig(
+            rank_window=100, ic_window=300, signal_ema_span=5, min_hold_bars=5
+        ),
+    )
+    # RULE-02: Rank IC / ICIR / Downside IC must still be evaluated on raw model scores
+    assert m_smooth.rank_ic == pytest.approx(m_raw.rank_ic, abs=1e-12)
+    assert m_smooth.icir == pytest.approx(m_raw.icir, abs=1e-12)
+    assert m_smooth.downside_ic == pytest.approx(m_raw.downside_ic, abs=1e-12)
+    # Smoothing + min_hold_bars must reduce turnover
+    assert m_smooth.mean_turnover < m_raw.mean_turnover

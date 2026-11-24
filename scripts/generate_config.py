@@ -264,6 +264,8 @@ def build_config_content(
                 "slippage_bps = 1.0",
                 "top_pct = 0.15",
                 "exit_pct = 0.30",
+                "signal_ema_span = 1",
+                "min_hold_bars = 0",
                 "rank_window = 2000",
                 "ic_window = 500",
                 "min_rank_ic = 0.035",
