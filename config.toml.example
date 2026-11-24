@@ -16,11 +16,19 @@ timestamp_col = "Date"
 # Minimum required ratio of matched timestamps during inner join (0.0 to 1.0)
 min_match_ratio = 0.95
 
+# Optional inclusive date range slice applied at the start of ingestion
+date_from = "2020-01-01 00:00:00"
+date_to = "2026-03-31 15:00:00"
+
 [labels]
 # Target label column name used for task inference and training
-selected = "is_peak_10"
+selected = "tb5_label"
 # Keep only the selected label column (avoids non-numeric sibling label errors)
 ignore_other_columns = true
+
+[labels.mapping]
+# Text label -> directional number mapping
+"NaN" = 0
 
 [split]
 # Maximum forward-looking horizon (bars) across all labels and ic_horizons
@@ -39,9 +47,12 @@ rolling_window = 63
 dcor_threshold = 0.85
 cluster_distance = 0.30
 max_nan_ratio = 0.60
-min_unique_ratio = 0.01
+min_unique_ratio = 0.0001
 min_cv = 1e-6
 max_peak_var_ratio = 50.0
+max_temporal_drift = 1.5
+max_lag1_autocorr = 0.995
+stationarity_blocks = 4
 max_features = 30
 monotonic_tolerance = 0.05
 mi_floor = 0.0
@@ -57,6 +68,7 @@ marginal_gain_threshold = 0.015
 wf_consistency_threshold = 0.60
 complexity_penalty = 0.15
 random_state = 42
+device = "auto"  # "auto" (CUDA for XGBoost/CatBoost if available), "cpu", or "cuda"
 enabled_models = ["lightgbm", "xgboost", "catboost"]
 
 [ensemble]
@@ -96,8 +108,8 @@ min_downside_ic = 0.0
 
 [realworld]
 # Tier 2 realistic execution via backtesting.py (set enabled = true to run)
-enabled = false
-cash = 1000000.0
+enabled = true
+cash = 1500.0
 commission = 0.00025
 margin = 1.0
 size = "auto"
