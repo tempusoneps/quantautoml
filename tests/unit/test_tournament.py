@@ -90,3 +90,37 @@ def test_tournament_ic_sharpe_uses_subwindow_rolling_ics() -> None:
     # With 2 folds of ~300 rows each, sub-window rolling IC Sharpe differs markedly from 2-point std
     assert not np.isclose(score.ic_sharpe, naive_2fold_sharpe, rtol=1e-3)
     assert np.isfinite(score.ic_sharpe) and score.ic_sharpe > 0.0
+
+
+def test_adaptive_leaf_bounds_scales_with_sample_size() -> None:
+    from quantautoml.models.tournament import adaptive_child_weight_bounds, adaptive_leaf_bounds
+
+    assert adaptive_leaf_bounds(250) == (10, 30)
+    assert adaptive_leaf_bounds(50_000) == (50, 250)
+    assert adaptive_child_weight_bounds(250) == (2, 15)
+    assert adaptive_child_weight_bounds(50_000) == (10, 50)
+
+
+def test_tournament_search_space_respects_regularization_caps(tournament_data) -> None:
+    X, y = tournament_data
+    cfg = ModelsConfig(
+        tournament_trials=3,
+        n_wf_folds=2,
+        enabled_models=["lightgbm", "xgboost", "catboost"],
+        device="cpu",
+        random_state=42,
+    )
+    res = ModelTournament(cfg=cfg, task_type=TaskType.BINARY_CLASSIFICATION).run(X, y)
+    for score in res.rankings:
+        p = score.params
+        assert 0.01 <= p["learning_rate"] <= 0.08
+        if score.model_name == "lightgbm":
+            assert 3 <= p["max_depth"] <= 7
+            assert 7 <= p["num_leaves"] <= 47
+            assert "min_child_samples" in p and p["min_child_samples"] >= 10
+        elif score.model_name == "xgboost":
+            assert 3 <= p["max_depth"] <= 7
+            assert "min_child_weight" in p and p["min_child_weight"] >= 2
+        elif score.model_name == "catboost":
+            assert 3 <= p["depth"] <= 7
+            assert p["l2_leaf_reg"] >= 2.0

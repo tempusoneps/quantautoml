@@ -118,6 +118,7 @@ class ModelsConfig(_Strict):
     wf_consistency_threshold: float = Field(default=0.60, gt=0.0, le=1.0)
     complexity_penalty: float = Field(default=0.05, ge=0.0)
     random_state: int = Field(default=42)
+    device: Literal["auto", "cpu", "cuda"] = "auto"
     enabled_models: list[str] = Field(default_factory=lambda: ["lightgbm", "xgboost", "catboost"])
 
     @field_validator("enabled_models")

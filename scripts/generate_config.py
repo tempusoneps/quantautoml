@@ -230,6 +230,7 @@ def build_config_content(
                 "wf_consistency_threshold = 0.60",
                 "complexity_penalty = 0.15",
                 "random_state = 42",
+                'device = "auto"  # "auto" (CUDA for XGBoost/CatBoost if available), "cpu", or "cuda"',
                 'enabled_models = ["lightgbm", "xgboost", "catboost"]',
                 "",
                 "[ensemble]",

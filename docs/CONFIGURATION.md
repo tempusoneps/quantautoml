@@ -136,6 +136,7 @@ marginal_gain_threshold  = 0.015
 wf_consistency_threshold = 0.60
 complexity_penalty       = 0.05
 random_state             = 42
+device                   = "auto"        # "auto" (GPU cho XGBoost/CatBoost nếu có CUDA), "cpu", hoặc "cuda"
 enabled_models           = ["lightgbm", "xgboost", "catboost"]
 ```
 
@@ -149,6 +150,7 @@ enabled_models           = ["lightgbm", "xgboost", "catboost"]
 | `models.wf_consistency_threshold` | `0.60` | `(0.0, 1.0]` | Tỷ lệ số fold Walk-Forward tối thiểu ($\ge 60\%$, tức $\ge 3/5$ folds) mà tổ hợp phải thắng mô hình đơn tốt nhất. |
 | `models.complexity_penalty` | `0.05` | `>= 0.0` | Hệ số phạt độ phức tạp cây trong hàm mục tiêu Optuna: $\text{Score} = \text{IC Sharpe}_{\text{WF}} - 0.05 \times \text{Complexity}$. |
 | `models.random_state` | `42` | `int` | Hạt giống ngẫu nhiên đảm bảo tính tái lập 100%. |
+| `models.device` | `"auto"` | `"auto"` \| `"cpu"` \| `"cuda"` | Thiết bị huấn luyện GBDT: `"auto"` tự động bật GPU CUDA cho XGBoost & CatBoost nếu có GPU NVIDIA (giữ LightGBM trên CPU); `"cpu"` ép chạy 100% CPU. |
 | `models.enabled_models` | `["lightgbm", "xgboost", "catboost"]` | Tập con hợp lệ | Danh sách các họ mô hình GBDT tham gia đấu loại. |
 
 ---

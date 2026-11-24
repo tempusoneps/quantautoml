@@ -212,6 +212,7 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             train_transformed = funnel.transform(split.train) if funnel is not None else split.train
             assert train_transformed.y is not None
             seed = cfg.models.random_state if cfg.models is not None else cfg.ensemble.random_state
+            device = cfg.models.device if cfg.models is not None else "cpu"
             cal_a_cands = _fit_oof_candidates(
                 tuning_result.tuned_candidates,
                 train_transformed.X,
@@ -219,6 +220,7 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
                 tr_a,
                 dataset.task_type,
                 seed,
+                device=device,
             )
             cal_b_cands = _fit_oof_candidates(
                 tuning_result.tuned_candidates,
@@ -227,6 +229,7 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
                 tr_b,
                 dataset.task_type,
                 seed,
+                device=device,
             )
             cal_a_seg = Segment(
                 X=train_transformed.X[cal_a_idx],
@@ -441,6 +444,7 @@ def _fit_oof_candidates(
     tr_idx: np.ndarray,
     task_type: TaskType,
     random_state: int,
+    device: str = "cpu",
 ) -> list[TunedCandidate]:
     """Fit fresh clones of tuned candidates strictly on ``tr_idx`` for true OOF predictions."""
     oof_list: list[TunedCandidate] = []
@@ -450,6 +454,7 @@ def _fit_oof_candidates(
             task_type=task_type,
             params=cand.best_params,
             random_state=random_state,
+            device=device,
         )
         model.fit(X_train[tr_idx], y_train[tr_idx])
         oof_list.append(cand.model_copy(update={"fitted_model": model}))

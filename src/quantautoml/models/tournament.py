@@ -68,24 +68,42 @@ class TournamentResult(BaseModel):
     fold_test_lens: list[int] = Field(default_factory=list)
 
 
-def _sample_params(trial: optuna.Trial, model_name: str) -> dict[str, Any]:
-    """Sample hyperparameters using Optuna trial suggestions."""
+def adaptive_leaf_bounds(n_samples: int) -> tuple[int, int]:
+    """Sample-size-aware LightGBM ``min_child_samples`` bounds (prevents tiny overfit leaves)."""
+    lo = max(10, n_samples // 1000)
+    hi = max(30, min(300, n_samples // 200))
+    return (lo, max(lo, hi))
+
+
+def adaptive_child_weight_bounds(n_samples: int) -> tuple[int, int]:
+    """Sample-size-aware XGBoost ``min_child_weight`` bounds."""
+    lo = max(2, n_samples // 5000)
+    hi = max(15, min(60, n_samples // 1000))
+    return (lo, max(lo, hi))
+
+
+def _sample_params(trial: optuna.Trial, model_name: str, n_samples: int = 1000) -> dict[str, Any]:
+    """Sample balanced, regularized hyperparameters using Optuna trial suggestions."""
     if model_name == "lightgbm":
+        leaf_lo, leaf_hi = adaptive_leaf_bounds(n_samples)
         return {
-            "n_estimators": trial.suggest_categorical("n_estimators", [30, 50, 100, 150]),
-            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
-            "num_leaves": trial.suggest_int("num_leaves", 15, 63),
-            "max_depth": trial.suggest_categorical("max_depth", [-1, 4, 6, 8]),
+            "n_estimators": trial.suggest_categorical("n_estimators", [50, 100, 150, 250]),
+            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.08, log=True),
+            "num_leaves": trial.suggest_int("num_leaves", 7, 47),
+            "max_depth": trial.suggest_int("max_depth", 3, 7),
+            "min_child_samples": trial.suggest_int("min_child_samples", leaf_lo, leaf_hi),
             "subsample": trial.suggest_float("subsample", 0.7, 1.0),
             "colsample_bytree": trial.suggest_float("colsample_bytree", 0.7, 1.0),
             "reg_alpha": trial.suggest_float("reg_alpha", 1e-3, 10.0, log=True),
             "reg_lambda": trial.suggest_float("reg_lambda", 1e-3, 10.0, log=True),
         }
     if model_name == "xgboost":
+        cw_lo, cw_hi = adaptive_child_weight_bounds(n_samples)
         return {
-            "n_estimators": trial.suggest_categorical("n_estimators", [30, 50, 100, 150]),
-            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
-            "max_depth": trial.suggest_int("max_depth", 3, 8),
+            "n_estimators": trial.suggest_categorical("n_estimators", [50, 100, 150, 250]),
+            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.08, log=True),
+            "max_depth": trial.suggest_int("max_depth", 3, 7),
+            "min_child_weight": trial.suggest_int("min_child_weight", cw_lo, cw_hi),
             "subsample": trial.suggest_float("subsample", 0.7, 1.0),
             "colsample_bytree": trial.suggest_float("colsample_bytree", 0.7, 1.0),
             "reg_alpha": trial.suggest_float("reg_alpha", 1e-3, 10.0, log=True),
@@ -93,10 +111,10 @@ def _sample_params(trial: optuna.Trial, model_name: str) -> dict[str, Any]:
         }
     if model_name == "catboost":
         return {
-            "n_estimators": trial.suggest_categorical("n_estimators", [30, 50, 100, 150]),
-            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
-            "depth": trial.suggest_int("depth", 4, 8),
-            "l2_leaf_reg": trial.suggest_float("l2_leaf_reg", 1.0, 10.0, log=True),
+            "n_estimators": trial.suggest_categorical("n_estimators", [50, 100, 150, 250]),
+            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.08, log=True),
+            "depth": trial.suggest_int("depth", 3, 7),
+            "l2_leaf_reg": trial.suggest_float("l2_leaf_reg", 2.0, 20.0, log=True),
             "subsample": trial.suggest_float("subsample", 0.7, 1.0),
         }
     raise InvalidDataError(f"Unsupported model for sampling: '{model_name}'")
@@ -153,7 +171,7 @@ class ModelTournament:
 
             def objective(trial: optuna.Trial) -> float:
                 nonlocal global_trial_id
-                params = _sample_params(trial, model_name)
+                params = _sample_params(trial, model_name, n_samples=n_samples)
 
                 fold_ics: list[float] = []
                 sub_ics: list[float] = []
@@ -165,6 +183,7 @@ class ModelTournament:
                         task_type=self.task_type,
                         params=params,
                         random_state=self.cfg.random_state,
+                        device=self.cfg.device,
                     )
                     candidate.fit(X[train_idx], y[train_idx])
                     pred = candidate.predict(X[test_idx])

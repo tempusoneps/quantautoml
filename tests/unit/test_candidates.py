@@ -180,3 +180,28 @@ def test_candidates_accept_subsample_param_multiclass(model_name: str, multiclas
     )
     m.fit(X, y)
     assert m.predict_proba(X).shape == (200, 3)
+
+
+def test_resolve_device_cpu_and_auto() -> None:
+    from quantautoml.models.candidates import resolve_device
+
+    assert resolve_device("cpu") == "cpu"
+    assert resolve_device("cuda") == "cuda"
+    assert resolve_device("auto") in ("cpu", "cuda")
+
+
+@pytest.mark.parametrize("model_name", ["lightgbm", "xgboost", "catboost"])
+def test_candidates_fit_predict_with_auto_device(model_name: str, binary_data) -> None:
+    X, y = binary_data
+    m = create_candidate(
+        model_name,
+        TaskType.BINARY_CLASSIFICATION,
+        params={"n_estimators": 10, "subsample": 0.8},
+        random_state=42,
+        device="auto",
+    )
+    m.fit(X, y)
+    probs = m.predict_proba(X)
+    assert probs.shape == (200, 2)
+    assert probs.dtype == np.float32
+    np.testing.assert_allclose(probs.sum(axis=1), np.ones(200, dtype=np.float32), atol=1e-5)

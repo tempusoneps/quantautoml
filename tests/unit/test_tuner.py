@@ -123,3 +123,30 @@ def test_tuner_reports_aligned_objective_to_pruner(
     # The final step's reported value must equal the final objective score
     final_step_val = reported[-1][1]
     assert final_step_val == pytest.approx(cand.best_score, abs=1e-5)
+
+
+def test_tuner_search_space_respects_regularization_caps(tuning_data) -> None:
+    X, y = tuning_data
+    cfg = ModelsConfig(
+        tuning_trials=2,
+        n_wf_folds=2,
+        device="cpu",
+        random_state=42,
+    )
+    res = DeepOptunaTuner(cfg=cfg, task_type=TaskType.BINARY_CLASSIFICATION).tune(
+        models_to_tune=["lightgbm", "xgboost", "catboost"], X=X, y=y
+    )
+    for cand in res.tuned_candidates:
+        p = cand.best_params
+        assert 50 <= p["n_estimators"] <= 300
+        assert 0.01 <= p["learning_rate"] <= 0.08
+        if cand.model_name == "lightgbm":
+            assert 3 <= p["max_depth"] <= 7
+            assert 7 <= p["num_leaves"] <= 47
+            assert p["min_child_samples"] >= 10
+        elif cand.model_name == "xgboost":
+            assert 3 <= p["max_depth"] <= 7
+            assert p["min_child_weight"] >= 2
+        elif cand.model_name == "catboost":
+            assert 3 <= p["depth"] <= 7
+            assert p["l2_leaf_reg"] >= 2.0

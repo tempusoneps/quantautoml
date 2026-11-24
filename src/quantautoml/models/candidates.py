@@ -3,13 +3,46 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Self
+from functools import lru_cache
+import shutil
+import subprocess
+from typing import Any, Literal, Self
 
 import numpy as np
 from numpy.typing import NDArray
 
 from quantautoml.common.exceptions import InvalidDataError, ModelError
 from quantautoml.common.types import TaskType
+
+
+@lru_cache(maxsize=1)
+def _cuda_available() -> bool:
+    """Detect whether an NVIDIA CUDA GPU is accessible in this environment (cached)."""
+    exe = shutil.which("nvidia-smi")
+    if exe is None:
+        return False
+    try:
+        proc = subprocess.run(
+            [exe, "-L"],
+            capture_output=True,
+            text=True,
+            timeout=3,
+            check=False,
+        )
+        return proc.returncode == 0 and bool(proc.stdout.strip())
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
+def resolve_device(device: str) -> Literal["cpu", "cuda"]:
+    """Resolve ``'auto' | 'cpu' | 'cuda'`` to concrete compute target ``'cpu'`` or ``'cuda'``."""
+    if device == "cpu":
+        return "cpu"
+    if device == "cuda":
+        return "cuda"
+    if device == "auto":
+        return "cuda" if _cuda_available() else "cpu"
+    raise InvalidDataError(f"Unsupported device {device!r}; must be 'auto', 'cpu', or 'cuda'")
 
 
 def _clip01(value: float) -> float:
@@ -35,6 +68,7 @@ class BaseGBDCandidate(ABC):
         task_type: TaskType,
         params: dict[str, Any] | None = None,
         random_state: int = 42,
+        device: str = "cpu",
     ) -> None:
         if task_type == TaskType.UNSUPERVISED:
             raise InvalidDataError(
@@ -43,6 +77,7 @@ class BaseGBDCandidate(ABC):
         self.task_type = task_type
         self.params = dict(params or {})
         self.random_state = random_state
+        self.device = resolve_device(device)
         self.estimator_: Any = None
         self.classes_: NDArray[np.int32] | None = None
 
@@ -196,8 +231,12 @@ class XGBoostCandidate(BaseGBDCandidate):
             "max_depth": max_depth,
             "random_state": self.random_state,
             "verbosity": 0,
-            "n_jobs": -1,
+            "tree_method": "hist",
         }
+        if self.device == "cuda":
+            default_kwargs["device"] = "cuda"
+        else:
+            default_kwargs["n_jobs"] = -1
         for k, v in self.params.items():
             default_kwargs[k] = v
 
@@ -245,9 +284,12 @@ class CatBoostCandidate(BaseGBDCandidate):
             "depth": depth,
             "random_seed": self.random_state,
             "verbose": 0,
-            "thread_count": -1,
             "allow_writing_files": False,
         }
+        if self.device == "cuda":
+            default_kwargs["task_type"] = "GPU"
+        else:
+            default_kwargs["thread_count"] = -1
         for k, v in self.params.items():
             if k == "n_estimators":
                 default_kwargs["iterations"] = v
@@ -295,6 +337,7 @@ def create_candidate(
     task_type: TaskType,
     params: dict[str, Any] | None = None,
     random_state: int = 42,
+    device: str = "cpu",
 ) -> BaseGBDCandidate:
     """Factory creating a unified GBDT candidate wrapper."""
     cls = _CANDIDATE_REGISTRY.get(name)
@@ -302,4 +345,4 @@ def create_candidate(
         raise InvalidDataError(
             f"Unknown candidate model: '{name}'. Supported models: {sorted(_CANDIDATE_REGISTRY.keys())}"
         )
-    return cls(task_type=task_type, params=params, random_state=random_state)
+    return cls(task_type=task_type, params=params, random_state=random_state, device=device)

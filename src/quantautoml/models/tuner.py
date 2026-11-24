@@ -14,7 +14,11 @@ from quantautoml.common.exceptions import InvalidDataError
 from quantautoml.common.types import TaskType
 from quantautoml.metrics.ic import calc_ic_sharpe
 from quantautoml.models.candidates import BaseGBDCandidate, create_candidate
-from quantautoml.models.tournament import fold_subwindow_ics
+from quantautoml.models.tournament import (
+    adaptive_child_weight_bounds,
+    adaptive_leaf_bounds,
+    fold_subwindow_ics,
+)
 from quantautoml.models.validation import ExpandingWalkForwardSplitter
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
@@ -42,37 +46,41 @@ class TuningResult(BaseModel):
     study_summaries: dict[str, Any]
 
 
-def _suggest_tuning_params(trial: optuna.Trial, model_name: str) -> dict[str, Any]:
-    """Fine-grained parameter suggestion for Bayesian TPE optimization."""
+def _suggest_tuning_params(
+    trial: optuna.Trial, model_name: str, n_samples: int = 1000
+) -> dict[str, Any]:
+    """Fine-grained regularized parameter suggestion for Bayesian TPE optimization."""
     if model_name == "lightgbm":
+        leaf_lo, leaf_hi = adaptive_leaf_bounds(n_samples)
         return {
-            "n_estimators": trial.suggest_int("n_estimators", 30, 200, step=10),
-            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
-            "num_leaves": trial.suggest_int("num_leaves", 15, 63),
-            "max_depth": trial.suggest_int("max_depth", 3, 8),
+            "n_estimators": trial.suggest_int("n_estimators", 50, 300, step=10),
+            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.08, log=True),
+            "num_leaves": trial.suggest_int("num_leaves", 7, 47),
+            "max_depth": trial.suggest_int("max_depth", 3, 7),
             "subsample": trial.suggest_float("subsample", 0.7, 1.0),
             "colsample_bytree": trial.suggest_float("colsample_bytree", 0.7, 1.0),
-            "min_child_samples": trial.suggest_int("min_child_samples", 5, 30),
+            "min_child_samples": trial.suggest_int("min_child_samples", leaf_lo, leaf_hi),
             "reg_alpha": trial.suggest_float("reg_alpha", 1e-3, 10.0, log=True),
             "reg_lambda": trial.suggest_float("reg_lambda", 1e-3, 10.0, log=True),
         }
     if model_name == "xgboost":
+        cw_lo, cw_hi = adaptive_child_weight_bounds(n_samples)
         return {
-            "n_estimators": trial.suggest_int("n_estimators", 30, 200, step=10),
-            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
-            "max_depth": trial.suggest_int("max_depth", 3, 8),
+            "n_estimators": trial.suggest_int("n_estimators", 50, 300, step=10),
+            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.08, log=True),
+            "max_depth": trial.suggest_int("max_depth", 3, 7),
             "subsample": trial.suggest_float("subsample", 0.7, 1.0),
             "colsample_bytree": trial.suggest_float("colsample_bytree", 0.7, 1.0),
-            "min_child_weight": trial.suggest_int("min_child_weight", 1, 15),
+            "min_child_weight": trial.suggest_int("min_child_weight", cw_lo, cw_hi),
             "reg_alpha": trial.suggest_float("reg_alpha", 1e-3, 10.0, log=True),
             "reg_lambda": trial.suggest_float("reg_lambda", 1e-3, 10.0, log=True),
         }
     if model_name == "catboost":
         return {
-            "n_estimators": trial.suggest_int("n_estimators", 30, 200, step=10),
-            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
-            "depth": trial.suggest_int("depth", 3, 8),
-            "l2_leaf_reg": trial.suggest_float("l2_leaf_reg", 1.0, 10.0, log=True),
+            "n_estimators": trial.suggest_int("n_estimators", 50, 300, step=10),
+            "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.08, log=True),
+            "depth": trial.suggest_int("depth", 3, 7),
+            "l2_leaf_reg": trial.suggest_float("l2_leaf_reg", 2.0, 20.0, log=True),
             "subsample": trial.suggest_float("subsample", 0.7, 1.0),
         }
     raise InvalidDataError(f"Unsupported model for tuning: '{model_name}'")
@@ -133,12 +141,13 @@ class DeepOptunaTuner:
             )
 
             def objective(trial: optuna.Trial) -> float:
-                params = _suggest_tuning_params(trial, model_name)
+                params = _suggest_tuning_params(trial, model_name, n_samples=n_samples)
                 complexity = create_candidate(
                     name=model_name,
                     task_type=self.task_type,
                     params=params,
                     random_state=self.cfg.random_state,
+                    device=self.cfg.device,
                 ).complexity_score()
                 sub_ics: list[float] = []
                 ic_sharpe = 0.0
@@ -150,6 +159,7 @@ class DeepOptunaTuner:
                         task_type=self.task_type,
                         params=params,
                         random_state=self.cfg.random_state,
+                        device=self.cfg.device,
                     )
                     candidate.fit(X[train_idx], y[train_idx])
                     pred = candidate.predict(X[test_idx])
@@ -181,6 +191,7 @@ class DeepOptunaTuner:
                 task_type=self.task_type,
                 params=best_params,
                 random_state=self.cfg.random_state,
+                device=self.cfg.device,
             )
             refitted_model.fit(X, y)
             final_complexity = refitted_model.complexity_score()
