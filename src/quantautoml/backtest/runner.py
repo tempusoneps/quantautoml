@@ -54,7 +54,12 @@ class OOSBacktestRunner:
         n = len(oos.X)
         if n < cfg.rank_window + 2:
             raise BacktestError(f"OOS has {n} bars, need >= rank_window + 2 = {cfg.rank_window + 2}")
-        close = self._close(oos.X, feature_names)
+        close = self._price_series(oos.X, feature_names, cfg.price_col)
+        open_px = (
+            self._price_series(oos.X, feature_names, cfg.open_col)
+            if cfg.execution_price == "next_open"
+            else None
+        )
         schema = FeatureSchemaContract.from_json(
             (Path(bundle_dir) / "features_schema.json").read_text(encoding="utf-8")
         )
@@ -64,17 +69,25 @@ class OOSBacktestRunner:
         scores = np.asarray(predictor.predict(oos.X), dtype=np.float32)
         latency_ms = _latency_ms(predictor, oos.X[:1], latency_repeats)
 
-        # Position decided at bar t earns the return from t to t+1; the last bar has none.
-        market = close[1:] / close[:-1] - 1.0
         positions = HysteresisBuffer(cfg.top_pct, cfg.exit_pct, cfg.rank_window).positions(scores)
-        pos = positions[:-1]
+        if cfg.execution_price == "next_open" and open_px is not None:
+            # Decision at bar t enters at Open[t+1] and marks/exits at Open[t+2] (matches Tier 2).
+            market = open_px[2:] / open_px[1:-1] - 1.0
+            pos = positions[:-2]
+            eval_scores, eval_y, eval_ts = scores[:-2], oos.y[:-2], oos.timestamps[:-2]
+        else:
+            # Position decided at bar t earns the return from Close[t] to Close[t+1].
+            market = close[1:] / close[:-1] - 1.0
+            pos = positions[:-1]
+            eval_scores, eval_y, eval_ts = scores[:-1], oos.y[:-1], oos.timestamps[:-1]
         friction = FrictionCostModel(cfg.fee_bps, cfg.slippage_bps)
         gross = pos * market
         metrics = evaluate_oos_performance(
-            scores=scores[:-1], y=oos.y[:-1], gross_returns=gross,
+            scores=eval_scores, y=eval_y, gross_returns=gross,
             net_returns=friction.net_returns(gross, pos), turnover=friction.turnover(pos),
             market_returns=market, periods_per_year=_periods_per_year(oos.timestamps),
             latency_ms=latency_ms, cfg=cfg, latency_budget_ms=latency_budget_ms,
+            timestamps=eval_ts,
         )
         if out_path is not None:
             report = metrics.model_dump()
@@ -95,14 +108,16 @@ class OOSBacktestRunner:
             )
         return metrics, rw_metrics
 
-    def _close(self, X: NDArray[np.float32], feature_names: Sequence[str]) -> NDArray[np.float64]:
-        col = self.cfg.price_col
+    @staticmethod
+    def _price_series(
+        X: NDArray[np.float32], feature_names: Sequence[str], col: str
+    ) -> NDArray[np.float64]:
         if col not in feature_names:
             raise BacktestError(f"price column '{col}' not found in feature names")
-        close = X[:, list(feature_names).index(col)].astype(np.float64)
-        if not (np.isfinite(close).all() and (close > 0).all()):
+        px = X[:, list(feature_names).index(col)].astype(np.float64)
+        if not (np.isfinite(px).all() and (px > 0).all()):
             raise BacktestError(f"price column '{col}' must be finite and > 0 on every OOS bar")
-        return close
+        return px
 
 
 def _latency_ms(predictor: object, row: NDArray[np.float32], repeats: int) -> float:

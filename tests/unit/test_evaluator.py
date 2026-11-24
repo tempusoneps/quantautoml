@@ -144,3 +144,43 @@ def test_degenerate_downside_ic_fails_gate() -> None:
     kw["y"] = np.zeros(4000, dtype=np.int32)  # constant labels: IC is undefined, not "stable"
     m = evaluate_oos_performance(**kw)
     assert m.n_stress_bars >= 30 and not m.gates["downside_ic"]
+
+
+def test_daily_net_sharpe_compounds_intraday_returns_and_scales_sqrt252() -> None:
+    """Audit #8: Daily Net Sharpe compounds bars within each calendar day and scales by sqrt(252)."""
+    n_days, bars_per_day = 20, 10
+    n = n_days * bars_per_day
+    rng = np.random.default_rng(3)
+    kw = _good(n=n)
+    # 10 bars per day across 20 distinct days
+    days = np.repeat(np.arange(n_days), bars_per_day)
+    intra = np.tile(np.arange(bars_per_day), n_days)
+    ts = (
+        np.datetime64("2024-01-01T09:00:00", "us")
+        + days * np.timedelta64(1, "D")
+        + intra * np.timedelta64(5, "m")
+    )
+    net = 0.0005 + 0.0003 * rng.normal(size=n)
+    kw["net_returns"] = net
+    kw["gross_returns"] = net
+    kw["timestamps"] = ts
+    m = evaluate_oos_performance(**kw)
+    assert m.daily_net_sharpe is not None
+    # Manual daily compounded returns
+    daily = np.array([np.prod(1.0 + net[d * bars_per_day : (d + 1) * bars_per_day]) - 1.0 for d in range(n_days)])
+    expected = float(daily.mean() / daily.std(ddof=1) * np.sqrt(252.0))
+    assert m.daily_net_sharpe == pytest.approx(expected, rel=1e-6)
+    assert m.deflated_sharpe_ratio is not None
+    assert 0.0 <= m.deflated_sharpe_ratio <= 1.0
+    assert m.deflated_sharpe_ratio > 0.95  # strong positive daily returns
+
+
+def test_deflated_sharpe_ratio_low_on_zero_alpha_noise() -> None:
+    rng = np.random.default_rng(13)
+    kw = _good(n=400)
+    kw["net_returns"] = rng.normal(0.0, 0.01, size=400)
+    kw["gross_returns"] = kw["net_returns"]
+    m = evaluate_oos_performance(**kw)
+    assert m.deflated_sharpe_ratio is not None
+    assert 0.0 <= m.deflated_sharpe_ratio <= 1.0
+    assert m.deflated_sharpe_ratio < 0.90

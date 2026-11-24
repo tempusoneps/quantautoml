@@ -103,3 +103,22 @@ def test_bootstrap_shrinkage_validation() -> None:
 
     with pytest.raises(ValueError, match="Shape mismatch"):
         engine.fit(np.zeros((10, 2), dtype=np.float32), np.zeros(20, dtype=np.float32))
+
+
+def test_block_bootstrap_preserves_contiguous_blocks() -> None:
+    """Audit #7: Moving Block Bootstrap must sample contiguous time-series blocks."""
+    from quantautoml.ensemble.bootstrap import _sample_block_indices
+
+    rng = np.random.default_rng(7)
+    idx = _sample_block_indices(rng, n_samples=500, target_size=400, block_size=20)
+    assert idx.shape == (400,)
+    assert np.all((idx >= 0) & (idx < 500))
+    # Every block of 20 elements must be strictly consecutive (diff == 1)
+    for start in range(0, 400, 20):
+        block = idx[start : start + 20]
+        assert np.all(np.diff(block) == 1)
+
+
+def test_ensemble_config_bootstrap_block_size() -> None:
+    cfg = EnsembleConfig(bootstrap_block_size=30)
+    assert cfg.bootstrap_block_size == 30

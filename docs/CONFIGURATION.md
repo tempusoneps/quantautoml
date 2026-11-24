@@ -161,6 +161,7 @@ min_weight             = 0.05
 max_weight             = 0.60
 n_bootstrap            = 200
 bootstrap_sample_ratio = 0.80
+bootstrap_block_size   = 20
 shrinkage_factor       = 0.10
 hurdle_ratio           = 0.05
 max_ece_threshold      = 0.05
@@ -169,13 +170,14 @@ random_state           = 42
 
 | Khóa | Mặc định | Ràng buộc | Mô tả chi tiết |
 | :--- | :--- | :--- | :--- |
-| `ensemble.min_weight` | `0.05` | `[0.0, 1.0]` | Cận dưới trọng số $w_i$ của mỗi mô hình trong bài toán tối ưu lồi SLSQP trên tập `Cal-B` (`min_weight < max_weight`). |
+| `ensemble.min_weight` | `0.05` | `[0.0, 1.0]` | Cận dưới trọng số $w_i$ của mỗi mô hình trong bài toán tối ưu lồi SLSQP trên tập `Cal-A` (`min_weight < max_weight`). |
 | `ensemble.max_weight` | `0.60` | `(0.0, 1.0]` | Cận trên trọng số $w_i$ của mỗi mô hình trong SLSQP, chống tập trung rủi ro vào một mô hình duy nhất. |
-| `ensemble.n_bootstrap` | `200` | `>= 10` | Số vòng lấy mẫu Bootstrap trên tập `Cal-B` để giải SLSQP và lấy vector trọng số trung vị (median weights). |
-| `ensemble.bootstrap_sample_ratio` | `0.80` | `(0.0, 1.0]` | Tỷ lệ kích thước mẫu trong mỗi lần lấy mẫu Bootstrap trên `Cal-B` (80% số dòng). |
+| `ensemble.n_bootstrap` | `200` | `>= 10` | Số vòng Moving Block Bootstrap trên tập `Cal-A` để giải SLSQP và lấy vector trọng số trung vị (median weights). |
+| `ensemble.bootstrap_sample_ratio` | `0.80` | `(0.0, 1.0]` | Tỷ lệ kích thước mẫu trong mỗi lần lấy mẫu Moving Block Bootstrap trên `Cal-A` (80% số dòng). |
+| `ensemble.bootstrap_block_size` | `20` | `>= 1` | Độ dài khối liên tiếp (bars) cho Moving Block Bootstrap nhằm bảo toàn cấu trúc tự tương quan thời gian. |
 | `ensemble.shrinkage_factor` | `0.10` | `[0.0, 1.0]` | Hệ số co cụm $\lambda$ kéo trọng số trung vị về trọng số đều $1/K$: $w_{\text{shrunk}} = (1-\lambda)w_{\text{med}} + \lambda (1/K)$. |
-| `ensemble.hurdle_ratio` | `0.05` | `>= 0.0` | **RULE-05 Hurdle Gate:** Trọng số SLSQP phải vượt qua cả Single Best Model và Equal Weights ($1/K$) ít nhất $+5\%$ IC Sharpe trên `Cal-B`; nếu không đạt sẽ tự động fallback về trọng số đều $1/K$. |
-| `ensemble.max_ece_threshold` | `0.05` | `(0.0, 1.0]` | Ngưỡng sai số hiệu chuẩn kỳ vọng tối đa (Expected Calibration Error $< 0.05$) sau khi tối ưu Temperature Scaling ($T > 0$) trên tập `Cal-A`. |
+| `ensemble.hurdle_ratio` | `0.05` | `>= 0.0` | **RULE-05 Hurdle Gate (Out-of-Bag):** Dự đoán OOB của SLSQP phải vượt qua cả Single Best Model và Equal Weights ($1/K$) ít nhất $+5\%$ IC Sharpe; nếu không đạt sẽ tự động fallback. |
+| `ensemble.max_ece_threshold` | `0.05` | `(0.0, 1.0]` | Ngưỡng sai số hiệu chuẩn kỳ vọng tối đa (Expected Calibration Error $< 0.05$) sau khi tối ưu Temperature Scaling ($T > 0$) trên tập `Cal-B`. |
 | `ensemble.random_state` | `42` | `int` | Hạt giống ngẫu nhiên cho quá trình lấy mẫu Bootstrap. |
 
 ---
@@ -192,6 +194,8 @@ latency_repeats   = 200
 
 [backtest]
 price_col         = "Close"
+open_col          = "Open"
+execution_price   = "close"              # "close" (Close[t]->Close[t+1]) hoặc "next_open" (Open[t+1]->Open[t+2])
 fee_bps           = 4.0
 slippage_bps      = 1.0
 top_pct           = 0.20
@@ -221,6 +225,8 @@ min_downside_ic   = 0.0
 | Khóa | Mặc định | Ràng buộc | Mô tả chi tiết |
 | :--- | :--- | :--- | :--- |
 | `backtest.price_col` | `"Close"` | Tên cột trong `X` | Cột giá đóng cửa trong ma trận đặc trưng thô của tập `OOS` dùng để tính lợi suất thị trường $r_t = \text{Close}_{t+1}/\text{Close}_t - 1$. |
+| `backtest.open_col` | `"Open"` | Tên cột trong `X` | Cột giá mở cửa dùng khi `execution_price = "next_open"`. |
+| `backtest.execution_price` | `"close"` | `"close"` \| `"next_open"` | Chế độ giá khớp lệnh ở Tier 1: `"close"` (mặc định) hoặc `"next_open"` ($r_t = \text{Open}_{t+2}/\text{Open}_{t+1} - 1$, đồng bộ với Tier 2). Báo cáo OOS luôn kèm `daily_net_sharpe` ($\times\sqrt{252}$) và `deflated_sharpe_ratio`. |
 | `backtest.fee_bps` | `4.0` | `>= 0.0` | Phí giao dịch (Taker fee) tính theo **Basis Points** ($1\text{ bps} = 0.01\% = 10^{-4}$). |
 | `backtest.slippage_bps` | `1.0` | `>= 0.0` | Độ trượt giá khớp lệnh (Slippage) tính theo **Basis Points**. Tổng chi phí mỗi đơn vị turnover là `(fee_bps + slippage_bps) / 10000`. |
 | `backtest.top_pct` | `0.20` | `(0.0, 0.5)` | **Ngưỡng mở vị thế (Entry Percentile):** Mở Long (`+1`) khi phân vị tín hiệu $\ge 1 - \text{top\_pct}$ (`0.80`, tức Top 20%); mở Short (`-1`) khi phân vị $\le \text{top\_pct}$ (`0.20`, tức Bottom 20%). |

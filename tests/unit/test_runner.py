@@ -145,3 +145,22 @@ def test_latency_repeats_is_configurable(bundle, monkeypatch) -> None:
     monkeypatch.setattr(r, "_latency_ms", spy)
     _run(bundle, _oos(signal=True), latency_repeats=7)
     assert calls["n"] == 7
+
+
+def test_runner_next_open_execution_uses_open_t_plus_1(bundle) -> None:
+    """Audit #8: execution_price='next_open' computes returns from Open[t+1] -> Open[t+2]."""
+    oos = _oos(signal=True)
+    # Missing Open column raises BacktestError
+    cfg_open = BacktestConfig(rank_window=100, ic_window=300, execution_price="next_open")
+    with pytest.raises(BacktestError, match="Open"):
+        _run(bundle, oos, cfg=cfg_open)
+
+    # With Open column present (reuse Close column name via open_col='Close' to stay compatible with bundle schema)
+    cfg_open_col = BacktestConfig(
+        rank_window=100, ic_window=300, execution_price="next_open", open_col="Close"
+    )
+    m = _run(bundle, oos, cfg=cfg_open_col)
+    # Decision at t enters at Open[t+1] and exits at Open[t+2] -> len(oos) - 2 return bars
+    assert m.n_bars == len(oos.X) - 2
+    assert m.daily_net_sharpe is not None
+    assert m.deflated_sharpe_ratio is not None

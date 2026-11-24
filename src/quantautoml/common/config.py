@@ -6,7 +6,7 @@ import math
 import tomllib
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Self
+from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -133,6 +133,7 @@ class EnsembleConfig(_Strict):
     max_weight: float = Field(default=0.60, gt=0.0, le=1.0)
     n_bootstrap: int = Field(default=200, ge=10)
     bootstrap_sample_ratio: float = Field(default=0.80, gt=0.0, le=1.0)
+    bootstrap_block_size: int = Field(default=20, ge=1)
     shrinkage_factor: float = Field(default=0.10, ge=0.0, le=1.0)
     hurdle_ratio: float = Field(default=0.05, ge=0.0)
     max_ece_threshold: float = Field(default=0.05, gt=0.0, le=1.0)
@@ -155,6 +156,8 @@ class PackagingConfig(_Strict):
 
 class BacktestConfig(_Strict):
     price_col: str = "Close"
+    open_col: str = "Open"
+    execution_price: Literal["close", "next_open"] = "close"
     fee_bps: float = Field(default=4.0, ge=0.0)
     slippage_bps: float = Field(default=1.0, ge=0.0)
     top_pct: float = Field(default=0.20, gt=0.0, lt=0.5)

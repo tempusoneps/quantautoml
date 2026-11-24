@@ -49,7 +49,7 @@ flowchart LR
 
 ---
 
-### Phase 3: Time-Series Bootstrap & Production Backtest Realism *(Active)*
+### Phase 3: Time-Series Bootstrap & Production Backtest Realism *(Done)*
 - **Objective:** Nâng cấp thống kê bất định của trọng số Ensemble và độ tin cậy nghiệm thu OOS theo chuẩn quỹ định lượng thực chiến.
 - **Prerequisites:** Phase 2 Done.
 - **Key Deliverables:**
@@ -59,4 +59,4 @@ flowchart LR
 - **Independent Testability:**
   - Test xác nhận Block Bootstrap giữ nguyên cấu trúc block liên tiếp và Hurdle gate không bị lạc quan giả trên dữ liệu nhiễu thuần.
   - Test so sánh Daily Net Sharpe trên dữ liệu có overnight gap; test Walk-Forward OOS đảm bảo mọi cửa sổ tuân thủ purging/embargo $h$ nến.
-- **Status:** In Progress
+- **Status:** Done

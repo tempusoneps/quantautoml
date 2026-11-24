@@ -5,11 +5,13 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import NDArray
 from pydantic import BaseModel, ConfigDict
+from scipy.stats import kurtosis, norm, skew
 
 from quantautoml.common.config import BacktestConfig
 from quantautoml.metrics.ic import calc_icir, calc_rank_ic, calc_rolling_ic
 
 _MIN_STRESS_BARS = 30
+_TRADING_DAYS_PER_YEAR = 252.0
 
 
 class OOSMetrics(BaseModel):
@@ -19,6 +21,8 @@ class OOSMetrics(BaseModel):
     icir: float
     gross_sharpe: float
     net_sharpe: float
+    daily_net_sharpe: float | None = None
+    deflated_sharpe_ratio: float | None = None
     max_drawdown: float
     downside_ic: float
     n_stress_bars: int
@@ -42,6 +46,7 @@ def evaluate_oos_performance(
     latency_ms: float | None,
     cfg: BacktestConfig,
     latency_budget_ms: float = 5.0,
+    timestamps: NDArray[np.datetime64] | None = None,
 ) -> OOSMetrics:
     """Compute OOS metrics and the acceptance gates (all strict inequalities).
 
@@ -68,6 +73,18 @@ def evaluate_oos_performance(
     downside_ic = calc_rank_ic(scores[stress], y[stress])[0] if downside_defined else 0.0
     net_sharpe = _sharpe(net_returns, periods_per_year)
     mdd = _max_drawdown(net_returns)
+    daily_rets = (
+        _daily_compounded_returns(net_returns, timestamps)
+        if timestamps is not None and len(timestamps) == n
+        else None
+    )
+    daily_net_sharpe = (
+        _sharpe(daily_rets, _TRADING_DAYS_PER_YEAR)
+        if daily_rets is not None and len(daily_rets) >= 2
+        else None
+    )
+    dsr_series = daily_rets if (daily_rets is not None and len(daily_rets) >= 5) else net_returns
+    dsr = _deflated_sharpe_ratio(dsr_series)
 
     gates = {
         "rank_ic": rank_ic > cfg.min_rank_ic,
@@ -80,7 +97,8 @@ def evaluate_oos_performance(
     failed = [k for k, ok in gates.items() if not ok]
     return OOSMetrics(
         rank_ic=rank_ic, icir=icir, gross_sharpe=_sharpe(gross_returns, periods_per_year),
-        net_sharpe=net_sharpe, max_drawdown=mdd, downside_ic=downside_ic, n_stress_bars=n_stress,
+        net_sharpe=net_sharpe, daily_net_sharpe=daily_net_sharpe, deflated_sharpe_ratio=dsr,
+        max_drawdown=mdd, downside_ic=downside_ic, n_stress_bars=n_stress,
         mean_turnover=float(np.mean(turnover)) if n else 0.0, n_bars=n, latency_ms=latency_ms,
         gates=gates, accepted=not failed, failed_gates=failed,
     )
@@ -113,3 +131,37 @@ def _stress_mask(
     trailing = cs[window:] - cs[:-window]
     mask[window:] = trailing <= np.quantile(trailing, quantile)
     return mask
+
+
+def _daily_compounded_returns(
+    returns: NDArray[np.float64], timestamps: NDArray[np.datetime64]
+) -> NDArray[np.float64]:
+    """Compound bar returns within each UTC calendar day."""
+    if len(returns) == 0:
+        return np.empty(0, dtype=np.float64)
+    days = timestamps.astype("datetime64[D]")
+    _, first_idx, counts = np.unique(days, return_index=True, return_counts=True)
+    order = np.argsort(first_idx)
+    out = np.empty(len(order), dtype=np.float64)
+    for i, k in enumerate(order):
+        start = int(first_idx[k])
+        out[i] = float(np.prod(1.0 + returns[start : start + int(counts[k])]) - 1.0)
+    return out
+
+
+def _deflated_sharpe_ratio(returns: NDArray[np.float64]) -> float:
+    """Probabilistic / Deflated Sharpe Ratio P(SR* > 0) adjusting for skew & kurtosis."""
+    n = len(returns)
+    if n < 3:
+        return 0.0
+    std = float(np.std(returns, ddof=1))
+    if std <= 1e-15:
+        return 0.0
+    sr = float(np.mean(returns)) / std  # non-annualized per-period Sharpe
+    g3 = float(skew(returns, bias=False)) if n >= 3 else 0.0
+    g4 = float(kurtosis(returns, fisher=False, bias=False)) if n >= 4 else 3.0
+    if not (np.isfinite(g3) and np.isfinite(g4)):
+        g3, g4 = 0.0, 3.0
+    denom_sq = max(1.0 - g3 * sr + ((g4 - 1.0) / 4.0) * (sr * sr), 1e-12)
+    z = sr * np.sqrt(n - 1.0) / np.sqrt(denom_sq)
+    return float(np.clip(norm.cdf(z), 0.0, 1.0))

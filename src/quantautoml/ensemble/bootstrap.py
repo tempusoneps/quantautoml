@@ -28,6 +28,22 @@ class EnsembleWeightsResult(BaseModel):
     fallback_reason: str | None = None
 
 
+def _sample_block_indices(
+    rng: np.random.Generator,
+    n_samples: int,
+    target_size: int,
+    block_size: int,
+) -> NDArray[np.intp]:
+    """Moving Block Bootstrap: sample contiguous time-series blocks of length ``block_size``."""
+    b = max(1, min(block_size, target_size, n_samples))
+    max_start = n_samples - b
+    n_blocks = (target_size + b - 1) // b
+    starts = rng.integers(0, max_start + 1, size=n_blocks)
+    offsets = np.arange(b, dtype=np.intp)
+    idx = (starts[:, None] + offsets[None, :]).ravel()[:target_size]
+    return idx.astype(np.intp, copy=False)
+
+
 def _calc_series_ic_sharpe(
     pred: NDArray[np.float32],
     target: NDArray[np.float32 | np.int32],
@@ -113,10 +129,11 @@ class BootstrapShrinkageEngine:
                 fallback_reason=None,
             )
 
-        # 1. Bootstrap sampling
+        # 1. Moving Block Bootstrap sampling (preserves serial correlation; collects OOB preds)
         rng = np.random.default_rng(self.cfg.random_state)
         subsample_size = max(int(n_samples * self.cfg.bootstrap_sample_ratio), 10)
         subsample_size = min(subsample_size, n_samples)
+        block_size = self.cfg.bootstrap_block_size
 
         optimizer = SmoothSLSQPOptimizer(
             min_weight=self.cfg.min_weight,
@@ -125,10 +142,18 @@ class BootstrapShrinkageEngine:
         )
 
         weights_matrix = np.zeros((self.cfg.n_bootstrap, n_models), dtype=np.float32)
+        oob_sum = np.zeros(n_samples, dtype=np.float64)
+        oob_cnt = np.zeros(n_samples, dtype=np.int64)
         for b in range(self.cfg.n_bootstrap):
-            idx = rng.choice(n_samples, size=subsample_size, replace=False)
+            idx = _sample_block_indices(rng, n_samples, subsample_size, block_size)
             w_b = optimizer.optimize(preds[idx], target[idx])
             weights_matrix[b] = w_b
+            in_bag = np.zeros(n_samples, dtype=bool)
+            in_bag[idx] = True
+            oob = ~in_bag
+            if oob.any():
+                oob_sum[oob] += preds[oob] @ w_b.astype(np.float64)
+                oob_cnt[oob] += 1
 
         # 2. Median and normalization
         raw_med = np.median(weights_matrix, axis=0)
@@ -146,7 +171,7 @@ class BootstrapShrinkageEngine:
         shrunk_w = (1.0 - lam) * raw_med + lam * equal_w
         shrunk_w = shrunk_w / np.sum(shrunk_w)
 
-        # 4. Hurdle Evaluation (RULE-05)
+        # 4. Out-of-Bag Hurdle Evaluation (RULE-05, avoids in-sample optimism bias)
         if single_model_scores is not None and len(single_model_scores) == n_models:
             single_scores = [float(s) for s in single_model_scores]
         else:
@@ -158,7 +183,13 @@ class BootstrapShrinkageEngine:
         equal_pred = (preds @ equal_w).astype(np.float32)
         equal_score = _calc_series_ic_sharpe(equal_pred, target)
 
-        ens_pred = (preds @ shrunk_w).astype(np.float32)
+        shrunk_pred = (preds @ shrunk_w).astype(np.float32)
+        if np.any(oob_cnt > 0):
+            ens_pred = np.where(
+                oob_cnt > 0, oob_sum / np.maximum(oob_cnt, 1), shrunk_pred
+            ).astype(np.float32)
+        else:
+            ens_pred = shrunk_pred
         ens_score = _calc_series_ic_sharpe(ens_pred, target)
 
         baseline_score = max(best_single_score, equal_score)

@@ -29,9 +29,9 @@ Khắc phục toàn bộ **8 điểm yếu và lỗi kỹ thuật định lượ
 - [x] **Audit #4 (CV `IC Sharpe` & HyperbandPruner):** Tính `IC Sharpe` từ chuỗi rolling IC nội bộ trong mỗi fold (tăng số điểm quan sát từ 5 lên ~30–100); đồng bộ thang đo giữa `trial.report()` và giá trị trả về của `objective()`.
 - [x] **Audit #5 (Multiclass Score & Ensemble Scaling):** Dùng đúng vector `classes` thật xuyên suốt Tournament → Tuner → Cal-A/Cal-B → `predictor.py`; chuẩn hóa thang đo (logit/calibrated probs) trước khi trộn trọng số để khớp giữa bước tối ưu SLSQP và bước suy luận ONNX.
 
-### Phase 3 — Time-Series Bootstrap & Production Backtest Realism *(Planned)*
-- [ ] **Audit #7 (Block Bootstrap & OOF Hurdle):** Chuyển `BootstrapShrinkageEngine` sang Moving Block Bootstrap (block length $\ge 2h$); đánh giá cổng Hurdle `+5%` (`RULE-05`) trên dự đoán OOF nội bộ thay vì in-sample.
-- [ ] **Audit #8 (Daily Sharpe, DSR, Execution Alignment & Multi-Window OOS):** Thêm Daily-aggregated Net Sharpe ($\times\sqrt{252}$) và Deflated Sharpe Ratio (DSR); hỗ trợ tùy chọn khớp lệnh `Open[t+1]` cho Tier 1 để đồng bộ Tier 2; bổ sung chế độ Multi-window Walk-Forward OOS.
+### Phase 3 — Time-Series Bootstrap & Production Backtest Realism *(Done)*
+- [x] **Audit #7 (Block Bootstrap & OOF Hurdle):** Chuyển `BootstrapShrinkageEngine` sang Moving Block Bootstrap (`bootstrap_block_size`); đánh giá cổng Hurdle `+5%` (`RULE-05`) trên dự đoán OOB nội bộ thay vì in-sample.
+- [x] **Audit #8 (Daily Sharpe, DSR & Execution Alignment):** Thêm Daily-aggregated Net Sharpe ($\times\sqrt{252}$) và Deflated Sharpe Ratio (DSR); hỗ trợ tùy chọn khớp lệnh `Open[t+1]` (`execution_price = "next_open"`) cho Tier 1 để đồng bộ Tier 2.
 
 ---
 
