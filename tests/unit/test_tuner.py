@@ -92,3 +92,34 @@ def test_tuner_hyperband_prunes_weak_trials() -> None:
     summary = result.study_summaries["lightgbm"]
     assert summary["n_trials"] == 25
     assert summary["n_pruned"] >= 1
+
+
+def test_tuner_reports_aligned_objective_to_pruner(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Audit #4: Intermediate values reported to HyperbandPruner must use the same
+    objective scale (ic_sharpe - complexity_penalty * complexity) as the final return value.
+    """
+    import optuna
+
+    reported: list[tuple[int, float]] = []
+    orig_report = optuna.Trial.report
+
+    def spy_report(self, value: float, step: int) -> None:
+        reported.append((step, float(value)))
+        return orig_report(self, value, step)
+
+    monkeypatch.setattr(optuna.Trial, "report", spy_report)
+
+    rng = np.random.default_rng(11)
+    n = 1000
+    X = rng.standard_normal((n, 4)).astype(np.float32)
+    y = (X[:, 0] * 0.9 + rng.standard_normal(n) * 0.4 > 0.0).astype(np.int32)
+    cfg = ModelsConfig(tuning_trials=1, n_wf_folds=2, complexity_penalty=0.05, random_state=42)
+    res = DeepOptunaTuner(cfg=cfg, task_type=TaskType.BINARY_CLASSIFICATION).tune(
+        models_to_tune=["lightgbm"], X=X, y=y
+    )
+    cand = res.tuned_candidates[0]
+    # The final step's reported value must equal the final objective score
+    final_step_val = reported[-1][1]
+    assert final_step_val == pytest.approx(cand.best_score, abs=1e-5)

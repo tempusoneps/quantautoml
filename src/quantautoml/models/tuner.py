@@ -12,8 +12,9 @@ from pydantic import BaseModel, ConfigDict
 from quantautoml.common.config import ModelsConfig
 from quantautoml.common.exceptions import InvalidDataError
 from quantautoml.common.types import TaskType
-from quantautoml.metrics.ic import calc_ic_sharpe, calc_rank_ic
+from quantautoml.metrics.ic import calc_ic_sharpe
 from quantautoml.models.candidates import BaseGBDCandidate, create_candidate
+from quantautoml.models.tournament import fold_subwindow_ics
 from quantautoml.models.validation import ExpandingWalkForwardSplitter
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
@@ -133,7 +134,15 @@ class DeepOptunaTuner:
 
             def objective(trial: optuna.Trial) -> float:
                 params = _suggest_tuning_params(trial, model_name)
-                fold_ics: list[float] = []
+                complexity = create_candidate(
+                    name=model_name,
+                    task_type=self.task_type,
+                    params=params,
+                    random_state=self.cfg.random_state,
+                ).complexity_score()
+                sub_ics: list[float] = []
+                ic_sharpe = 0.0
+                objective_val = -self.cfg.complexity_penalty * complexity
 
                 for step, (train_idx, test_idx) in enumerate(folds):
                     candidate = create_candidate(
@@ -144,25 +153,15 @@ class DeepOptunaTuner:
                     )
                     candidate.fit(X[train_idx], y[train_idx])
                     pred = candidate.predict(X[test_idx])
-                    ic = calc_rank_ic(pred, y[test_idx])[0]
-                    fold_ics.append(float(ic))
+                    sub_ics.extend(fold_subwindow_ics(pred, y[test_idx]))
 
-                    # Report intermediate progress for pruning
-                    intermediate_val = float(np.mean(fold_ics))
-                    trial.report(intermediate_val, step=step)
+                    ic_sharpe = float(calc_ic_sharpe(np.array(sub_ics, dtype=np.float64)))
+                    objective_val = ic_sharpe - self.cfg.complexity_penalty * complexity
+                    # Report intermediate progress on the exact same scale as final objective
+                    trial.report(objective_val, step=step)
 
                     if step >= 1 and trial.should_prune():
                         raise optuna.TrialPruned()
-
-                ic_sharpe = float(calc_ic_sharpe(np.array(fold_ics, dtype=np.float64)))
-                temp_cand = create_candidate(
-                    name=model_name,
-                    task_type=self.task_type,
-                    params=params,
-                    random_state=self.cfg.random_state,
-                )
-                complexity = temp_cand.complexity_score()
-                objective_val = ic_sharpe - self.cfg.complexity_penalty * complexity
 
                 trial.set_user_attr("ic_sharpe", ic_sharpe)
                 trial.set_user_attr("complexity", complexity)

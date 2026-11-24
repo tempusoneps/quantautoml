@@ -12,11 +12,35 @@ from pydantic import BaseModel, ConfigDict, Field
 from quantautoml.common.config import ModelsConfig
 from quantautoml.common.exceptions import InvalidDataError
 from quantautoml.common.types import TaskType
-from quantautoml.metrics.ic import calc_ic_sharpe, calc_rank_ic
+from quantautoml.metrics.ic import calc_ic_sharpe, calc_rank_ic, calc_rolling_ic
 from quantautoml.models.candidates import create_candidate
 from quantautoml.models.validation import ExpandingWalkForwardSplitter
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
+
+_MIN_FOLD_FOR_SUBWINDOWS = 40
+_MIN_SUBWINDOW = 20
+_MAX_SUBWINDOW = 63
+
+
+def fold_subwindow_ics(
+    pred: NDArray[np.float32],
+    y_fold: NDArray[np.float32 | np.int32],
+) -> list[float]:
+    """Compute non-overlapping sub-window Rank ICs within a fold test block.
+
+    Provides enough observations for stable ``calc_ic_sharpe`` estimation instead of
+    dividing by ``std()`` of only 2-5 fold-level scalars. Falls back to the single
+    fold Rank IC when the fold test block is too short (< 40 rows).
+    """
+    n = len(y_fold)
+    if n >= _MIN_FOLD_FOR_SUBWINDOWS:
+        sub_w = max(_MIN_SUBWINDOW, min(_MAX_SUBWINDOW, n // 4))
+        roll = calc_rolling_ic(pred, y_fold, window=sub_w)
+        valid = roll[~np.isnan(roll)]
+        if valid.size >= 2:
+            return [float(v) for v in valid]
+    return [float(calc_rank_ic(pred, y_fold)[0])]
 
 
 class TrialScore(BaseModel):
@@ -132,6 +156,7 @@ class ModelTournament:
                 params = _sample_params(trial, model_name)
 
                 fold_ics: list[float] = []
+                sub_ics: list[float] = []
                 oof_preds_list: list[float] = []
 
                 for train_idx, test_idx in folds:
@@ -147,9 +172,10 @@ class ModelTournament:
 
                     ic = calc_rank_ic(pred, y[test_idx])[0]
                     fold_ics.append(float(ic))
+                    sub_ics.extend(fold_subwindow_ics(pred, y[test_idx]))
 
                 mean_ic = float(np.mean(fold_ics))
-                sharpe = float(calc_ic_sharpe(np.array(fold_ics, dtype=np.float64)))
+                sharpe = float(calc_ic_sharpe(np.array(sub_ics, dtype=np.float64)))
 
                 score = TrialScore(
                     trial_id=global_trial_id,

@@ -66,3 +66,27 @@ def test_tournament_insufficient_samples() -> None:
     tournament = ModelTournament(cfg=cfg, task_type=TaskType.BINARY_CLASSIFICATION)
     with pytest.raises(InvalidDataError):
         tournament.run(X, y)
+
+
+def test_tournament_ic_sharpe_uses_subwindow_rolling_ics() -> None:
+    """Audit #4: When fold test blocks are large enough, IC Sharpe must be computed over
+    internal non-overlapping sub-windows rather than std() of just n_wf_folds (2-5) scalars.
+    """
+    from quantautoml.metrics.ic import calc_ic_sharpe
+
+    rng = np.random.default_rng(7)
+    n = 1200
+    X = rng.standard_normal((n, 4)).astype(np.float32)
+    y = (X[:, 0] * 0.8 + rng.standard_normal(n) * 0.5 > 0.0).astype(np.int32)
+    cfg = ModelsConfig(
+        tournament_trials=1,
+        n_wf_folds=2,
+        enabled_models=["lightgbm"],
+        random_state=42,
+    )
+    result = ModelTournament(cfg=cfg, task_type=TaskType.BINARY_CLASSIFICATION).run(X, y)
+    score = result.rankings[0]
+    naive_2fold_sharpe = float(calc_ic_sharpe(np.array(score.fold_ics, dtype=np.float64)))
+    # With 2 folds of ~300 rows each, sub-window rolling IC Sharpe differs markedly from 2-point std
+    assert not np.isclose(score.ic_sharpe, naive_2fold_sharpe, rtol=1e-3)
+    assert np.isfinite(score.ic_sharpe) and score.ic_sharpe > 0.0
