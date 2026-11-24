@@ -30,8 +30,18 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="quantautoml")
     sub = parser.add_subparsers(dest="command", required=True)
     prep = sub.add_parser("run", help="run the Quant AutoML pipeline")
-    prep.add_argument("--config", type=Path, required=True, help="path to TOML config")
-    prep.add_argument("--out", type=Path, required=True, help="output directory")
+    prep.add_argument(
+        "--config",
+        type=Path,
+        default=Path("config.toml"),
+        help="path to TOML config (default: config.toml)",
+    )
+    prep.add_argument(
+        "--out",
+        type=Path,
+        default=Path("runs/default"),
+        help="output directory (default: runs/default)",
+    )
     return parser
 
 

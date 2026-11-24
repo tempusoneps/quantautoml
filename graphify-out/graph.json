@@ -967,8 +967,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg",
-      "community": 93,
-      "community_name": "export_svg_document",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "export_svg.py"
     },
     {
@@ -1011,8 +1011,8 @@
       "source_location": "L150",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_html_tokens",
-      "community": 206,
-      "community_name": "extract_first_svg",
+      "community": 119,
+      "community_name": "_rewrite_start_tags",
       "norm_label": "html_tokens()"
     },
     {
@@ -1033,8 +1033,8 @@
       "source_location": "L185",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_mask_opaque_html",
-      "community": 206,
-      "community_name": "extract_first_svg",
+      "community": 119,
+      "community_name": "_rewrite_start_tags",
       "norm_label": "mask_opaque_html()"
     },
     {
@@ -1044,8 +1044,8 @@
       "source_location": "L206",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_extract_first_svg",
-      "community": 206,
-      "community_name": "extract_first_svg",
+      "community": 119,
+      "community_name": "_rewrite_start_tags",
       "norm_label": "extract_first_svg()"
     },
     {
@@ -1055,8 +1055,8 @@
       "source_location": "L225",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_xml_safe_comments",
-      "community": 93,
-      "community_name": "export_svg_document",
+      "community": 50,
+      "community_name": "Self",
       "norm_label": "xml_safe_comments()"
     },
     {
@@ -1154,8 +1154,8 @@
       "source_location": "L458",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_selector_list_parts",
-      "community": 105,
-      "community_name": "css_escape",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "selector_list_parts()"
     },
     {
@@ -1165,8 +1165,8 @@
       "source_location": "L489",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_is_chrome_selector",
-      "community": 105,
-      "community_name": "css_escape",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "is_chrome_selector()"
     },
     {
@@ -1220,8 +1220,8 @@
       "source_location": "L593",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_scope_selector",
-      "community": 105,
-      "community_name": "css_escape",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "scope_selector()"
     },
     {
@@ -1231,8 +1231,8 @@
       "source_location": "L621",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_body_inherited_css",
-      "community": 105,
-      "community_name": "css_escape",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "body_inherited_css()"
     },
     {
@@ -1484,8 +1484,8 @@
       "source_location": "L1364",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_decoded_css_property_text",
-      "community": 119,
-      "community_name": "_rewrite_start_tags",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "_decoded_css_property_text()"
     },
     {
@@ -1495,8 +1495,8 @@
       "source_location": "L1378",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_css_paint_may_target_descendants",
-      "community": 105,
-      "community_name": "css_escape",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "_css_paint_may_target_descendants()"
     },
     {
@@ -1506,8 +1506,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_py_element",
-      "community": 105,
-      "community_name": "css_escape",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "element"
     },
     {
@@ -1528,8 +1528,8 @@
       "source_location": "L1508",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_has_diagram_stylesheet",
-      "community": 93,
-      "community_name": "export_svg_document",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "has_diagram_stylesheet()"
     },
     {
@@ -1594,8 +1594,8 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_rationale_151",
-      "community": 206,
-      "community_name": "extract_first_svg",
+      "community": 119,
+      "community_name": "_rewrite_start_tags",
       "norm_label": "yield markup with its svg context and any opaque text body boundaries.      html"
     },
     {
@@ -1605,8 +1605,8 @@
       "source_location": "L207",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_rationale_207",
-      "community": 206,
-      "community_name": "extract_first_svg",
+      "community": 119,
+      "community_name": "_rewrite_start_tags",
       "norm_label": "return the first top-level <svg> element, including nested <svg> icons."
     },
     {
@@ -1616,8 +1616,8 @@
       "source_location": "L226",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_rationale_226",
-      "community": 93,
-      "community_name": "export_svg_document",
+      "community": 50,
+      "community_name": "Self",
       "norm_label": "make html comments valid xml comments; cdata is copied unchanged.      html allo"
     },
     {
@@ -1682,8 +1682,8 @@
       "source_location": "L459",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_rationale_459",
-      "community": 105,
-      "community_name": "css_escape",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "split only selector-list commas, preserving quoted and escaped literals."
     },
     {
@@ -1737,8 +1737,8 @@
       "source_location": "L622",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_rationale_622",
-      "community": 105,
-      "community_name": "css_escape",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "bind `color` / `font-family` from a dropped `body` rule to the svg root."
     },
     {
@@ -1858,8 +1858,8 @@
       "source_location": "L1365",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_rationale_1365",
-      "community": 119,
-      "community_name": "_rewrite_start_tags",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "read opacity spellings conservatively without changing carried css."
     },
     {
@@ -1869,8 +1869,8 @@
       "source_location": "L1379",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_rationale_1379",
-      "community": 105,
-      "community_name": "css_escape",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "exclude provably unrelated simple selectors; preserve unknown css cascades."
     },
     {
@@ -1891,8 +1891,8 @@
       "source_location": "L1509",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_scripts_export_svg_rationale_1509",
-      "community": 93,
-      "community_name": "export_svg_document",
+      "community": 95,
+      "community_name": "export_svg.py",
       "norm_label": "true when a <style> block contains css rules beyond the fonts @import."
     },
     {
@@ -5345,8 +5345,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "scripts_generate_config",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "generate_config.py"
     },
     {
@@ -5356,8 +5356,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "scripts_generate_config_detect_file_info",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "detect_file_info()"
     },
     {
@@ -5367,8 +5367,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "scripts_generate_config_py_path",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "path"
     },
     {
@@ -5378,8 +5378,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "scripts_generate_config_py_any",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "any"
     },
     {
@@ -5389,8 +5389,8 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "scripts_generate_config_build_config_content",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "build_config_content()"
     },
     {
@@ -5400,8 +5400,8 @@
       "source_location": "L274",
       "_origin": "ast",
       "id": "scripts_generate_config_main",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "main()"
     },
     {
@@ -5497,8 +5497,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_main",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "__main__.py"
     },
     {
@@ -5552,8 +5552,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_buffer_hysteresisbuffer_init",
-      "community": 87,
-      "community_name": "HysteresisBuffer",
+      "community": 50,
+      "community_name": "Self",
       "norm_label": ".__init__()"
     },
     {
@@ -5871,8 +5871,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_friction",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "friction.py"
     },
     {
@@ -5882,8 +5882,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_friction_frictioncostmodel",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "frictioncostmodel"
     },
     {
@@ -5893,8 +5893,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_friction_frictioncostmodel_init",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": ".__init__()"
     },
     {
@@ -5948,8 +5948,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_friction_rationale_1",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "friction cost model (rule-09): r_net = r_gross - turnover * (fee + slippage)."
     },
     {
@@ -5959,8 +5959,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_friction_rationale_10",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "taker fee + slippage in basis points, charged on ``turnover_t = 0.5 * sum|w_t -"
     },
     {
@@ -6003,8 +6003,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_realworldbacktestrunner",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": "realworldbacktestrunner"
     },
     {
@@ -6014,8 +6014,8 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_realworldbacktestrunner_init",
-      "community": 103,
-      "community_name": "test_packaging_bundle.py",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": ".__init__()"
     },
     {
@@ -6025,8 +6025,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_realworldbacktestrunner_run",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": ".run()"
     },
     {
@@ -6036,8 +6036,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_py_dataframe",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": "dataframe"
     },
     {
@@ -6047,8 +6047,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_py_ndarray",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": "ndarray"
     },
     {
@@ -6058,8 +6058,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_py_float64",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": "float64"
     },
     {
@@ -6069,8 +6069,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_realworldbacktestrunner_prepare",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": "._prepare()"
     },
     {
@@ -6080,8 +6080,8 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_realworldbacktestrunner_metrics",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": "._metrics()"
     },
     {
@@ -6091,8 +6091,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "series",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": "series"
     },
     {
@@ -6102,8 +6102,8 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_num",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": "_num()"
     },
     {
@@ -6124,8 +6124,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_rationale_47",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": "inject positions -> backtest -> extract metrics -> optional html / csv export."
     },
     {
@@ -6135,8 +6135,8 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "src_quantautoml_backtest_realworld_runner_rationale_127",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 161,
+      "community_name": "test_pipeline_packaging.py",
       "norm_label": "backtesting.py reports undefined ratios as nan; surface them as 0.0."
     },
     {
@@ -6399,8 +6399,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_cli",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "cli.py"
     },
     {
@@ -6410,8 +6410,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_quantautoml_cli_format_duration",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "_format_duration()"
     },
     {
@@ -6421,8 +6421,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_quantautoml_cli_build_parser",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "_build_parser()"
     },
     {
@@ -6432,19 +6432,19 @@
       "source_location": "",
       "_origin": "ast",
       "id": "argumentparser",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "argumentparser"
     },
     {
       "label": "main()",
       "file_type": "code",
       "source_file": "src/quantautoml/cli.py",
-      "source_location": "L38",
+      "source_location": "L48",
       "_origin": "ast",
       "id": "src_quantautoml_cli_main",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "main()"
     },
     {
@@ -6454,8 +6454,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_cli_rationale_1",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "command-line entrypoint: ``quantautoml run --config config.toml --out out/``."
     },
     {
@@ -6498,8 +6498,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "datetime",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "datetime"
     },
     {
@@ -6619,8 +6619,8 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "src_quantautoml_common_config_modelsconfig",
-      "community": 18,
-      "community_name": "ModelsConfig",
+      "community": 64,
+      "community_name": "DeepOptunaTuner",
       "norm_label": "modelsconfig"
     },
     {
@@ -6630,8 +6630,8 @@
       "source_location": "L122",
       "_origin": "ast",
       "id": "src_quantautoml_common_config_modelsconfig_validate_enabled_models",
-      "community": 18,
-      "community_name": "ModelsConfig",
+      "community": 50,
+      "community_name": "Self",
       "norm_label": "._validate_enabled_models()"
     },
     {
@@ -6718,8 +6718,8 @@
       "source_location": "L227",
       "_origin": "ast",
       "id": "src_quantautoml_common_config_pipelineconfig",
-      "community": 77,
-      "community_name": "DataIngestion",
+      "community": 180,
+      "community_name": "PipelineConfig",
       "norm_label": "pipelineconfig"
     },
     {
@@ -6784,8 +6784,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "exceptions.py"
     },
     {
@@ -6795,8 +6795,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_quantautomlerror",
-      "community": 205,
-      "community_name": "test_types.py",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "quantautomlerror"
     },
     {
@@ -6806,8 +6806,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_py_exception",
-      "community": 205,
-      "community_name": "test_types.py",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "exception"
     },
     {
@@ -6817,8 +6817,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_invaliddataerror",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": "invaliddataerror"
     },
     {
@@ -6828,8 +6828,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_timestampalignmenterror",
-      "community": 77,
-      "community_name": "DataIngestion",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "timestampalignmenterror"
     },
     {
@@ -6861,8 +6861,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_modelerror",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "modelerror"
     },
     {
@@ -6894,8 +6894,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_ensembleerror",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "ensembleerror"
     },
     {
@@ -6905,8 +6905,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_optimizationconvergenceerror",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "optimizationconvergenceerror"
     },
     {
@@ -6916,8 +6916,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_calibrationerror",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "calibrationerror"
     },
     {
@@ -6960,8 +6960,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_backtesterror",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 99,
+      "community_name": "test_zero_leakage_packaging.py",
       "norm_label": "backtesterror"
     },
     {
@@ -6971,8 +6971,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_rationale_1",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "custom exceptions shared across the quantautoml pipeline."
     },
     {
@@ -6982,8 +6982,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_rationale_5",
-      "community": 205,
-      "community_name": "test_types.py",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "base class for every error raised by quantautoml."
     },
     {
@@ -6993,8 +6993,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_rationale_9",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": "input data or configuration violates a pipeline data contract."
     },
     {
@@ -7004,8 +7004,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_rationale_13",
-      "community": 77,
-      "community_name": "DataIngestion",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "timestamps are non-monotonic, duplicated or cannot be aligned."
     },
     {
@@ -7037,8 +7037,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_rationale_25",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "base class for model training, tournament, and tuning failures."
     },
     {
@@ -7070,8 +7070,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_rationale_37",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "base class for ensemble optimization and probability calibration failures."
     },
     {
@@ -7081,8 +7081,8 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_rationale_41",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "slsqp convex optimization failed to converge to a feasible solution."
     },
     {
@@ -7092,8 +7092,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_rationale_45",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "probability calibration failed or violated rank-invariance."
     },
     {
@@ -7136,8 +7136,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_quantautoml_common_exceptions_rationale_61",
-      "community": 67,
-      "community_name": "BacktestError",
+      "community": 99,
+      "community_name": "test_zero_leakage_packaging.py",
       "norm_label": "out-of-sample backtest cannot be run on the supplied data."
     },
     {
@@ -7147,8 +7147,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_common_types",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "types.py"
     },
     {
@@ -7158,8 +7158,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_quantautoml_common_types_tasktype",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "tasktype"
     },
     {
@@ -7180,8 +7180,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "enum",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "enum"
     },
     {
@@ -7213,8 +7213,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "src_quantautoml_common_types_ingestionreport_to_dict",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": ".to_dict()"
     },
     {
@@ -7224,8 +7224,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_common_types_py_any",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": "any"
     },
     {
@@ -7257,8 +7257,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_quantautoml_common_types_splitreport_to_dict",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": ".to_dict()"
     },
     {
@@ -7301,8 +7301,8 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "src_quantautoml_common_types_filterreport",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "filterreport"
     },
     {
@@ -7312,8 +7312,8 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "src_quantautoml_common_types_preprocessorspec",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "preprocessorspec"
     },
     {
@@ -7323,8 +7323,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_common_types_rationale_1",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "core enums, data containers and report dataclasses for phase 1."
     },
     {
@@ -7334,8 +7334,8 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "src_quantautoml_common_types_rationale_127",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "composed description of ``featurefunnel.transform`` for onnx export.      semant"
     },
     {
@@ -7389,8 +7389,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_quantautoml_data_ingestion_dataingestion_init",
-      "community": 77,
-      "community_name": "DataIngestion",
+      "community": 180,
+      "community_name": "PipelineConfig",
       "norm_label": ".__init__()"
     },
     {
@@ -7763,8 +7763,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_data_task_inference",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "task_inference.py"
     },
     {
@@ -7774,8 +7774,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_quantautoml_data_task_inference_taskinference",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "taskinference"
     },
     {
@@ -7818,8 +7818,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_data_task_inference_rationale_1",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "infer the learning task (binary / multiclass / unsupervised) from the label vect"
     },
     {
@@ -7840,8 +7840,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_init",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "ensemble/__init__.py"
     },
     {
@@ -7851,8 +7851,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_init_rationale_1",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "convex ensemble optimization and probability calibration."
     },
     {
@@ -7862,8 +7862,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_bootstrap",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "bootstrap.py"
     },
     {
@@ -7994,8 +7994,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_bootstrap_rationale_1",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "bootstrap shrinkage engine and hurdle fallback gate (rule-05)."
     },
     {
@@ -8115,8 +8115,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_calibration_temperaturecalibrator_fit",
-      "community": 43,
-      "community_name": ".optimize",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": ".fit()"
     },
     {
@@ -8126,8 +8126,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_calibration_py_ndarray",
-      "community": 43,
-      "community_name": ".optimize",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "ndarray"
     },
     {
@@ -8137,8 +8137,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_calibration_py_float32",
-      "community": 43,
-      "community_name": ".optimize",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "float32"
     },
     {
@@ -8148,8 +8148,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_calibration_py_int32",
-      "community": 43,
-      "community_name": ".optimize",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "int32"
     },
     {
@@ -8159,8 +8159,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_calibration_py_self",
-      "community": 43,
-      "community_name": ".optimize",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "self"
     },
     {
@@ -8170,8 +8170,8 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_calibration_temperaturecalibrator_calibrate",
-      "community": 43,
-      "community_name": ".optimize",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": ".calibrate()"
     },
     {
@@ -8181,8 +8181,8 @@
       "source_location": "L180",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_calibration_temperaturecalibrator_verify_rank_invariance",
-      "community": 43,
-      "community_name": ".optimize",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": ".verify_rank_invariance()"
     },
     {
@@ -8236,8 +8236,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_calibration_rationale_60",
-      "community": 43,
-      "community_name": ".optimize",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "fit optimal temperature scalar t > 0 on cal-b (chronologically after ensemble)."
     },
     {
@@ -8247,8 +8247,8 @@
       "source_location": "L142",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_calibration_rationale_142",
-      "community": 43,
-      "community_name": ".optimize",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "apply learned temperature scaling to input probabilities.          parameters"
     },
     {
@@ -8258,8 +8258,8 @@
       "source_location": "L185",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_calibration_rationale_185",
-      "community": 43,
-      "community_name": ".optimize",
+      "community": 22,
+      "community_name": "TemperatureCalibrator",
       "norm_label": "verify that temperature calibration strictly preserved 100% of ranking order."
     },
     {
@@ -8280,8 +8280,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_slsqp",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "slsqp.py"
     },
     {
@@ -8291,8 +8291,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_slsqp_smoothslsqpoptimizer",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "smoothslsqpoptimizer"
     },
     {
@@ -8302,8 +8302,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_slsqp_smoothslsqpoptimizer_init",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": ".__init__()"
     },
     {
@@ -8357,8 +8357,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_slsqp_rationale_1",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "smooth slsqp convex optimization on rank-transformed data (c2 differentiable obj"
     },
     {
@@ -8368,8 +8368,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_quantautoml_ensemble_slsqp_rationale_14",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "slsqp convex weight optimizer with c2 differentiable objective.      solves for"
     },
     {
@@ -8390,8 +8390,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_init",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "features/__init__.py"
     },
     {
@@ -8401,8 +8401,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_init_rationale_1",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "leakage-free feature filter funnel."
     },
     {
@@ -8511,8 +8511,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_base",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "base.py"
     },
     {
@@ -8533,8 +8533,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_quantautoml_features_base_basefeaturefilter",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "basefeaturefilter"
     },
     {
@@ -8544,8 +8544,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_features_base_py_abc",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "abc"
     },
     {
@@ -8555,8 +8555,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_quantautoml_features_base_basefeaturefilter_init",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": ".__init__()"
     },
     {
@@ -8610,8 +8610,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_features_base_py_float32",
-      "community": 3,
-      "community_name": ".fit",
+      "community": 11,
+      "community_name": ".transform",
       "norm_label": "float32"
     },
     {
@@ -8654,8 +8654,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_base_rationale_1",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "base contract for every feature filter (fit on train only, transform anywhere)."
     },
     {
@@ -8665,8 +8665,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "src_quantautoml_features_base_rationale_25",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "template-method base: validation lives here, logic in `_fit`/`_transform`."
     },
     {
@@ -8709,8 +8709,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_clustering",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "clustering.py"
     },
     {
@@ -8753,8 +8753,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "src_quantautoml_features_clustering_icbehaviorclusterfilter",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 130,
+      "community_name": "._fit",
       "norm_label": "icbehaviorclusterfilter"
     },
     {
@@ -8764,8 +8764,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "src_quantautoml_features_clustering_icbehaviorclusterfilter_init",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 130,
+      "community_name": "._fit",
       "norm_label": ".__init__()"
     },
     {
@@ -8918,8 +8918,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_collinearity",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 13,
+      "community_name": "test_collinearity.py",
       "norm_label": "collinearity.py"
     },
     {
@@ -8984,8 +8984,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_quantautoml_features_collinearity_fastnonlinearcollinearityfilter",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 13,
+      "community_name": "test_collinearity.py",
       "norm_label": "fastnonlinearcollinearityfilter"
     },
     {
@@ -8995,8 +8995,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "src_quantautoml_features_collinearity_fastnonlinearcollinearityfilter_init",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 13,
+      "community_name": "test_collinearity.py",
       "norm_label": ".__init__()"
     },
     {
@@ -9050,8 +9050,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_collinearity_rationale_1",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 13,
+      "community_name": "test_collinearity.py",
       "norm_label": "f4: fast nonlinear collinearity filter based on distance correlation (dcor, avl)"
     },
     {
@@ -9094,8 +9094,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_funnel",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "funnel.py"
     },
     {
@@ -9127,8 +9127,8 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "src_quantautoml_features_funnel_featurefunnel_fit",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": ".fit()"
     },
     {
@@ -9138,8 +9138,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_features_funnel_py_self",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": "self"
     },
     {
@@ -9149,8 +9149,8 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "src_quantautoml_features_funnel_featurefunnel_preprocessor_spec",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": ".preprocessor_spec()"
     },
     {
@@ -9160,8 +9160,8 @@
       "source_location": "L140",
       "_origin": "ast",
       "id": "src_quantautoml_features_funnel_featurefunnel_transform",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": ".transform()"
     },
     {
@@ -9171,8 +9171,8 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "src_quantautoml_features_funnel_preprocessor_spec",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "_preprocessor_spec()"
     },
     {
@@ -9215,8 +9215,8 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "src_quantautoml_features_funnel_rationale_135",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "return the composed, onnx-exportable description of ``transform``."
     },
     {
@@ -9237,8 +9237,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_ic_stability",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "ic_stability.py"
     },
     {
@@ -9281,8 +9281,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_quantautoml_features_ic_stability_icstabilityfilter",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 116,
+      "community_name": "build_preprocessor_onnx",
       "norm_label": "icstabilityfilter"
     },
     {
@@ -9292,8 +9292,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_quantautoml_features_ic_stability_icstabilityfilter_init",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 116,
+      "community_name": "build_preprocessor_onnx",
       "norm_label": ".__init__()"
     },
     {
@@ -9358,8 +9358,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_ic_stability_rationale_1",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "f3+7: rolling rank-ic stability, bh-fdr gate and ic term-structure monotonicity."
     },
     {
@@ -9380,8 +9380,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_quantautoml_features_ic_stability_rationale_29",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 116,
+      "community_name": "build_preprocessor_onnx",
       "norm_label": "keep features with stable, significant, monotonically decaying rank ic (train on"
     },
     {
@@ -9391,8 +9391,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_jmi",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "jmi.py"
     },
     {
@@ -9402,8 +9402,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_quantautoml_features_jmi_jmifeatureselector",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "jmifeatureselector"
     },
     {
@@ -9413,8 +9413,8 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_quantautoml_features_jmi_jmifeatureselector_init",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": ".__init__()"
     },
     {
@@ -9512,8 +9512,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_jmi_rationale_1",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "f8: greedy joint mutual information (jmi) feature selection."
     },
     {
@@ -9523,8 +9523,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_quantautoml_features_jmi_rationale_20",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "greedy jmi: keep the ``min(cfg.max_features, n_features)`` best features.      e"
     },
     {
@@ -9534,8 +9534,8 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_quantautoml_features_jmi_rationale_57",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "greedy jmi order of ``k`` column indices (cached bin codes, incremental j)."
     },
     {
@@ -9545,8 +9545,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_regime_synergy",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "regime_synergy.py"
     },
     {
@@ -9600,8 +9600,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "src_quantautoml_features_regime_synergy_regimesynergyfilter",
-      "community": 141,
-      "community_name": "RegimeSynergyFilter",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": "regimesynergyfilter"
     },
     {
@@ -9611,8 +9611,8 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "src_quantautoml_features_regime_synergy_regimesynergyfilter_init",
-      "community": 141,
-      "community_name": "RegimeSynergyFilter",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": ".__init__()"
     },
     {
@@ -9677,8 +9677,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_regime_synergy_rationale_1",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "f6: regime-aware mutual information and synergistic-pair protection."
     },
     {
@@ -9710,8 +9710,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_triage",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "triage.py"
     },
     {
@@ -9721,8 +9721,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_quantautoml_features_triage_naninftriage",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 128,
+      "community_name": "._fit",
       "norm_label": "naninftriage"
     },
     {
@@ -9732,8 +9732,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "src_quantautoml_features_triage_naninftriage_init",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 128,
+      "community_name": "._fit",
       "norm_label": ".__init__()"
     },
     {
@@ -9864,8 +9864,8 @@
       "source_location": "L187",
       "_origin": "ast",
       "id": "src_quantautoml_features_triage_naninftriage_bool_fill",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 128,
+      "community_name": "._fit",
       "norm_label": ".bool_fill_()"
     },
     {
@@ -9886,8 +9886,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_triage_rationale_1",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "f1: nan/inf triage, missingness typing (mcar/mar/mnar) and mi scoring."
     },
     {
@@ -9897,8 +9897,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_quantautoml_features_triage_rationale_23",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 128,
+      "community_name": "._fit",
       "norm_label": "gate garbage columns, type their missingness and score them by mi.      fit (tra"
     },
     {
@@ -9908,8 +9908,8 @@
       "source_location": "L140",
       "_origin": "ast",
       "id": "src_quantautoml_features_triage_rationale_140",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 128,
+      "community_name": "._fit",
       "norm_label": "one mi call over [non-constant features | non-constant indicators] on y != -1."
     },
     {
@@ -9919,8 +9919,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_variance",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "variance.py"
     },
     {
@@ -9930,8 +9930,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_quantautoml_features_variance_multimetricvariancefilter",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 154,
+      "community_name": "._fit",
       "norm_label": "multimetricvariancefilter"
     },
     {
@@ -9941,8 +9941,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "src_quantautoml_features_variance_multimetricvariancefilter_init",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 154,
+      "community_name": "._fit",
       "norm_label": ".__init__()"
     },
     {
@@ -10029,8 +10029,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_features_variance_rationale_1",
-      "community": 2,
-      "community_name": "types.py",
+      "community": 71,
+      "community_name": "contingency_mi",
       "norm_label": "f2: multi-metric variance check (cv, peak rolling variance, unique ratio)."
     },
     {
@@ -10084,8 +10084,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_calibration",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "metrics/calibration.py"
     },
     {
@@ -10095,8 +10095,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_calibration_calc_ece",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "calc_ece()"
     },
     {
@@ -10106,8 +10106,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_calibration_py_ndarray",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "ndarray"
     },
     {
@@ -10117,8 +10117,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_calibration_py_int32",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "int32"
     },
     {
@@ -10128,8 +10128,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_calibration_py_float32",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "float32"
     },
     {
@@ -10139,8 +10139,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_calibration_rationale_1",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "metrics for evaluating probability calibration error (ece)."
     },
     {
@@ -10150,8 +10150,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_calibration_rationale_15",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "calculate the expected calibration error (ece) for binary or multiclass probabil"
     },
     {
@@ -10238,8 +10238,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_ic",
-      "community": 5,
-      "community_name": "calc_rank_ic",
+      "community": 179,
+      "community_name": "People",
       "norm_label": "ic.py"
     },
     {
@@ -10326,8 +10326,8 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_ic_calc_icir",
-      "community": 5,
-      "community_name": "calc_rank_ic",
+      "community": 179,
+      "community_name": "People",
       "norm_label": "calc_icir()"
     },
     {
@@ -10348,8 +10348,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_ic_rationale_1",
-      "community": 5,
-      "community_name": "calc_rank_ic",
+      "community": 179,
+      "community_name": "People",
       "norm_label": "spearman rank ic, non-overlapping rolling ic (per column / matrix) and icir (rul"
     },
     {
@@ -10392,8 +10392,8 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "src_quantautoml_metrics_ic_rationale_115",
-      "community": 5,
-      "community_name": "calc_rank_ic",
+      "community": 179,
+      "community_name": "People",
       "norm_label": "return mean/std (ddof=1, nan ignored); 0.0 if std == 0, constant series, or < 2"
     },
     {
@@ -10436,8 +10436,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "candidates.py"
     },
     {
@@ -10447,8 +10447,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_clip01",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "_clip01()"
     },
     {
@@ -10458,8 +10458,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_complexity",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "_complexity()"
     },
     {
@@ -10469,8 +10469,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_basegbdcandidate",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "basegbdcandidate"
     },
     {
@@ -10480,8 +10480,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_py_abc",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "abc"
     },
     {
@@ -10491,8 +10491,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_basegbdcandidate_init",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": ".__init__()"
     },
     {
@@ -10601,8 +10601,8 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_basegbdcandidate_complexity_score",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": ".complexity_score()"
     },
     {
@@ -10623,8 +10623,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_lightgbmcandidate",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "lightgbmcandidate"
     },
     {
@@ -10667,8 +10667,8 @@
       "source_location": "L171",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_lightgbmcandidate_complexity_score",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": ".complexity_score()"
     },
     {
@@ -10678,8 +10678,8 @@
       "source_location": "L181",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_xgboostcandidate",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "xgboostcandidate"
     },
     {
@@ -10711,8 +10711,8 @@
       "source_location": "L223",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_xgboostcandidate_complexity_score",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": ".complexity_score()"
     },
     {
@@ -10722,8 +10722,8 @@
       "source_location": "L230",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_catboostcandidate",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "catboostcandidate"
     },
     {
@@ -10755,8 +10755,8 @@
       "source_location": "L279",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_catboostcandidate_complexity_score",
-      "community": 94,
-      "community_name": "str",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": ".complexity_score()"
     },
     {
@@ -10766,8 +10766,8 @@
       "source_location": "L293",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_create_candidate",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "create_candidate()"
     },
     {
@@ -10777,8 +10777,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_1",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "modern gbdt trio model wrappers (lightgbm, catboost, xgboost) with unified contr"
     },
     {
@@ -10788,8 +10788,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_20",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "blend of ensemble size, tree structure and learning rate, each scaled to (0, 1]."
     },
     {
@@ -10799,8 +10799,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_29",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "abstract base wrapper for gbdt candidate models."
     },
     {
@@ -10810,8 +10810,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_51",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "fit model on training segment. both x and y must be numpy arrays."
     },
     {
@@ -10821,8 +10821,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_55",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "predict class probabilities of shape (n_samples, n_classes) as float32."
     },
     {
@@ -10832,8 +10832,8 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_58",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "predict continuous scores suitable for spearman rank ic evaluation.          for"
     },
     {
@@ -10854,8 +10854,8 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_84",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "return complexity penalty score in (0, 1] based on tree depth and count."
     },
     {
@@ -10865,8 +10865,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_92",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "lightgbm candidate wrapper."
     },
     {
@@ -10887,8 +10887,8 @@
       "source_location": "L182",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_182",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "xgboost candidate wrapper."
     },
     {
@@ -10898,8 +10898,8 @@
       "source_location": "L231",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_231",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "catboost candidate wrapper."
     },
     {
@@ -10909,8 +10909,8 @@
       "source_location": "L299",
       "_origin": "ast",
       "id": "src_quantautoml_models_candidates_rationale_299",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "factory creating a unified gbdt candidate wrapper."
     },
     {
@@ -11173,8 +11173,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_quantautoml_models_tournament_sample_params",
-      "community": 36,
-      "community_name": "config.py",
+      "community": 206,
+      "community_name": "extract_first_svg",
       "norm_label": "_sample_params()"
     },
     {
@@ -11184,8 +11184,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_models_tournament_py_trial",
-      "community": 36,
-      "community_name": "config.py",
+      "community": 206,
+      "community_name": "extract_first_svg",
       "norm_label": "trial"
     },
     {
@@ -11195,8 +11195,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_models_tournament_py_any",
-      "community": 36,
-      "community_name": "config.py",
+      "community": 206,
+      "community_name": "extract_first_svg",
       "norm_label": "any"
     },
     {
@@ -11283,8 +11283,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_quantautoml_models_tournament_rationale_72",
-      "community": 36,
-      "community_name": "config.py",
+      "community": 206,
+      "community_name": "extract_first_svg",
       "norm_label": "sample hyperparameters using optuna trial suggestions."
     },
     {
@@ -11360,8 +11360,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "src_quantautoml_models_tuner_suggest_tuning_params",
-      "community": 36,
-      "community_name": "config.py",
+      "community": 207,
+      "community_name": "_fwd",
       "norm_label": "_suggest_tuning_params()"
     },
     {
@@ -11371,8 +11371,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_models_tuner_py_trial",
-      "community": 36,
-      "community_name": "config.py",
+      "community": 207,
+      "community_name": "_fwd",
       "norm_label": "trial"
     },
     {
@@ -11382,8 +11382,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_models_tuner_py_any",
-      "community": 36,
-      "community_name": "config.py",
+      "community": 207,
+      "community_name": "_fwd",
       "norm_label": "any"
     },
     {
@@ -11404,8 +11404,8 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "src_quantautoml_models_tuner_deepoptunatuner_init",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 64,
+      "community_name": "DeepOptunaTuner",
       "norm_label": ".__init__()"
     },
     {
@@ -11492,8 +11492,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_quantautoml_models_tuner_rationale_46",
-      "community": 36,
-      "community_name": "config.py",
+      "community": 207,
+      "community_name": "_fwd",
       "norm_label": "fine-grained parameter suggestion for bayesian tpe optimization."
     },
     {
@@ -11624,8 +11624,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_init",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "packaging/__init__.py"
     },
     {
@@ -11635,8 +11635,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_init_rationale_1",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "onnx model bundle packaging."
     },
     {
@@ -11646,8 +11646,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "bundle.py"
     },
     {
@@ -11657,8 +11657,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_bundlemanifest",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "bundlemanifest"
     },
     {
@@ -11668,8 +11668,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_py_basemodel",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "basemodel"
     },
     {
@@ -11679,8 +11679,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_onnxbundleexporter",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "onnxbundleexporter"
     },
     {
@@ -11701,8 +11701,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_onnxbundleexporter_export",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": ".export()"
     },
     {
@@ -11712,8 +11712,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_py_path",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "path"
     },
     {
@@ -11723,8 +11723,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_py_ndarray",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "ndarray"
     },
     {
@@ -11734,8 +11734,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_py_float32",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "float32"
     },
     {
@@ -11745,8 +11745,8 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_python_reference",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "_python_reference()"
     },
     {
@@ -11756,8 +11756,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_rationale_1",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "onnxbundleexporter: write the model bundle and gate it on the rule-06 precision"
     },
     {
@@ -11767,8 +11767,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_rationale_32",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "written to ``bundle_manifest.json``."
     },
     {
@@ -11778,8 +11778,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_rationale_43",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "export only: never fits anything. train statistics come from the train matrix pa"
     },
     {
@@ -11789,8 +11789,8 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_bundle_rationale_148",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "training-side pipeline (models -> weights -> temperature), as ``run_pipeline`` d"
     },
     {
@@ -11954,8 +11954,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_predictor_loader",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "predictor_loader.py"
     },
     {
@@ -11965,8 +11965,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_predictor_loader_load_predictor",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "load_predictor()"
     },
     {
@@ -11976,8 +11976,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_predictor_loader_py_path",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "path"
     },
     {
@@ -11987,8 +11987,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "moduletype",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "moduletype"
     },
     {
@@ -11998,8 +11998,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_predictor_loader_rationale_1",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "load a bundle's standalone ``predictor.py`` without leaving bytecode inside the"
     },
     {
@@ -12009,8 +12009,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_predictor_loader_rationale_14",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "import ``path`` (a bundle's predictor.py) as a throw-away module."
     },
     {
@@ -12020,8 +12020,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_preprocessor",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "preprocessor.py"
     },
     {
@@ -12031,8 +12031,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_preprocessor_build_preprocessor_onnx",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "build_preprocessor_onnx()"
     },
     {
@@ -12042,8 +12042,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_preprocessor_py_path",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "path"
     },
     {
@@ -12053,8 +12053,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_preprocessor_run_preprocessor_onnx",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "run_preprocessor_onnx()"
     },
     {
@@ -12064,8 +12064,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_preprocessor_py_ndarray",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "ndarray"
     },
     {
@@ -12075,8 +12075,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_preprocessor_py_float32",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "float32"
     },
     {
@@ -12086,8 +12086,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_preprocessor_rationale_1",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "build ``preprocessor.onnx`` from a :class:`preprocessorspec` (export side only)."
     },
     {
@@ -12097,8 +12097,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_preprocessor_rationale_20",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "write an onnx graph ``x[n, n_in] float32 -> xp[n, len(final_idx)] float32``."
     },
     {
@@ -12108,8 +12108,8 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_preprocessor_rationale_64",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "run ``preprocessor.onnx`` (helper for tests and the precision validator)."
     },
     {
@@ -12119,8 +12119,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_schema",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "schema.py"
     },
     {
@@ -12130,8 +12130,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_schema_featureschemacontract",
-      "community": 80,
-      "community_name": "FeatureSchemaContract",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "featureschemacontract"
     },
     {
@@ -12141,8 +12141,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_schema_py_basemodel",
-      "community": 80,
-      "community_name": "FeatureSchemaContract",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "basemodel"
     },
     {
@@ -12207,8 +12207,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_schema_featureschemacontract_to_json",
-      "community": 80,
-      "community_name": "FeatureSchemaContract",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": ".to_json()"
     },
     {
@@ -12251,8 +12251,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_schema_rationale_1",
-      "community": 1,
-      "community_name": "FitContext",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "features_schema.json data contract: input columns, model columns and train stati"
     },
     {
@@ -12262,8 +12262,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_quantautoml_packaging_schema_rationale_17",
-      "community": 80,
-      "community_name": "FeatureSchemaContract",
+      "community": 205,
+      "community_name": "test_types.py",
       "norm_label": "contract between the training pipeline and the standalone predictor.      ``trai"
     },
     {
@@ -12526,8 +12526,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "src_quantautoml_pipeline_pipelineresult",
-      "community": 28,
-      "community_name": "TaskType",
+      "community": 39,
+      "community_name": "Quantitative metrics shared across pipeline layers.",
       "norm_label": "pipelineresult"
     },
     {
@@ -13043,8 +13043,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "test_zero_leakage.py"
     },
     {
@@ -13054,8 +13054,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_fwd",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "_fwd()"
     },
     {
@@ -13065,8 +13065,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_py_ndarray",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "ndarray"
     },
     {
@@ -13076,8 +13076,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_write_case",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "_write_case()"
     },
     {
@@ -13087,8 +13087,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_py_path",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "path"
     },
     {
@@ -13098,8 +13098,8 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_run",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "_run()"
     },
     {
@@ -13109,8 +13109,8 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_labels_unchanged_when_future_masked",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "_labels_unchanged_when_future_masked()"
     },
     {
@@ -13120,8 +13120,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_test_no_segment_label_depends_on_a_later_segment",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "test_no_segment_label_depends_on_a_later_segment()"
     },
     {
@@ -13131,8 +13131,8 @@
       "source_location": "L100",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_test_oof_folds_do_not_leak_validation_prices_into_training_labels",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "test_oof_folds_do_not_leak_validation_prices_into_training_labels()"
     },
     {
@@ -13142,8 +13142,8 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_test_training_segment_never_contains_a_later_timestamp",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "test_training_segment_never_contains_a_later_timestamp()"
     },
     {
@@ -13153,8 +13153,8 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_test_horizon_smaller_than_longest_label_is_blocked_before_splitting",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "test_horizon_smaller_than_longest_label_is_blocked_before_splitting()"
     },
     {
@@ -13164,8 +13164,8 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_test_reports_are_json_serialisable",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 94,
+      "community_name": "str",
       "norm_label": "test_reports_are_json_serialisable()"
     },
     {
@@ -13197,8 +13197,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_ensemble_make_dummy_dataset",
-      "community": 202,
-      "community_name": "4. Mathematical Formulations & Optimization Engines",
+      "community": 77,
+      "community_name": "DataIngestion",
       "norm_label": "_make_dummy_dataset()"
     },
     {
@@ -13340,8 +13340,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_funnel_case",
-      "community": 88,
-      "community_name": "validate_numerical_precision",
+      "community": 163,
+      "community_name": "Segment",
       "norm_label": "case"
     },
     {
@@ -13351,8 +13351,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_funnel_case_features",
-      "community": 88,
-      "community_name": "validate_numerical_precision",
+      "community": 163,
+      "community_name": "Segment",
       "norm_label": ".features()"
     },
     {
@@ -13450,8 +13450,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_funnel_small_funnel",
-      "community": 88,
-      "community_name": "validate_numerical_precision",
+      "community": 3,
+      "community_name": ".fit",
       "norm_label": "small_funnel()"
     },
     {
@@ -13472,8 +13472,8 @@
       "source_location": "L149",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_funnel_test_noise_in_val_oos_cal_does_not_change_selection",
-      "community": 88,
-      "community_name": "validate_numerical_precision",
+      "community": 3,
+      "community_name": ".fit",
       "norm_label": "test_noise_in_val_oos_cal_does_not_change_selection()"
     },
     {
@@ -13483,8 +13483,8 @@
       "source_location": "L184",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_funnel_test_every_stage_fits_on_train_rows_only",
-      "community": 88,
-      "community_name": "validate_numerical_precision",
+      "community": 3,
+      "community_name": ".fit",
       "norm_label": "test_every_stage_fits_on_train_rows_only()"
     },
     {
@@ -13494,8 +13494,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_funnel_py_monkeypatch",
-      "community": 88,
-      "community_name": "validate_numerical_precision",
+      "community": 3,
+      "community_name": ".fit",
       "norm_label": "monkeypatch"
     },
     {
@@ -13505,8 +13505,8 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_funnel_test_non_monotone_train_index_raises",
-      "community": 88,
-      "community_name": "validate_numerical_precision",
+      "community": 3,
+      "community_name": ".fit",
       "norm_label": "test_non_monotone_train_index_raises()"
     },
     {
@@ -13516,8 +13516,8 @@
       "source_location": "L225",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_funnel_test_train_index_overlap_raises",
-      "community": 88,
-      "community_name": "validate_numerical_precision",
+      "community": 3,
+      "community_name": ".fit",
       "norm_label": "test_train_index_overlap_raises()"
     },
     {
@@ -13824,8 +13824,8 @@
       "source_location": "L100",
       "_origin": "ast",
       "id": "tests_integration_test_zero_leakage_packaging_test_packaging_and_backtest_never_call_fit",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "test_packaging_and_backtest_never_call_fit()"
     },
     {
@@ -13857,8 +13857,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_bundle_helper",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 69,
+      "community_name": "exceptions.py",
       "norm_label": "bundle_helper.py"
     },
     {
@@ -13868,8 +13868,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "tests_unit_bundle_helper_bundlefixture",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 69,
+      "community_name": "exceptions.py",
       "norm_label": "bundlefixture"
     },
     {
@@ -13879,8 +13879,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "tests_unit_bundle_helper_bundlefixture_reference",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 69,
+      "community_name": "exceptions.py",
       "norm_label": ".reference()"
     },
     {
@@ -13890,8 +13890,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_bundle_helper_py_ndarray",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 69,
+      "community_name": "exceptions.py",
       "norm_label": "ndarray"
     },
     {
@@ -13901,8 +13901,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "tests_unit_bundle_helper_make_bundle",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "make_bundle()"
     },
     {
@@ -13912,8 +13912,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_bundle_helper_py_path",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "path"
     },
     {
@@ -13923,8 +13923,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_bundle_helper_rationale_1",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 69,
+      "community_name": "exceptions.py",
       "norm_label": "test-only helper: build a tiny but real model bundle (same file formats as the e"
     },
     {
@@ -13934,8 +13934,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "tests_unit_bundle_helper_rationale_45",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 69,
+      "community_name": "exceptions.py",
       "norm_label": "python reference: spec -> models -> weights -> temperature. returns calibrated p"
     },
     {
@@ -14286,8 +14286,8 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "tests_unit_test_bootstrap_shrinkage_test_block_bootstrap_preserves_contiguous_blocks",
-      "community": 136,
-      "community_name": ".run",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "test_block_bootstrap_preserves_contiguous_blocks()"
     },
     {
@@ -14319,8 +14319,8 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "tests_unit_test_bootstrap_shrinkage_rationale_109",
-      "community": 136,
-      "community_name": ".run",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "audit #7: moving block bootstrap must sample contiguous time-series blocks."
     },
     {
@@ -14473,8 +14473,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_candidates",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "test_candidates.py"
     },
     {
@@ -14484,8 +14484,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_binary_data",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "binary_data()"
     },
     {
@@ -14495,8 +14495,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_multiclass_data",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "multiclass_data()"
     },
     {
@@ -14506,8 +14506,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_test_create_candidate_factory",
-      "community": 26,
-      "community_name": "create_candidate",
+      "community": 138,
+      "community_name": "test_packaging_converters.py",
       "norm_label": "test_create_candidate_factory()"
     },
     {
@@ -14539,8 +14539,8 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_test_candidates_reproducibility",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "test_candidates_reproducibility()"
     },
     {
@@ -14550,8 +14550,8 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_test_complexity_score",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "test_complexity_score()"
     },
     {
@@ -14561,8 +14561,8 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_test_complexity_score_increases_with_learning_rate",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "test_complexity_score_increases_with_learning_rate()"
     },
     {
@@ -14572,8 +14572,8 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_test_lightgbm_complexity_respects_max_depth",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "test_lightgbm_complexity_respects_max_depth()"
     },
     {
@@ -14583,8 +14583,8 @@
       "source_location": "L140",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_test_multiclass_train_missing_a_class",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "test_multiclass_train_missing_a_class()"
     },
     {
@@ -14594,8 +14594,8 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_test_single_class_train_raises_model_error",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "test_single_class_train_raises_model_error()"
     },
     {
@@ -14605,8 +14605,8 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_test_candidates_accept_subsample_param",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "test_candidates_accept_subsample_param()"
     },
     {
@@ -14616,8 +14616,8 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_test_candidates_accept_subsample_param_multiclass",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "test_candidates_accept_subsample_param_multiclass()"
     },
     {
@@ -14627,8 +14627,8 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_rationale_141",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "early walk-forward folds may lack a class; labels {0, 2} must still fit and scor"
     },
     {
@@ -14638,8 +14638,8 @@
       "source_location": "L164",
       "_origin": "ast",
       "id": "tests_unit_test_candidates_rationale_164",
-      "community": 94,
-      "community_name": "str",
+      "community": 7,
+      "community_name": "BaseGBDCandidate",
       "norm_label": "tournament/tuner search spaces pass `subsample` to every gbdt (catboost needs be"
     },
     {
@@ -14649,8 +14649,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_cli",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "test_cli.py"
     },
     {
@@ -14660,8 +14660,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "tests_unit_test_cli_toml",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "_toml()"
     },
     {
@@ -14671,8 +14671,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_test_cli_py_path",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "path"
     },
     {
@@ -14682,8 +14682,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_unit_test_cli_test_run_command_writes_artifacts",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "test_run_command_writes_artifacts()"
     },
     {
@@ -14693,8 +14693,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "tests_unit_test_cli_test_run_command_returns_nonzero_on_pipeline_error",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "test_run_command_returns_nonzero_on_pipeline_error()"
     },
     {
@@ -14704,9 +14704,31 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "tests_unit_test_cli_test_missing_subcommand_exits_with_usage_error",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "test_missing_subcommand_exits_with_usage_error()"
+    },
+    {
+      "label": "test_run_command_uses_default_config_and_out()",
+      "file_type": "code",
+      "source_file": "tests/unit/test_cli.py",
+      "source_location": "L56",
+      "_origin": "ast",
+      "id": "tests_unit_test_cli_test_run_command_uses_default_config_and_out",
+      "community": 6,
+      "community_name": "make_frames",
+      "norm_label": "test_run_command_uses_default_config_and_out()"
+    },
+    {
+      "label": "MonkeyPatch",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "tests_unit_test_cli_py_monkeypatch",
+      "community": 6,
+      "community_name": "make_frames",
+      "norm_label": "monkeypatch"
     },
     {
       "label": "CLI: ``quantautoml run --config X --out DIR``.",
@@ -14715,8 +14737,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_cli_rationale_1",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 6,
+      "community_name": "make_frames",
       "norm_label": "cli: ``quantautoml run --config x --out dir``."
     },
     {
@@ -14869,8 +14891,8 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "tests_unit_test_clustering_test_distance_identical_and_independent_series",
-      "community": 130,
-      "community_name": "._fit",
+      "community": 12,
+      "community_name": "test_clustering.py",
       "norm_label": "test_distance_identical_and_independent_series()"
     },
     {
@@ -14880,8 +14902,8 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "tests_unit_test_clustering_test_distance_constant_nan_and_sparse_series_are_one",
-      "community": 130,
-      "community_name": "._fit",
+      "community": 12,
+      "community_name": "test_clustering.py",
       "norm_label": "test_distance_constant_nan_and_sparse_series_are_one()"
     },
     {
@@ -14891,8 +14913,8 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "tests_unit_test_clustering_test_distance_uses_pairwise_common_windows",
-      "community": 130,
-      "community_name": "._fit",
+      "community": 12,
+      "community_name": "test_clustering.py",
       "norm_label": "test_distance_uses_pairwise_common_windows()"
     },
     {
@@ -15386,8 +15408,8 @@
       "source_location": "L263",
       "_origin": "ast",
       "id": "tests_unit_test_collinearity_test_refit_leaves_no_stale_state",
-      "community": 13,
-      "community_name": "test_collinearity.py",
+      "community": 3,
+      "community_name": ".fit",
       "norm_label": "test_refit_leaves_no_stale_state()"
     },
     {
@@ -15606,8 +15628,8 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "tests_unit_test_config_test_feature_selection_error_is_quantautoml_error",
-      "community": 205,
-      "community_name": "test_types.py",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "test_feature_selection_error_is_quantautoml_error()"
     },
     {
@@ -15815,8 +15837,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_unit_test_ensemble_config_test_ensemble_exceptions_hierarchy",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "test_ensemble_exceptions_hierarchy()"
     },
     {
@@ -16442,8 +16464,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_friction",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "test_friction.py"
     },
     {
@@ -16453,8 +16475,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "tests_unit_test_friction_test_zero_cost_equals_gross",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "test_zero_cost_equals_gross()"
     },
     {
@@ -16464,8 +16486,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_unit_test_friction_test_known_turnover",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "test_known_turnover()"
     },
     {
@@ -16475,8 +16497,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_unit_test_friction_test_known_net_returns",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "test_known_net_returns()"
     },
     {
@@ -16486,8 +16508,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "tests_unit_test_friction_test_first_bar_entry_pays_cost",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "test_first_bar_entry_pays_cost()"
     },
     {
@@ -16497,8 +16519,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "tests_unit_test_friction_test_net_never_exceeds_gross_when_costs_positive",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "test_net_never_exceeds_gross_when_costs_positive()"
     },
     {
@@ -16508,8 +16530,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "tests_unit_test_friction_test_length_mismatch_raises",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "test_length_mismatch_raises()"
     },
     {
@@ -16519,8 +16541,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "tests_unit_test_friction_test_negative_cost_rejected",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "test_negative_cost_rejected()"
     },
     {
@@ -16530,8 +16552,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_friction_rationale_1",
-      "community": 79,
-      "community_name": "runner.py",
+      "community": 67,
+      "community_name": "BacktestError",
       "norm_label": "frictioncostmodel: r_net = r_gross - turnover * (fee + slippage), turnover = 0.5"
     },
     {
@@ -16574,8 +16596,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "tests_unit_test_funnel_fwd",
-      "community": 207,
-      "community_name": "_fwd",
+      "community": 70,
+      "community_name": "FeatureFunnel",
       "norm_label": "_fwd()"
     },
     {
@@ -16585,8 +16607,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_test_funnel_py_ndarray",
-      "community": 207,
-      "community_name": "_fwd",
+      "community": 70,
+      "community_name": "FeatureFunnel",
       "norm_label": "ndarray"
     },
     {
@@ -16596,8 +16618,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_test_funnel_py_float64",
-      "community": 207,
-      "community_name": "_fwd",
+      "community": 70,
+      "community_name": "FeatureFunnel",
       "norm_label": "float64"
     },
     {
@@ -16607,8 +16629,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_test_funnel_py_float32",
-      "community": 207,
-      "community_name": "_fwd",
+      "community": 70,
+      "community_name": "FeatureFunnel",
       "norm_label": "float32"
     },
     {
@@ -16816,8 +16838,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_funnel_rationale_1",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": "featurefunnel: f1 -> f2 -> f3+7 -> f4 -> f5 -> f6 -> f8 chaining, fit on train o"
     },
     {
@@ -16827,8 +16849,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "tests_unit_test_funnel_rationale_49",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": "forward k-bar return at t = r[t+1] + ... + r[t+k] (``r[t+1]`` realized at t+1)."
     },
     {
@@ -16838,8 +16860,8 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "tests_unit_test_funnel_rationale_58",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": "signal ``sig`` drives the next 1-bar return; ``miss`` has mnar nan (on y == 1)."
     },
     {
@@ -18235,8 +18257,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_calibration",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "test_metrics_calibration.py"
     },
     {
@@ -18246,8 +18268,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_calibration_test_calc_ece_perfect_calibration_binary",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "test_calc_ece_perfect_calibration_binary()"
     },
     {
@@ -18257,8 +18279,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_calibration_test_calc_ece_overconfident_uncalibrated_binary",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "test_calc_ece_overconfident_uncalibrated_binary()"
     },
     {
@@ -18268,8 +18290,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_calibration_test_calc_ece_multiclass_2d",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "test_calc_ece_multiclass_2d()"
     },
     {
@@ -18279,8 +18301,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_calibration_test_calc_ece_range_and_bins",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "test_calc_ece_range_and_bins()"
     },
     {
@@ -18290,8 +18312,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_calibration_test_calc_ece_empty_or_invalid",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "test_calc_ece_empty_or_invalid()"
     },
     {
@@ -18301,8 +18323,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_calibration_rationale_1",
-      "community": 22,
-      "community_name": "TemperatureCalibrator",
+      "community": 43,
+      "community_name": ".optimize",
       "norm_label": "unit tests for expected calibration error (ece) metric."
     },
     {
@@ -18675,8 +18697,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_icir",
-      "community": 5,
-      "community_name": "calc_rank_ic",
+      "community": 179,
+      "community_name": "People",
       "norm_label": "test_metrics_icir.py"
     },
     {
@@ -18686,8 +18708,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_icir_test_icir_regular_series_unchanged",
-      "community": 5,
-      "community_name": "calc_rank_ic",
+      "community": 179,
+      "community_name": "People",
       "norm_label": "test_icir_regular_series_unchanged()"
     },
     {
@@ -18697,8 +18719,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_icir_test_icir_degenerate_series_returns_zero",
-      "community": 5,
-      "community_name": "calc_rank_ic",
+      "community": 179,
+      "community_name": "People",
       "norm_label": "test_icir_degenerate_series_returns_zero()"
     },
     {
@@ -18708,8 +18730,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_icir_py_ndarray",
-      "community": 5,
-      "community_name": "calc_rank_ic",
+      "community": 179,
+      "community_name": "People",
       "norm_label": "ndarray"
     },
     {
@@ -18719,8 +18741,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_unit_test_metrics_icir_test_icir_small_but_real_variation_not_zeroed",
-      "community": 5,
-      "community_name": "calc_rank_ic",
+      "community": 179,
+      "community_name": "People",
       "norm_label": "test_icir_small_but_real_variation_not_zeroed()"
     },
     {
@@ -19027,8 +19049,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_unit_test_packaging_config_test_exception_hierarchy",
-      "community": 205,
-      "community_name": "test_types.py",
+      "community": 26,
+      "community_name": "create_candidate",
       "norm_label": "test_exception_hierarchy()"
     },
     {
@@ -19577,8 +19599,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_pipeline_packaging",
-      "community": 161,
-      "community_name": "test_pipeline_packaging.py",
+      "community": 28,
+      "community_name": "TaskType",
       "norm_label": "test_pipeline_packaging.py"
     },
     {
@@ -19588,8 +19610,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "tests_unit_test_pipeline_packaging_write_inputs",
-      "community": 161,
-      "community_name": "test_pipeline_packaging.py",
+      "community": 28,
+      "community_name": "TaskType",
       "norm_label": "_write_inputs()"
     },
     {
@@ -19599,8 +19621,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_test_pipeline_packaging_py_path",
-      "community": 161,
-      "community_name": "test_pipeline_packaging.py",
+      "community": 28,
+      "community_name": "TaskType",
       "norm_label": "path"
     },
     {
@@ -19610,8 +19632,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "tests_unit_test_pipeline_packaging_run",
-      "community": 161,
-      "community_name": "test_pipeline_packaging.py",
+      "community": 28,
+      "community_name": "TaskType",
       "norm_label": "run()"
     },
     {
@@ -19621,8 +19643,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "tests_unit_test_pipeline_packaging_test_pipeline_writes_bundle_when_packaging_configured",
-      "community": 161,
-      "community_name": "test_pipeline_packaging.py",
+      "community": 28,
+      "community_name": "TaskType",
       "norm_label": "test_pipeline_writes_bundle_when_packaging_configured()"
     },
     {
@@ -19632,8 +19654,8 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "tests_unit_test_pipeline_packaging_test_pipeline_bundle_precision_ok",
-      "community": 161,
-      "community_name": "test_pipeline_packaging.py",
+      "community": 28,
+      "community_name": "TaskType",
       "norm_label": "test_pipeline_bundle_precision_ok()"
     },
     {
@@ -19643,8 +19665,8 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "tests_unit_test_pipeline_packaging_test_pipeline_skips_bundle_without_packaging_section",
-      "community": 161,
-      "community_name": "test_pipeline_packaging.py",
+      "community": 28,
+      "community_name": "TaskType",
       "norm_label": "test_pipeline_skips_bundle_without_packaging_section()"
     },
     {
@@ -19654,8 +19676,8 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "tests_unit_test_pipeline_packaging_test_pipeline_packaging_gets_train_and_val_only",
-      "community": 161,
-      "community_name": "test_pipeline_packaging.py",
+      "community": 28,
+      "community_name": "TaskType",
       "norm_label": "test_pipeline_packaging_gets_train_and_val_only()"
     },
     {
@@ -19676,8 +19698,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_pipeline_packaging_rationale_1",
-      "community": 161,
-      "community_name": "test_pipeline_packaging.py",
+      "community": 28,
+      "community_name": "TaskType",
       "norm_label": "run_pipeline writes an onnx bundle when [packaging] is configured."
     },
     {
@@ -19698,8 +19720,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_predictor_template.py"
     },
     {
@@ -19709,8 +19731,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_load",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "_load()"
     },
     {
@@ -19720,8 +19742,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_py_path",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "path"
     },
     {
@@ -19731,8 +19753,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_imports_only_numpy_onnxruntime_stdlib",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_imports_only_numpy_onnxruntime_stdlib()"
     },
     {
@@ -19742,8 +19764,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_runs_in_isolated_subprocess_without_training_libs",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_runs_in_isolated_subprocess_without_training_libs()"
     },
     {
@@ -19753,8 +19775,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_matches_python_reference_pipeline",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_matches_python_reference_pipeline()"
     },
     {
@@ -19764,8 +19786,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_binary_predict_is_positive_class_probability",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_binary_predict_is_positive_class_probability()"
     },
     {
@@ -19775,8 +19797,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_nan_inf_input_never_returns_nan",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_nan_inf_input_never_returns_nan()"
     },
     {
@@ -19786,8 +19808,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_drift_warning_when_z_gt_3",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_drift_warning_when_z_gt_3()"
     },
     {
@@ -19797,8 +19819,8 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_no_warning_in_distribution",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_no_warning_in_distribution()"
     },
     {
@@ -19808,8 +19830,8 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_wrong_column_count_raises_valueerror",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_wrong_column_count_raises_valueerror()"
     },
     {
@@ -19819,8 +19841,8 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_float64_input_is_rejected",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_float64_input_is_rejected()"
     },
     {
@@ -19830,8 +19852,8 @@
       "source_location": "L121",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_single_row_latency_under_5ms",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_single_row_latency_under_5ms()"
     },
     {
@@ -19841,8 +19863,8 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_rare_binary_indicator_does_not_trigger_drift_warning",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_rare_binary_indicator_does_not_trigger_drift_warning()"
     },
     {
@@ -19852,8 +19874,8 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_test_wrong_column_names_raise_valueerror",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "test_wrong_column_names_raise_valueerror()"
     },
     {
@@ -19863,8 +19885,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_predictor_template_rationale_1",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "standalone predictor: numpy/onnxruntime only, matches python reference, drift +"
     },
     {
@@ -19896,8 +19918,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_onnx_test_onnx_matches_funnel_transform_clean",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "test_onnx_matches_funnel_transform_clean()"
     },
     {
@@ -19907,8 +19929,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_onnx_py_path",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "path"
     },
     {
@@ -19918,8 +19940,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_onnx_test_onnx_matches_funnel_transform_with_inf_nan",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "test_onnx_matches_funnel_transform_with_inf_nan()"
     },
     {
@@ -19940,8 +19962,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_onnx_test_single_row_input",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "test_single_row_input()"
     },
     {
@@ -19973,8 +19995,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_spec_apply_spec_numpy",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 69,
+      "community_name": "exceptions.py",
       "norm_label": "apply_spec_numpy()"
     },
     {
@@ -19984,8 +20006,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_spec_py_ndarray",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "ndarray"
     },
     {
@@ -19995,8 +20017,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_spec_dirty",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "dirty()"
     },
     {
@@ -20017,8 +20039,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_spec_test_spec_reproduces_funnel_transform_on_clean_data",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 69,
+      "community_name": "exceptions.py",
       "norm_label": "test_spec_reproduces_funnel_transform_on_clean_data()"
     },
     {
@@ -20028,8 +20050,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_spec_test_spec_reproduces_funnel_transform_with_inf_nan",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 69,
+      "community_name": "exceptions.py",
       "norm_label": "test_spec_reproduces_funnel_transform_with_inf_nan()"
     },
     {
@@ -20072,8 +20094,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_spec_rationale_16",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 69,
+      "community_name": "exceptions.py",
       "norm_label": "reference implementation of the preprocessing semantics (test-only)."
     },
     {
@@ -20083,8 +20105,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "tests_unit_test_preprocessor_spec_rationale_26",
-      "community": 70,
-      "community_name": "FeatureFunnel",
+      "community": 15,
+      "community_name": "test_variance.py",
       "norm_label": "inject +/-inf and nan into every column of a copy of x."
     },
     {
@@ -20842,8 +20864,8 @@
       "source_location": "L168",
       "_origin": "ast",
       "id": "tests_unit_test_regime_synergy_rationale_168",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": "fixed regimes: bear has ``n_small`` rows, bull / sideways split the rest."
     },
     {
@@ -20853,8 +20875,8 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "tests_unit_test_regime_synergy_rationale_179",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": "aggregate check: of 400 pure-noise features, <= 5% survive a 100-row regime."
     },
     {
@@ -20886,8 +20908,8 @@
       "source_location": "L368",
       "_origin": "ast",
       "id": "tests_unit_test_regime_synergy_rationale_368",
-      "community": 16,
-      "community_name": "infer_task_type",
+      "community": 2,
+      "community_name": "types.py",
       "norm_label": "aggregate check (fixed seeds): pure noise at n = 1,000, 8 fits x 30 features."
     },
     {
@@ -20930,8 +20952,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "tests_unit_test_runner_bundle",
-      "community": 169,
-      "community_name": "CalibrationError",
+      "community": 23,
+      "community_name": "exceptions.py",
       "norm_label": "bundle()"
     },
     {
@@ -21304,8 +21326,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_slsqp_smooth",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "test_slsqp_smooth.py"
     },
     {
@@ -21315,8 +21337,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "tests_unit_test_slsqp_smooth_test_slsqp_single_model",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "test_slsqp_single_model()"
     },
     {
@@ -21326,8 +21348,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "tests_unit_test_slsqp_smooth_test_slsqp_three_models_bounds_and_sum",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "test_slsqp_three_models_bounds_and_sum()"
     },
     {
@@ -21337,8 +21359,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "tests_unit_test_slsqp_smooth_test_slsqp_convergence_speed",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "test_slsqp_convergence_speed()"
     },
     {
@@ -21348,8 +21370,8 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "tests_unit_test_slsqp_smooth_test_slsqp_fallback_on_constant_data",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "test_slsqp_fallback_on_constant_data()"
     },
     {
@@ -21359,8 +21381,8 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "tests_unit_test_slsqp_smooth_test_slsqp_input_validation",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "test_slsqp_input_validation()"
     },
     {
@@ -21370,8 +21392,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_slsqp_smooth_rationale_1",
-      "community": 31,
-      "community_name": "bootstrap.py",
+      "community": 21,
+      "community_name": "EnsembleConfig",
       "norm_label": "unit tests for smoothslsqpoptimizer (c2 objective)."
     },
     {
@@ -21513,8 +21535,8 @@
       "source_location": "L118",
       "_origin": "ast",
       "id": "tests_unit_test_splitter_test_split_api_has_no_shuffle_parameter",
-      "community": 0,
-      "community_name": "InvalidDataError",
+      "community": 163,
+      "community_name": "Segment",
       "norm_label": "test_split_api_has_no_shuffle_parameter()"
     },
     {
@@ -22415,8 +22437,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_unit_test_types",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": "test_types.py"
     },
     {
@@ -22426,8 +22448,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "tests_unit_test_types_test_exceptions_inherit_from_base_error",
-      "community": 205,
-      "community_name": "test_types.py",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": "test_exceptions_inherit_from_base_error()"
     },
     {
@@ -22437,8 +22459,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_unit_test_types_py_exception",
-      "community": 205,
-      "community_name": "test_types.py",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": "exception"
     },
     {
@@ -22448,8 +22470,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "tests_unit_test_types_test_enum_values_are_stable_strings",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": "test_enum_values_are_stable_strings()"
     },
     {
@@ -22459,8 +22481,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "tests_unit_test_types_segment",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": "_segment()"
     },
     {
@@ -22470,8 +22492,8 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "tests_unit_test_types_test_segment_is_frozen",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": "test_segment_is_frozen()"
     },
     {
@@ -22481,8 +22503,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "tests_unit_test_types_test_ingestion_report_to_dict_is_json_serialisable",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": "test_ingestion_report_to_dict_is_json_serialisable()"
     },
     {
@@ -22503,8 +22525,8 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "tests_unit_test_types_test_dataset_defaults_task_type_and_classes_to_none",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": "test_dataset_defaults_task_type_and_classes_to_none()"
     },
     {
@@ -22514,8 +22536,8 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "tests_unit_test_types_test_split_result_optional_parts_for_oof_mode",
-      "community": 163,
-      "community_name": "Segment",
+      "community": 169,
+      "community_name": "CalibrationError",
       "norm_label": "test_split_result_optional_parts_for_oof_mode()"
     },
     {
@@ -24241,8 +24263,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_onboarding",
-      "community": 148,
-      "community_name": "Core SVG primitives",
+      "community": 66,
+      "community_name": "diagram-design/SKILL.md",
       "norm_label": "onboarding.md"
     },
     {
@@ -24813,8 +24835,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_primitive_icons",
-      "community": 66,
-      "community_name": "diagram-design/SKILL.md",
+      "community": 126,
+      "community_name": "Steps",
       "norm_label": "primitive-icons.md"
     },
     {
@@ -26210,8 +26232,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_profiles",
-      "community": 148,
-      "community_name": "Core SVG primitives",
+      "community": 66,
+      "community_name": "diagram-design/SKILL.md",
       "norm_label": "profiles.md"
     },
     {
@@ -26551,8 +26573,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_style_guide",
-      "community": 148,
-      "community_name": "Core SVG primitives",
+      "community": 66,
+      "community_name": "diagram-design/SKILL.md",
       "norm_label": "style-guide.md"
     },
     {
@@ -27222,8 +27244,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_data_flow",
-      "community": 66,
-      "community_name": "diagram-design/SKILL.md",
+      "community": 81,
+      "community_name": "Data Flow",
       "norm_label": "type-data-flow.md"
     },
     {
@@ -27805,8 +27827,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_dp_integration",
-      "community": 148,
-      "community_name": "Core SVG primitives",
+      "community": 66,
+      "community_name": "diagram-design/SKILL.md",
       "norm_label": "type-dp-integration.md"
     },
     {
@@ -28564,8 +28586,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_fishbone",
-      "community": 179,
-      "community_name": "People",
+      "community": 148,
+      "community_name": "Core SVG primitives",
       "norm_label": "type-fishbone.md"
     },
     {
@@ -28575,8 +28597,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_fishbone_fishbone_ishikawa_root_cause",
-      "community": 179,
-      "community_name": "People",
+      "community": 148,
+      "community_name": "Core SVG primitives",
       "norm_label": "fishbone / ishikawa (root-cause)"
     },
     {
@@ -28586,8 +28608,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_fishbone_layout_conventions",
-      "community": 179,
-      "community_name": "People",
+      "community": 148,
+      "community_name": "Core SVG primitives",
       "norm_label": "layout conventions"
     },
     {
@@ -28597,8 +28619,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_fishbone_math",
-      "community": 179,
-      "community_name": "People",
+      "community": 148,
+      "community_name": "Core SVG primitives",
       "norm_label": "math"
     },
     {
@@ -28608,8 +28630,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_fishbone_pre_computed_reference_5_bone_layout_head_1200_cy_320",
-      "community": 179,
-      "community_name": "People",
+      "community": 148,
+      "community_name": "Core SVG primitives",
       "norm_label": "pre-computed reference (5-bone layout, head=1200, cy=320)"
     },
     {
@@ -28619,8 +28641,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_fishbone_complexity_budget",
-      "community": 179,
-      "community_name": "People",
+      "community": 148,
+      "community_name": "Core SVG primitives",
       "norm_label": "complexity budget"
     },
     {
@@ -28630,8 +28652,8 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_fishbone_anti_patterns",
-      "community": 179,
-      "community_name": "People",
+      "community": 148,
+      "community_name": "Core SVG primitives",
       "norm_label": "anti-patterns"
     },
     {
@@ -28641,8 +28663,8 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_fishbone_examples",
-      "community": 179,
-      "community_name": "People",
+      "community": 148,
+      "community_name": "Core SVG primitives",
       "norm_label": "examples"
     },
     {
@@ -28773,8 +28795,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_heatmap",
-      "community": 66,
-      "community_name": "diagram-design/SKILL.md",
+      "community": 162,
+      "community_name": "Heatmap",
       "norm_label": "type-heatmap.md"
     },
     {
@@ -28861,8 +28883,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_high_level",
-      "community": 148,
-      "community_name": "Core SVG primitives",
+      "community": 66,
+      "community_name": "diagram-design/SKILL.md",
       "norm_label": "type-high-level.md"
     },
     {
@@ -30676,8 +30698,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_process",
-      "community": 148,
-      "community_name": "Core SVG primitives",
+      "community": 66,
+      "community_name": "diagram-design/SKILL.md",
       "norm_label": "type-process.md"
     },
     {
@@ -32106,8 +32128,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "agents_skills_diagram_design_references_type_steps",
-      "community": 66,
-      "community_name": "diagram-design/SKILL.md",
+      "community": 126,
+      "community_name": "Steps",
       "norm_label": "type-steps.md"
     },
     {
@@ -36742,9 +36764,9 @@
       "file_type": "code",
       "source_file": "",
       "source_location": "",
-      "community": 205,
+      "community": 26,
       "norm_label": "exception",
-      "community_name": "test_types.py",
+      "community_name": "create_candidate",
       "id": "exception"
     },
     {
@@ -36812,9 +36834,9 @@
       "file_type": "code",
       "source_file": "",
       "source_location": "",
-      "community": 2,
+      "community": 116,
       "norm_label": "basefeaturefilter",
-      "community_name": "types.py",
+      "community_name": "build_preprocessor_onnx",
       "id": "basefeaturefilter"
     },
     {
@@ -36832,9 +36854,9 @@
       "file_type": "code",
       "source_file": "",
       "source_location": "",
-      "community": 26,
+      "community": 138,
       "norm_label": "abc",
-      "community_name": "create_candidate",
+      "community_name": "test_packaging_converters.py",
       "id": "abc"
     },
     {
@@ -36872,9 +36894,9 @@
       "file_type": "code",
       "source_file": "src/quantautoml/models/candidates.py",
       "source_location": "L36",
-      "community": 26,
+      "community": 138,
       "norm_label": "fit()",
-      "community_name": "create_candidate",
+      "community_name": "test_packaging_converters.py",
       "id": "src_quantautoml_models_candidates_fit"
     },
     {
@@ -36882,9 +36904,9 @@
       "file_type": "code",
       "source_file": "src/quantautoml/models/candidates.py",
       "source_location": "L40",
-      "community": 26,
+      "community": 138,
       "norm_label": "predict_proba()",
-      "community_name": "create_candidate",
+      "community_name": "test_packaging_converters.py",
       "id": "src_quantautoml_models_candidates_predict_proba"
     },
     {
@@ -36892,9 +36914,9 @@
       "file_type": "code",
       "source_file": "src/quantautoml/models/candidates.py",
       "source_location": "L57",
-      "community": 26,
+      "community": 138,
       "norm_label": "complexity_score()",
-      "community_name": "create_candidate",
+      "community_name": "test_packaging_converters.py",
       "id": "src_quantautoml_models_candidates_complexity_score"
     },
     {
@@ -54088,7 +54110,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/quantautoml/cli.py",
-      "source_location": "L38",
+      "source_location": "L48",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_quantautoml_cli",
@@ -54170,7 +54192,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/quantautoml/cli.py",
-      "source_location": "L49",
+      "source_location": "L59",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_quantautoml_cli_main",
@@ -54205,7 +54227,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/quantautoml/cli.py",
-      "source_location": "L45",
+      "source_location": "L55",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_quantautoml_cli_main",
@@ -54216,7 +54238,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/quantautoml/cli.py",
-      "source_location": "L44",
+      "source_location": "L54",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_quantautoml_cli_main",
@@ -54245,6 +54267,18 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_unit_test_cli_test_run_command_returns_nonzero_on_pipeline_error",
+      "target": "src_quantautoml_cli_main"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/unit/test_cli.py",
+      "source_location": "L70",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_unit_test_cli_test_run_command_uses_default_config_and_out",
       "target": "src_quantautoml_cli_main"
     },
     {
@@ -88620,6 +88654,18 @@
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
+      "source_file": "tests/unit/test_cli.py",
+      "source_location": "L59",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_unit_test_cli_test_run_command_uses_default_config_and_out",
+      "target": "tests_conftest_make_frames"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
       "source_file": "tests/unit/test_ingestion.py",
       "source_location": "L337",
       "weight": 1.0,
@@ -92456,6 +92502,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tests/unit/test_cli.py",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_unit_test_cli",
+      "target": "tests_unit_test_cli_test_run_command_uses_default_config_and_out",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/unit/test_cli.py",
       "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast",
@@ -92527,11 +92584,35 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "tests/unit/test_cli.py",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_unit_test_cli_test_run_command_uses_default_config_and_out",
+      "target": "tests_unit_test_cli_py_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/unit/test_cli.py",
       "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast",
       "source": "tests_unit_test_cli_test_run_command_writes_artifacts",
       "target": "tests_unit_test_cli_py_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "tests/unit/test_cli.py",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "tests_unit_test_cli_test_run_command_uses_default_config_and_out",
+      "target": "tests_unit_test_cli_py_monkeypatch",
       "confidence_score": 1.0
     },
     {
@@ -124342,5 +124423,5 @@
       "source_file": "docs/plan/07-backtest/DESIGN.md"
     }
   ],
-  "built_at_commit": "f1c7d245256b0316fc34866c9ac5f17ee01503b3"
+  "built_at_commit": "550e844a229e0062b6a5ff6abd5af5d8462ce90a"
 }

@@ -10,8 +10,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/cli.py": {
-    "mtime": 1795477650.904907,
-    "ast_hash": "5b1430ed905ab40f783072f11438925e",
+    "mtime": 1795490748.7107725,
+    "ast_hash": "b58591c70705e2c1dd6e8aebc9e4eb42",
     "semantic_hash": ""
   },
   "src/quantautoml/__init__.py": {
@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_cli.py": {
-    "mtime": 1795478473.4248922,
-    "ast_hash": "a9d34a3e01cf0e05a868be8955326343",
+    "mtime": 1795490750.5887582,
+    "ast_hash": "1c1904813e2008fd813c4bcd13af9325",
     "semantic_hash": ""
   },
   "tests/unit/test_task_inference.py": {

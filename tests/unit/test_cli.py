@@ -51,3 +51,23 @@ def test_missing_subcommand_exits_with_usage_error() -> None:
     with pytest.raises(SystemExit) as exc:
         main([])
     assert exc.value.code == 2
+
+
+def test_run_command_uses_default_config_and_out(
+    tmp_path: Path, make_frames, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    feats, labels = make_frames(n=3000)
+    fp, lp = tmp_path / "f.parquet", tmp_path / "l.parquet"
+    feats.write_parquet(fp)
+    labels.write_parquet(lp)
+    (tmp_path / "config.toml").write_text(
+        f'[data]\nfeatures_path = "{fp}"\nlabels_path = "{lp}"\n'
+        '[labels]\nselected = "y_dir"\n[split]\nhorizon_h = 21\n',
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+
+    code = main(["run"])
+
+    assert code == 0
+    assert (tmp_path / "runs" / "default" / "01_data" / "segments" / "train.npz").is_file()
