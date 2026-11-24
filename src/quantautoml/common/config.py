@@ -117,6 +117,7 @@ class ModelsConfig(_Strict):
     marginal_gain_threshold: float = Field(default=0.015, ge=0.0)
     wf_consistency_threshold: float = Field(default=0.60, gt=0.0, le=1.0)
     complexity_penalty: float = Field(default=0.05, ge=0.0)
+    ic_window: int | None = Field(default=None, ge=20)
     random_state: int = Field(default=42)
     device: Literal["auto", "cpu", "cuda"] = "auto"
     enabled_models: list[str] = Field(default_factory=lambda: ["lightgbm", "xgboost", "catboost"])
@@ -141,6 +142,7 @@ class EnsembleConfig(_Strict):
     shrinkage_factor: float = Field(default=0.10, ge=0.0, le=1.0)
     hurdle_ratio: float = Field(default=0.05, ge=0.0)
     max_ece_threshold: float = Field(default=0.05, gt=0.0, le=1.0)
+    ic_window: int | None = Field(default=None, ge=20)
     random_state: int = Field(default=42)
 
     @model_validator(mode="after")

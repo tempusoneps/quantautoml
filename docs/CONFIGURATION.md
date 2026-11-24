@@ -135,6 +135,7 @@ diversity_threshold      = 0.88
 marginal_gain_threshold  = 0.015
 wf_consistency_threshold = 0.60
 complexity_penalty       = 0.05
+# ic_window              = 500             # tùy chọn (mặc định None = thích ứng tối đa 500 nến)
 random_state             = 42
 device                   = "auto"        # "auto" (GPU cho XGBoost/CatBoost nếu có CUDA), "cpu", hoặc "cuda"
 enabled_models           = ["lightgbm", "xgboost", "catboost"]
@@ -149,6 +150,7 @@ enabled_models           = ["lightgbm", "xgboost", "catboost"]
 | `models.marginal_gain_threshold` | `0.015` | `>= 0.0` | Mức cải thiện Rank IC tối thiểu ($+1.5\%$) của tổ hợp so với mô hình đơn tốt nhất để chấp nhận Ensemble. |
 | `models.wf_consistency_threshold` | `0.60` | `(0.0, 1.0]` | Tỷ lệ số fold Walk-Forward tối thiểu ($\ge 60\%$, tức $\ge 3/5$ folds) mà tổ hợp phải thắng mô hình đơn tốt nhất. |
 | `models.complexity_penalty` | `0.05` | `>= 0.0` | Hệ số phạt độ phức tạp cây trong hàm mục tiêu Optuna: $\text{Score} = \text{IC Sharpe}_{\text{WF}} - 0.05 \times \text{Complexity}$. |
+| `models.ic_window` | `None` | `>= 20` hoặc `None` | Cửa sổ rolling IC không chồng lấn trong từng fold Walk-Forward (`fold_subwindow_ics`). Khi `None`, tự động thích ứng theo cỡ fold `max(20, min(500, n // 4))`; khi chỉ định tường minh, clamp theo `n // 4` trên fold nhỏ. |
 | `models.random_state` | `42` | `int` | Hạt giống ngẫu nhiên đảm bảo tính tái lập 100%. |
 | `models.device` | `"auto"` | `"auto"` \| `"cpu"` \| `"cuda"` | Thiết bị huấn luyện GBDT: `"auto"` tự động bật GPU CUDA cho XGBoost & CatBoost nếu có GPU NVIDIA (giữ LightGBM trên CPU); `"cpu"` ép chạy 100% CPU. |
 | `models.enabled_models` | `["lightgbm", "xgboost", "catboost"]` | Tập con hợp lệ | Danh sách các họ mô hình GBDT tham gia đấu loại. |
@@ -167,6 +169,7 @@ bootstrap_block_size   = 20
 shrinkage_factor       = 0.10
 hurdle_ratio           = 0.05
 max_ece_threshold      = 0.05
+# ic_window            = 500               # tùy chọn (mặc định None = thích ứng tối đa 500 nến)
 random_state           = 42
 ```
 
@@ -180,6 +183,7 @@ random_state           = 42
 | `ensemble.shrinkage_factor` | `0.10` | `[0.0, 1.0]` | Hệ số co cụm $\lambda$ kéo trọng số trung vị về trọng số đều $1/K$: $w_{\text{shrunk}} = (1-\lambda)w_{\text{med}} + \lambda (1/K)$. |
 | `ensemble.hurdle_ratio` | `0.05` | `>= 0.0` | **RULE-05 Hurdle Gate (Out-of-Bag):** Dự đoán OOB của SLSQP phải vượt qua cả Single Best Model và Equal Weights ($1/K$) ít nhất $+5\%$ IC Sharpe; nếu không đạt sẽ tự động fallback. |
 | `ensemble.max_ece_threshold` | `0.05` | `(0.0, 1.0]` | Ngưỡng sai số hiệu chuẩn kỳ vọng tối đa (Expected Calibration Error $< 0.05$) sau khi tối ưu Temperature Scaling ($T > 0$) trên tập `Cal-B`. |
+| `ensemble.ic_window` | `None` | `>= 20` hoặc `None` | Cửa sổ rolling IC không chồng lấn khi chấm `IC Sharpe` và kiểm tra cổng `RULE-05` trong `BootstrapShrinkageEngine` (`Cal-A` / OOF). Khi `None`, tự động thích ứng `max(10, min(500, n // 10))`; khi chỉ định tường minh, clamp theo `n // 4` trên lát cắt nhỏ. |
 | `ensemble.random_state` | `42` | `int` | Hạt giống ngẫu nhiên cho quá trình lấy mẫu Bootstrap. |
 
 ---

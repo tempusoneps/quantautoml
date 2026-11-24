@@ -124,3 +124,44 @@ def test_tournament_search_space_respects_regularization_caps(tournament_data) -
         elif score.model_name == "catboost":
             assert 3 <= p["depth"] <= 7
             assert p["l2_leaf_reg"] >= 2.0
+
+
+def test_fold_subwindow_ics_scales_up_on_long_series() -> None:
+    from quantautoml.models.tournament import fold_subwindow_ics
+
+    rng = np.random.default_rng(12)
+    n = 4500
+    y = rng.standard_normal(n).astype(np.float32)
+    pred = (y + 0.5 * rng.standard_normal(n)).astype(np.float32)
+    ics = fold_subwindow_ics(pred, y)
+    assert len(ics) == 9  # 4500 // 500
+
+
+def test_fold_subwindow_ics_respects_explicit_ic_window() -> None:
+    from quantautoml.models.tournament import fold_subwindow_ics
+
+    rng = np.random.default_rng(13)
+    n = 2000
+    y = rng.standard_normal(n).astype(np.float32)
+    pred = (y + 0.5 * rng.standard_normal(n)).astype(np.float32)
+    ics = fold_subwindow_ics(pred, y, ic_window=250)
+    assert len(ics) == 8  # 2000 // 250
+
+
+def test_fold_subwindow_ics_clamps_large_ic_window_on_small_fold() -> None:
+    from quantautoml.models.tournament import fold_subwindow_ics
+
+    rng = np.random.default_rng(14)
+    n = 200
+    y = rng.standard_normal(n).astype(np.float32)
+    pred = (y + 0.5 * rng.standard_normal(n)).astype(np.float32)
+    ics = fold_subwindow_ics(pred, y, ic_window=500)
+    assert len(ics) == 4  # clamped to n // 4 = 50 -> 4 windows
+
+
+def test_fold_subwindow_ics_rejects_tiny_explicit_window() -> None:
+    from quantautoml.models.tournament import fold_subwindow_ics
+
+    y = np.arange(50, dtype=np.float32)
+    with pytest.raises(InvalidDataError, match="ic_window"):
+        fold_subwindow_ics(y, y, ic_window=2)

@@ -150,3 +150,30 @@ def test_tuner_search_space_respects_regularization_caps(tuning_data) -> None:
         elif cand.model_name == "catboost":
             assert 3 <= p["depth"] <= 7
             assert p["l2_leaf_reg"] >= 2.0
+
+
+def test_tuner_forwards_explicit_ic_window(
+    tuning_data, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import quantautoml.models.tuner as tuner_mod
+
+    X, y = tuning_data
+    seen_windows: list[int | None] = []
+    orig = tuner_mod.fold_subwindow_ics
+
+    def spy(pred, y_fold, *, ic_window=None):  # type: ignore[no-untyped-def]
+        seen_windows.append(ic_window)
+        return orig(pred, y_fold, ic_window=ic_window)
+
+    monkeypatch.setattr(tuner_mod, "fold_subwindow_ics", spy)
+    cfg = ModelsConfig(
+        tuning_trials=1,
+        n_wf_folds=2,
+        ic_window=120,
+        device="cpu",
+        random_state=42,
+    )
+    DeepOptunaTuner(cfg=cfg, task_type=TaskType.BINARY_CLASSIFICATION).tune(
+        models_to_tune=["lightgbm"], X=X, y=y
+    )
+    assert seen_windows and all(w == 120 for w in seen_windows)

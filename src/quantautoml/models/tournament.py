@@ -20,26 +20,36 @@ optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 _MIN_FOLD_FOR_SUBWINDOWS = 40
 _MIN_SUBWINDOW = 20
-_MAX_SUBWINDOW = 63
+_MAX_SUBWINDOW = 500
 
 
 def fold_subwindow_ics(
     pred: NDArray[np.float32],
     y_fold: NDArray[np.float32 | np.int32],
+    *,
+    ic_window: int | None = None,
 ) -> list[float]:
     """Compute non-overlapping sub-window Rank ICs within a fold test block.
 
     Provides enough observations for stable ``calc_ic_sharpe`` estimation instead of
-    dividing by ``std()`` of only 2-5 fold-level scalars. Falls back to the single
-    fold Rank IC when the fold test block is too short (< 40 rows).
+    dividing by ``std()`` of only 2-5 fold-level scalars. Scales up to 500 bars on
+    long intraday series (or respects ``ic_window`` clamped to ``n // 4``) to prevent
+    short-window Simpson's Paradox. Falls back to the single fold Rank IC when the
+    fold test block is too short (< 40 rows) or yields fewer than 2 valid windows.
     """
+    if ic_window is not None and ic_window < 3:
+        raise InvalidDataError(f"ic_window must be >= 3, got {ic_window}")
     n = len(y_fold)
     if n >= _MIN_FOLD_FOR_SUBWINDOWS:
-        sub_w = max(_MIN_SUBWINDOW, min(_MAX_SUBWINDOW, n // 4))
-        roll = calc_rolling_ic(pred, y_fold, window=sub_w)
-        valid = roll[~np.isnan(roll)]
-        if valid.size >= 2:
-            return [float(v) for v in valid]
+        if ic_window is not None:
+            sub_w = min(ic_window, max(_MIN_SUBWINDOW, n // 4))
+        else:
+            sub_w = max(_MIN_SUBWINDOW, min(_MAX_SUBWINDOW, n // 4))
+        if n // sub_w >= 2:
+            roll = calc_rolling_ic(pred, y_fold, window=sub_w)
+            valid = roll[~np.isnan(roll)]
+            if valid.size >= 2:
+                return [float(v) for v in valid]
     return [float(calc_rank_ic(pred, y_fold)[0])]
 
 
@@ -191,7 +201,9 @@ class ModelTournament:
 
                     ic = calc_rank_ic(pred, y[test_idx])[0]
                     fold_ics.append(float(ic))
-                    sub_ics.extend(fold_subwindow_ics(pred, y[test_idx]))
+                    sub_ics.extend(
+                        fold_subwindow_ics(pred, y[test_idx], ic_window=self.cfg.ic_window)
+                    )
 
                 mean_ic = float(np.mean(fold_ics))
                 sharpe = float(calc_ic_sharpe(np.array(sub_ics, dtype=np.float64)))

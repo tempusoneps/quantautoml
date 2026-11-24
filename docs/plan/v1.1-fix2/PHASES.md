@@ -32,7 +32,7 @@ flowchart LR
 
 ---
 
-### Phase 2: Regime Freshness & Multi-Window Walk-Forward OOS *(Active)*
+### Phase 2: Regime Freshness & Multi-Window Walk-Forward OOS *(Queued after `v1.1-optimize3`)*
 - **Objective:** Khắc phục việc bỏ trống 20% dữ liệu gần OOS nhất (Cal-A/Cal-B) và loại bỏ rủi ro đánh giá OOS trên 1 đoạn duy nhất.
 - **Prerequisites:** Phase 1 Done.
 - **Key Deliverables:**

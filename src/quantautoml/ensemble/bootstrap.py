@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 from numpy.typing import NDArray
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from quantautoml.common.config import EnsembleConfig
 from quantautoml.ensemble.slsqp import SmoothSLSQPOptimizer
@@ -26,6 +26,9 @@ class EnsembleWeightsResult(BaseModel):
     equal_weights_ic_sharpe: float
     hurdle_ratio_achieved: float
     fallback_reason: str | None = None
+    ic_window_used: int = 0
+    single_model_scores: list[float] = Field(default_factory=list)
+    overall_rank_ic: float = 0.0
 
 
 def _sample_block_indices(
@@ -44,20 +47,40 @@ def _sample_block_indices(
     return idx.astype(np.intp, copy=False)
 
 
+def _resolve_ic_window(n: int, ic_window: int | None) -> int:
+    """Resolve rolling IC window length for ``n`` observations.
+
+    When ``ic_window`` is ``None``, scales adaptively up to 500 bars (``n // 10``)
+    so long intraday series avoid short-window Simpson's Paradox while small slices
+    retain enough windows. Explicit ``ic_window`` is clamped to ``max(10, n // 4)``
+    so ``std(ddof=1)`` is not estimated from only 2 windows.
+    """
+    if ic_window is not None:
+        if ic_window < 3:
+            raise ValueError(f"ic_window must be >= 3, got {ic_window}")
+        w = min(ic_window, max(10, n // 4))
+    else:
+        w = max(10, min(500, n // 10))
+    if n // w < 2:
+        w = max(3, n // 2)
+    return int(w)
+
+
 def _calc_series_ic_sharpe(
     pred: NDArray[np.float32],
     target: NDArray[np.float32 | np.int32],
+    *,
+    ic_window: int | None = None,
 ) -> float:
-    """Helper to evaluate IC Sharpe or fallback to Rank IC on small sample slices."""
-    n = len(pred)
-    window = max(10, min(50, n // 10))
-    if n // window < 2:
-        window = max(3, n // 2)
-
+    """Evaluate rolling IC Sharpe, falling back to Rank IC only on degenerate slices."""
+    window = _resolve_ic_window(len(pred), ic_window)
     ic_series = calc_rolling_ic(pred, target, window=window)
+    valid = ic_series[~np.isnan(ic_series)]
+    if valid.size < 2 or np.ptp(valid) == 0.0 or float(np.std(valid, ddof=1)) <= 1e-12:
+        return float(calc_rank_ic(pred, target)[0])
     score = calc_ic_sharpe(ic_series)
-    if np.isnan(score) or score == 0.0:
-        score = float(calc_rank_ic(pred, target)[0])
+    if np.isnan(score):
+        return float(calc_rank_ic(pred, target)[0])
     return float(score)
 
 
@@ -109,13 +132,15 @@ class BootstrapShrinkageEngine:
             )
 
         n_samples, n_models = preds.shape
+        ic_window_used = _resolve_ic_window(n_samples, self.cfg.ic_window)
 
         if n_models == 1:
             single_score = (
                 float(single_model_scores[0])
-                if single_model_scores
-                else _calc_series_ic_sharpe(preds[:, 0], target)
+                if single_model_scores is not None and len(single_model_scores) == 1
+                else _calc_series_ic_sharpe(preds[:, 0], target, ic_window=self.cfg.ic_window)
             )
+            overall_ic = float(calc_rank_ic(preds[:, 0], target)[0])
             return EnsembleWeightsResult(
                 weights=[1.0],
                 raw_weights=[1.0],
@@ -127,6 +152,9 @@ class BootstrapShrinkageEngine:
                 equal_weights_ic_sharpe=single_score,
                 hurdle_ratio_achieved=0.0,
                 fallback_reason=None,
+                ic_window_used=ic_window_used,
+                single_model_scores=[single_score],
+                overall_rank_ic=overall_ic,
             )
 
         # 1. Moving Block Bootstrap sampling (preserves serial correlation; collects OOB preds)
@@ -175,13 +203,16 @@ class BootstrapShrinkageEngine:
         if single_model_scores is not None and len(single_model_scores) == n_models:
             single_scores = [float(s) for s in single_model_scores]
         else:
-            single_scores = [_calc_series_ic_sharpe(preds[:, k], target) for k in range(n_models)]
+            single_scores = [
+                _calc_series_ic_sharpe(preds[:, k], target, ic_window=self.cfg.ic_window)
+                for k in range(n_models)
+            ]
 
         best_single_score = max(single_scores)
         best_single_idx = int(np.argmax(single_scores))
 
         equal_pred = (preds @ equal_w).astype(np.float32)
-        equal_score = _calc_series_ic_sharpe(equal_pred, target)
+        equal_score = _calc_series_ic_sharpe(equal_pred, target, ic_window=self.cfg.ic_window)
 
         shrunk_pred = (preds @ shrunk_w).astype(np.float32)
         if np.any(oob_cnt > 0):
@@ -190,7 +221,7 @@ class BootstrapShrinkageEngine:
             ).astype(np.float32)
         else:
             ens_pred = shrunk_pred
-        ens_score = _calc_series_ic_sharpe(ens_pred, target)
+        ens_score = _calc_series_ic_sharpe(ens_pred, target, ic_window=self.cfg.ic_window)
 
         baseline_score = max(best_single_score, equal_score)
 
@@ -215,6 +246,9 @@ class BootstrapShrinkageEngine:
                 final_weights = [float(x) for x in equal_w]
                 fallback_reason = "Ensemble did not achieve +5% IC Sharpe over Equal Weights baseline."
 
+        final_pred = (preds @ np.asarray(final_weights, dtype=np.float32)).astype(np.float32)
+        overall_ic = float(calc_rank_ic(final_pred, target)[0])
+
         return EnsembleWeightsResult(
             weights=final_weights,
             raw_weights=[float(x) for x in raw_med],
@@ -226,4 +260,7 @@ class BootstrapShrinkageEngine:
             equal_weights_ic_sharpe=equal_score,
             hurdle_ratio_achieved=float(hurdle_achieved),
             fallback_reason=fallback_reason,
+            ic_window_used=ic_window_used,
+            single_model_scores=single_scores,
+            overall_rank_ic=overall_ic,
         )

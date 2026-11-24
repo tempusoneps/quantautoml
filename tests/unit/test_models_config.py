@@ -69,3 +69,16 @@ def test_invalid_enabled_models_rejected() -> None:
 
     with pytest.raises(pydantic.ValidationError):
         ModelsConfig(enabled_models=[])
+
+
+def test_models_config_ic_window_default_and_custom(write_toml, valid_toml: str) -> None:
+    assert ModelsConfig().ic_window is None
+    assert ModelsConfig(ic_window=500).ic_window == 500
+    cfg = load_config(write_toml(valid_toml + "\n[models]\nic_window = 250\n"))
+    assert cfg.models is not None and cfg.models.ic_window == 250
+
+
+@pytest.mark.parametrize("w", [19, 0, -5])
+def test_models_config_ic_window_below_20_rejected(w: int) -> None:
+    with pytest.raises(pydantic.ValidationError):
+        ModelsConfig(ic_window=w)

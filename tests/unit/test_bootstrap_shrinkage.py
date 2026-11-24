@@ -122,3 +122,76 @@ def test_block_bootstrap_preserves_contiguous_blocks() -> None:
 def test_ensemble_config_bootstrap_block_size() -> None:
     cfg = EnsembleConfig(bootstrap_block_size=30)
     assert cfg.bootstrap_block_size == 30
+
+
+def test_resolve_ic_window_clamps_to_at_least_four_windows_when_possible() -> None:
+    from quantautoml.ensemble.bootstrap import _resolve_ic_window
+
+    assert _resolve_ic_window(380, 500) == 95
+    assert _resolve_ic_window(7585, None) == 500
+    assert _resolve_ic_window(7585, 500) == 500
+    assert _resolve_ic_window(100, None) == 10
+    with pytest.raises(ValueError, match="ic_window"):
+        _resolve_ic_window(380, 2)
+
+
+def test_calc_series_ic_sharpe_does_not_mix_rank_ic_when_mean_is_zero() -> None:
+    from quantautoml.ensemble.bootstrap import _calc_series_ic_sharpe
+    from quantautoml.metrics.ic import calc_rank_ic
+
+    # 4 windows of 25: +1, -1, +1, -1 within-window IC (mean=0, std>0),
+    # while shifting levels across windows makes overall Rank IC strongly positive.
+    w = 25
+    base = np.linspace(0.0, 1.0, w, dtype=np.float32)
+    y_parts = [base + 10.0 * i for i in range(4)]
+    p_parts = [
+        base + 10.0 * 0,
+        (1.0 - base) + 10.0 * 1,
+        base + 10.0 * 2,
+        (1.0 - base) + 10.0 * 3,
+    ]
+    y = np.concatenate(y_parts)
+    pred = np.concatenate(p_parts)
+    assert calc_rank_ic(pred, y)[0] > 0.5
+    score = _calc_series_ic_sharpe(pred, y, ic_window=w)
+    assert score == pytest.approx(0.0, abs=1e-12)
+
+
+def test_bootstrap_adaptive_window_scales_on_long_intraday_series() -> None:
+    rng = np.random.default_rng(77)
+    n = 7500
+    y = rng.standard_normal(n).astype(np.float32)
+    preds = np.column_stack(
+        [
+            (y + 0.6 * rng.standard_normal(n)).astype(np.float32),
+            (y + 0.8 * rng.standard_normal(n)).astype(np.float32),
+            (y + 1.0 * rng.standard_normal(n)).astype(np.float32),
+        ]
+    )
+    cfg = EnsembleConfig(n_bootstrap=10, random_state=42)
+    res = BootstrapShrinkageEngine(cfg).fit(preds, y)
+    assert res.ic_window_used == 500
+    assert len(res.single_model_scores) == 3
+    assert np.isfinite(res.overall_rank_ic) and res.overall_rank_ic > 0.0
+
+
+def test_bootstrap_explicit_ic_window_and_single_model_branch() -> None:
+    rng = np.random.default_rng(88)
+    n = 1500
+    y = rng.standard_normal(n).astype(np.float32)
+    m1 = (y + 0.5 * rng.standard_normal(n)).astype(np.float32)
+    m2 = (y + 0.7 * rng.standard_normal(n)).astype(np.float32)
+    m3 = (y + 0.9 * rng.standard_normal(n)).astype(np.float32)
+
+    cfg = EnsembleConfig(n_bootstrap=10, ic_window=300, random_state=42)
+    engine = BootstrapShrinkageEngine(cfg)
+
+    res_single = engine.fit(m1[:, None], y)
+    assert res_single.ic_window_used == 300
+    assert len(res_single.single_model_scores) == 1
+    assert np.isfinite(res_single.overall_rank_ic) and res_single.overall_rank_ic > 0.0
+
+    res_multi = engine.fit(np.column_stack([m1, m2, m3]), y)
+    assert res_multi.ic_window_used == 300
+    assert len(res_multi.single_model_scores) == 3
+    assert np.isfinite(res_multi.overall_rank_ic) and res_multi.overall_rank_ic > 0.0

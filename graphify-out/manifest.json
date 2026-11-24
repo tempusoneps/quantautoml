@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/common/config.py": {
-    "mtime": 1795507655.0039814,
-    "ast_hash": "4caa40c97b9a2d5bc21ca7ae3d148136",
+    "mtime": 1795519522.7543657,
+    "ast_hash": "9ef78daa6c80e8243e90361c8703df5d",
     "semantic_hash": ""
   },
   "src/quantautoml/common/exceptions.py": {
@@ -60,8 +60,8 @@
     "semantic_hash": ""
   },
   "scripts/generate_config.py": {
-    "mtime": 1795507683.5603354,
-    "ast_hash": "95c1e863a833aa78c975af7aadc5901c",
+    "mtime": 1795519568.2793124,
+    "ast_hash": "328b307e2e35c573615e3ad1459964a0",
     "semantic_hash": ""
   },
   "tests/conftest.py": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "docs/CONFIGURATION.md": {
-    "mtime": 1795507688.0089114,
-    "ast_hash": "49436b5076e23a56f5d62a722741462f",
+    "mtime": 1795519574.9659038,
+    "ast_hash": "6d7c3382c0bb435cc35a2632990e64fc",
     "semantic_hash": ""
   },
   "docs/STRUCTURE.md": {
@@ -335,8 +335,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/ensemble/bootstrap.py": {
-    "mtime": 1795490231.1165092,
-    "ast_hash": "4d097cc5838f44e6ce9cf25a585e1971",
+    "mtime": 1795519785.1001651,
+    "ast_hash": "c2c5aff713141af475c2838df5c0674b",
     "semantic_hash": ""
   },
   "src/quantautoml/ensemble/calibration.py": {
@@ -440,13 +440,13 @@
     "semantic_hash": ""
   },
   "src/quantautoml/models/tournament.py": {
-    "mtime": 1795507669.8158941,
-    "ast_hash": "87e5955c22230caa8bf8f070975a12e4",
+    "mtime": 1795519781.3861847,
+    "ast_hash": "b38b1417339962e547c21ebc1d4b3412",
     "semantic_hash": ""
   },
   "src/quantautoml/models/tuner.py": {
-    "mtime": 1795507676.636515,
-    "ast_hash": "8bfdfe49e8558a690882b1e4b0dcf99b",
+    "mtime": 1795519526.4236574,
+    "ast_hash": "430287570e589f9d93abf456382abd6a",
     "semantic_hash": ""
   },
   "src/quantautoml/models/validation.py": {
@@ -475,8 +475,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_bootstrap_shrinkage.py": {
-    "mtime": 1795490151.1524074,
-    "ast_hash": "7bf6074aaaa3ea49d194584ad9d27e98",
+    "mtime": 1795519790.611656,
+    "ast_hash": "3b08109cc22880662f7986c2b8306357",
     "semantic_hash": ""
   },
   "tests/unit/test_candidates.py": {
@@ -500,8 +500,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_ensemble_config.py": {
-    "mtime": 1795477650.9192302,
-    "ast_hash": "c38b5e0c9a75854e25ee07175b06c9ba",
+    "mtime": 1795519454.7213252,
+    "ast_hash": "8385dcffef966b2449022e51ab2ffafb",
     "semantic_hash": ""
   },
   "tests/unit/test_features_base.py": {
@@ -550,8 +550,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_models_config.py": {
-    "mtime": 1795477650.9223964,
-    "ast_hash": "607daa62fd02a7bd68387b0814f9ebf9",
+    "mtime": 1795519453.22408,
+    "ast_hash": "7c6a4f95cb9b01283a02c31cab00fa26",
     "semantic_hash": ""
   },
   "tests/unit/test_regime_synergy.py": {
@@ -570,8 +570,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_tournament.py": {
-    "mtime": 1795507566.9334633,
-    "ast_hash": "e7f3847f0458569c59f9027c6966bf0e",
+    "mtime": 1795519787.0990129,
+    "ast_hash": "1ca3a2efb398051ced3db86e3ba333f8",
     "semantic_hash": ""
   },
   "tests/unit/test_triage.py": {
@@ -580,8 +580,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_tuner.py": {
-    "mtime": 1795507569.1534233,
-    "ast_hash": "0ddb12f2da7d2cef3935f0e0351381fa",
+    "mtime": 1795519789.227002,
+    "ast_hash": "b23df40e50991f0a6a806cdb74c778d0",
     "semantic_hash": ""
   },
   "tests/unit/test_variance.py": {
@@ -2560,8 +2560,8 @@
     "semantic_hash": ""
   },
   "docs/plan/v1.1-fix2/PHASES.md": {
-    "mtime": 1795507755.0138307,
-    "ast_hash": "56d673d02e97ef587acb806a4fbdf56f",
+    "mtime": 1795519003.602326,
+    "ast_hash": "3525ceacad1ecfd0e7f8f23cf853817b",
     "semantic_hash": ""
   },
   "docs/plan/v1.1-fix2/PLAN.md": {
@@ -2582,6 +2582,41 @@
   "docs/plan/v1.1-fix2/TRADE-OFF.md": {
     "mtime": 1795500173.3486776,
     "ast_hash": "6fe095897398a98df970040f62d1cc00",
+    "semantic_hash": ""
+  },
+  "docs/OBJECTIVE.md": {
+    "mtime": 1795519002.392828,
+    "ast_hash": "e4650c5e2c7e3459249657b0fddc5abc",
+    "semantic_hash": ""
+  },
+  "docs/plan/v1.1-optimize3/ARCHITECTURE.md": {
+    "mtime": 1795518997.7623005,
+    "ast_hash": "a91fea3ff6de7d12a4583bfb55e4ce62",
+    "semantic_hash": ""
+  },
+  "docs/plan/v1.1-optimize3/PHASES.md": {
+    "mtime": 1795519729.816161,
+    "ast_hash": "97d0bca017504e88727f62a7480c4a39",
+    "semantic_hash": ""
+  },
+  "docs/plan/v1.1-optimize3/PLAN.md": {
+    "mtime": 1795519792.1453936,
+    "ast_hash": "905df2176fa5c1dc71b6abffbba1e4dc",
+    "semantic_hash": ""
+  },
+  "docs/plan/v1.1-optimize3/SCOPE.md": {
+    "mtime": 1795519793.7602434,
+    "ast_hash": "0b400a57b430dd7a7c8cc04acd5ff92d",
+    "semantic_hash": ""
+  },
+  "docs/plan/v1.1-optimize3/STRUCTURE.md": {
+    "mtime": 1795519022.4788654,
+    "ast_hash": "112a89dcd972dfb6087741044c9aeb13",
+    "semantic_hash": ""
+  },
+  "docs/plan/v1.1-optimize3/TRADE-OFF.md": {
+    "mtime": 1795518327.080933,
+    "ast_hash": "f125876426f4e55ebb7d92e0070d3134",
     "semantic_hash": ""
   }
 }

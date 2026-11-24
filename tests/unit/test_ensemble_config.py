@@ -120,3 +120,32 @@ def test_pipeline_config_with_ensemble(tmp_path: Path) -> None:
     assert cfg.ensemble.min_weight == 0.05
     assert cfg.ensemble.max_weight == 0.60
     assert cfg.ensemble.n_bootstrap == 200
+
+
+def test_ensemble_config_ic_window_default_and_custom(tmp_path: Path) -> None:
+    assert EnsembleConfig().ic_window is None
+    assert EnsembleConfig(ic_window=500).ic_window == 500
+    toml_content = """
+    [data]
+    features_path = "features.parquet"
+    labels_path = "labels.parquet"
+
+    [labels]
+    selected = "label_h5"
+
+    [split]
+    horizon_h = 5
+
+    [ensemble]
+    ic_window = 300
+    """
+    cfg_file = tmp_path / "cfg_icw.toml"
+    cfg_file.write_text(toml_content, encoding="utf-8")
+    cfg = load_config(cfg_file)
+    assert cfg.ensemble is not None and cfg.ensemble.ic_window == 300
+
+
+@pytest.mark.parametrize("w", [19, 0, -5])
+def test_ensemble_config_ic_window_below_20_rejected(w: int) -> None:
+    with pytest.raises(ValidationError):
+        EnsembleConfig(ic_window=w)

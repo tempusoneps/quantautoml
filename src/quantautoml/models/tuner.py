@@ -163,7 +163,9 @@ class DeepOptunaTuner:
                     )
                     candidate.fit(X[train_idx], y[train_idx])
                     pred = candidate.predict(X[test_idx])
-                    sub_ics.extend(fold_subwindow_ics(pred, y[test_idx]))
+                    sub_ics.extend(
+                        fold_subwindow_ics(pred, y[test_idx], ic_window=self.cfg.ic_window)
+                    )
 
                     ic_sharpe = float(calc_ic_sharpe(np.array(sub_ics, dtype=np.float64)))
                     objective_val = ic_sharpe - self.cfg.complexity_penalty * complexity
