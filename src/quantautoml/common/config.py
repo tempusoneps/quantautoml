@@ -196,6 +196,7 @@ class RealWorldConfig(_Strict):
     trade_on_close: bool = False
     out_html: str | None = None
     out_trades_csv: str | None = None
+    out_returns_curve: str | None = None
     ohlcv_open_col: str = "Open"
     ohlcv_high_col: str = "High"
     ohlcv_low_col: str = "Low"

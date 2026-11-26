@@ -16,6 +16,7 @@ def test_defaults_match_spec() -> None:
     assert cfg.trade_on_close is False
     assert cfg.out_html is None
     assert cfg.out_trades_csv is None
+    assert cfg.out_returns_curve is None
     assert cfg.ohlcv_open_col == "Open"
     assert cfg.ohlcv_high_col == "High"
     assert cfg.ohlcv_low_col == "Low"

@@ -43,6 +43,7 @@ runs/default/
     ├── 02_realworld_report.json             # (Tùy chọn Tier 2) Báo cáo mô phỏng khớp lệnh Open[t+1] qua backtesting.py
     ├── 03_regime_diagnostics.json           # (Sinh bởi `quantautoml diagnose`) Chẩn đoán read-only đa segment (close vs next_open)
     ├── backtest_report.html                 # (Tùy chọn Tier 2) Biểu đồ nến HTML tương tác
+    ├── returns_curve.png                    # (Tùy chọn Tier 2) Biểu đồ đường cong PnL lũy kế theo từng lệnh
     └── trades.csv                           # (Tùy chọn Tier 2) Nhật ký giao dịch chi tiết
 ```
 

@@ -8,7 +8,7 @@ Output layout under ``out_dir``::
     03_models/     (01_tournament_report.json, 02_decision_report.json, 03_tuning_report.json)
     04_ensemble/   (01_ensemble_report.json, 02_calibration_report.json)
     05_packaging/  (bundle/)
-    06_backtest/   (01_backtest_report.json, 02_realworld_report.json, backtest_report.html, trades.csv)
+    06_backtest/   (01_backtest_report.json, 02_realworld_report.json, backtest_report.html, trades.csv, returns_curve.png)
 
 Skipped phase directories are not created. Segment ``.npz`` files keep the unfiltered X.
 """
@@ -392,6 +392,8 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
                     update={
                         "out_html": rw_cfg.out_html or str(backtest_dir / "backtest_report.html"),
                         "out_trades_csv": rw_cfg.out_trades_csv or str(backtest_dir / "trades.csv"),
+                        "out_returns_curve": rw_cfg.out_returns_curve
+                        or str(backtest_dir / "returns_curve.png"),
                     }
                 )
         backtest_metrics, realworld_metrics = OOSBacktestRunner(cfg.backtest).run(
@@ -410,6 +412,10 @@ def run_pipeline(config: PipelineConfig | str | Path, out_dir: str | Path) -> Pi
             realworld_path = backtest_dir / "02_realworld_report.json"
             _dump_json(realworld_path, realworld_metrics.model_dump())
             bt_artifacts["realworld_report"] = _rel(realworld_path, out)
+            if rw_cfg is not None and rw_cfg.out_returns_curve is not None:
+                curve_path = Path(rw_cfg.out_returns_curve)
+                if curve_path.is_file() and curve_path.is_relative_to(out):
+                    bt_artifacts["returns_curve"] = _rel(curve_path, out)
         phases.append({"phase": "06_backtest", "status": "completed", "artifacts": bt_artifacts})
     else:
         phases.append({"phase": "06_backtest", "status": "skipped", "artifacts": {}})

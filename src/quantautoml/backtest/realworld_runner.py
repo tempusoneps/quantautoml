@@ -7,6 +7,7 @@ Nothing is fitted here (RULE-01); positions come from Tier 1 and are never recom
 from __future__ import annotations
 
 import math
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -74,7 +75,27 @@ class RealWorldBacktestRunner:
             bt.plot(filename=cfg.out_html, open_browser=False)
         if cfg.out_trades_csv is not None:
             trades.to_csv(cfg.out_trades_csv, index=False)
+        if cfg.out_returns_curve is not None:
+            self._save_returns_curve(trades, cfg.out_returns_curve)
         return self._metrics(stats, trades)
+
+    @staticmethod
+    def _save_returns_curve(trades: pd.DataFrame, out_path: str) -> None:
+        """Plot cumulative trade PnL to a PNG chart (headless Agg backend)."""
+        from matplotlib.backends.backend_agg import FigureCanvasAgg
+        from matplotlib.figure import Figure
+
+        cum_pnl = trades["PnL"].cumsum() if len(trades) else pd.Series(dtype=float)
+        fig = Figure(figsize=(12, 6), dpi=120)
+        FigureCanvasAgg(fig)
+        ax = fig.add_subplot(111)
+        ax.plot(np.arange(len(cum_pnl)), cum_pnl)
+        ax.set_title("QUANTAUTOML cumulative PnL")
+        ax.set_xlabel("Trades")
+        ax.set_ylabel("PnL")
+        dest = Path(out_path)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(dest, dpi=300)
 
     def _prepare(self, ohlcv_df: pd.DataFrame, positions: NDArray[np.float64]) -> pd.DataFrame:
         cfg = self.cfg

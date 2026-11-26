@@ -137,3 +137,21 @@ def test_runner_respects_start_cash_size_config(tmp_path: Path) -> None:
     assert m.n_trades > 0
     assert out.is_file()
 
+
+def test_returns_curve_export_creates_png(tmp_path: Path) -> None:
+    out = tmp_path / "nested" / "returns_curve.png"
+    m = _run(RealWorldConfig(out_returns_curve=str(out)))
+    assert m.n_trades > 0
+    assert out.is_file()
+    raw = out.read_bytes()
+    assert len(raw) > 0
+    assert raw.startswith(b"\x89PNG\r\n\x1a\n")
+
+
+def test_returns_curve_export_handles_zero_trades(tmp_path: Path) -> None:
+    out = tmp_path / "returns_curve.png"
+    m = _run(RealWorldConfig(out_returns_curve=str(out)), pos=np.zeros(N))
+    assert m.n_trades == 0
+    assert out.is_file()
+    assert out.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
+

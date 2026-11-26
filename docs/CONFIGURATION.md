@@ -271,7 +271,7 @@ ohlcv_volume_col = "Volume"
 
 | Khóa | Mặc định | Ràng buộc | Mô tả chi tiết |
 | :--- | :--- | :--- | :--- |
-| `realworld.enabled` | `false` | `bool` | Cờ bật/tắt tầng backtest thực chiến Tier 2 (`backtesting.py`). Đặt `false` để chỉ chạy Tier 1 (NumPy vectorized); đặt `true` để tự động xuất thêm `realworld_report.json`, `trades.csv` và `backtest_report.html` khi Tier 1 `accepted = true`. |
+| `realworld.enabled` | `false` | `bool` | Cờ bật/tắt tầng backtest thực chiến Tier 2 (`backtesting.py`). Đặt `false` để chỉ chạy Tier 1 (NumPy vectorized); đặt `true` để tự động xuất thêm `realworld_report.json`, `trades.csv`, `backtest_report.html` và `returns_curve.png` khi Tier 1 `accepted = true`. |
 | `realworld.cash` | `1_000_000.0` | `> 0.0` | Số vốn khởi tạo ban đầu (`initial_cash`) của tài khoản mô phỏng. |
 | `realworld.commission` | `0.0005` | `>= 0.0` | Tỷ lệ phí giao dịch trên mỗi chiều khớp lệnh (`0.0005` = `0.05%` = `5 bps`). |
 | `realworld.margin` | `1.0` | `> 0.0` | Tỷ lệ ký quỹ (`1.0` = không dùng đòn bẩy; `0.2` = đòn bẩy 5x). |
@@ -279,4 +279,5 @@ ohlcv_volume_col = "Volume"
 | `realworld.trade_on_close` | `false` | `bool` | `false`: Tín hiệu tại nến $t$ sẽ khớp lệnh Market tại giá `Open` của nến $t+1$ (chống thiên kiến giá đóng cửa). |
 | `realworld.out_html` | `None` | `str \| None` | Đường dẫn xuất biểu đồ nến HTML tương tác (`backtest_report.html`). |
 | `realworld.out_trades_csv` | `None` | `str \| None` | Đường dẫn xuất nhật ký lệnh chi tiết (`trades.csv`). |
+| `realworld.out_returns_curve` | `None` | `str \| None` | Đường dẫn xuất biểu đồ đường cong lợi nhuận lũy kế theo từng lệnh (`returns_curve.png`). |
 

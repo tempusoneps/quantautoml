@@ -49,15 +49,23 @@ def bundle(tmp_path_factory):
 
 def test_tier2_produces_html_and_csv_on_real_bundle(bundle, tmp_path) -> None:
     oos = _oos()
-    html, csv = tmp_path / "backtest_report.html", tmp_path / "trades.csv"
+    html = tmp_path / "backtest_report.html"
+    csv = tmp_path / "trades.csv"
+    curve = tmp_path / "returns_curve.png"
     metrics, rw = OOSBacktestRunner(BacktestConfig(rank_window=100, ic_window=300)).run(
         bundle_dir=bundle.dir, oos=oos, feature_names=NAMES, other_segments=[],
         ohlcv_df=_ohlcv(oos),
-        realworld_cfg=RealWorldConfig(enabled=True, out_html=str(html), out_trades_csv=str(csv)),
+        realworld_cfg=RealWorldConfig(
+            enabled=True,
+            out_html=str(html),
+            out_trades_csv=str(csv),
+            out_returns_curve=str(curve),
+        ),
     )
     assert metrics.accepted, metrics.failed_gates
     assert rw is not None and rw.n_trades > 0
     assert html.exists() and html.stat().st_size > 0
+    assert curve.exists() and curve.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
     trades = pd.read_csv(csv)
     assert len(trades) == rw.n_trades
     assert {"EntryBar", "ExitBar", "EntryPrice", "ExitPrice", "PnL", "ReturnPct", "Duration"} <= set(
@@ -68,14 +76,18 @@ def test_tier2_produces_html_and_csv_on_real_bundle(bundle, tmp_path) -> None:
 def test_tier2_skipped_when_tier1_rejected(bundle, tmp_path) -> None:
     oos = _oos()
     html = tmp_path / "never.html"
+    curve = tmp_path / "never.png"
     metrics, rw = OOSBacktestRunner(
         BacktestConfig(rank_window=100, ic_window=300, min_net_sharpe=999.0)
     ).run(
         bundle_dir=bundle.dir, oos=oos, feature_names=NAMES, other_segments=[],
-        ohlcv_df=_ohlcv(oos), realworld_cfg=RealWorldConfig(enabled=True, out_html=str(html)),
+        ohlcv_df=_ohlcv(oos),
+        realworld_cfg=RealWorldConfig(
+            enabled=True, out_html=str(html), out_returns_curve=str(curve)
+        ),
     )
     assert not metrics.accepted
-    assert rw is None and not html.exists()
+    assert rw is None and not html.exists() and not curve.exists()
 
 
 def test_tier2_trades_are_consistent_with_tier1_positions(bundle, tmp_path) -> None:
