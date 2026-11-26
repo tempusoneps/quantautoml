@@ -107,9 +107,9 @@ downside_quantile = 0.20
 min_downside_ic = 0.0
 
 [realworld]
-# Tier 2 realistic execution via backtesting.py (set enabled = true to run)
+# Tier 2 realistic execution via tempusonebt (set enabled = true to run)
 enabled = true
-cash = 10000.0
+cash = 3000.0
 commission = 0.00025
 margin = 1.0
 size = "auto"
