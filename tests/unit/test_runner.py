@@ -69,6 +69,15 @@ def test_report_written_with_gates_and_extras(bundle, tmp_path: Path) -> None:
     assert rep["accepted"] == m.accepted and set(rep["gates"]) >= {"net_sharpe", "latency"}
     assert rep["periods_per_year"] > 0 and rep["n_overnight_gaps"] == 0
     assert rep["config"]["fee_bps"] == CFG.fee_bps
+    assert m.classification_metrics is not None
+    cm = rep["classification_metrics"]
+    assert cm is not None
+    assert 0.0 <= cm["accuracy"] <= 1.0
+    assert 0.0 <= cm["balanced_accuracy"] <= 1.0
+    assert 0.0 <= cm["macro_f1"] <= 1.0
+    assert cm["log_loss"] >= 0.0
+    assert len(cm["classes"]) == len(cm["per_class"]) == len(cm["confusion_matrix"])
+    assert sum(c["support"] for c in cm["per_class"]) == len(_oos(signal=True).y)
 
 
 def test_gap_count_reported(bundle, tmp_path: Path) -> None:

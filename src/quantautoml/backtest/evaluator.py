@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict
 from scipy.stats import kurtosis, norm, skew
 
 from quantautoml.common.config import BacktestConfig
+from quantautoml.metrics.classification import ClassificationMetrics
 from quantautoml.metrics.ic import calc_icir, calc_rank_ic, calc_rolling_ic
 
 _MIN_STRESS_BARS = 30
@@ -32,6 +33,7 @@ class OOSMetrics(BaseModel):
     gates: dict[str, bool]
     accepted: bool
     failed_gates: list[str]
+    classification_metrics: ClassificationMetrics | None = None
 
 
 def evaluate_oos_performance(

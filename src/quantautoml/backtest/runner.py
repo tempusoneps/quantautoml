@@ -22,6 +22,7 @@ from quantautoml.backtest.realworld_runner import RealWorldBacktestRunner, RealW
 from quantautoml.common.config import BacktestConfig, RealWorldConfig
 from quantautoml.common.exceptions import BacktestError, DataLeakageError
 from quantautoml.common.types import Segment
+from quantautoml.metrics.classification import ClassificationMetrics, calc_classification_metrics
 from quantautoml.packaging.predictor_loader import load_predictor
 from quantautoml.packaging.schema import FeatureSchemaContract
 
@@ -69,6 +70,7 @@ class OOSBacktestRunner:
         predictor = load_predictor(Path(bundle_dir) / "predictor.py").Predictor(bundle_dir)
         scores = np.asarray(predictor.predict(oos.X), dtype=np.float32)
         latency_ms = _latency_ms(predictor, oos.X[:1], latency_repeats)
+        cls_metrics = _compute_classification_metrics(predictor, Path(bundle_dir), oos.X, oos.y)
 
         positions = HysteresisBuffer(
             cfg.top_pct,
@@ -89,6 +91,8 @@ class OOSBacktestRunner:
             latency_ms=latency_ms,
             latency_budget_ms=latency_budget_ms,
         )
+        if cls_metrics is not None:
+            metrics = metrics.model_copy(update={"classification_metrics": cls_metrics})
         if out_path is not None:
             report = metrics.model_dump()
             report |= {
@@ -162,6 +166,25 @@ def evaluate_segment_execution(
         timestamps=eval_ts,
     )
     return metrics, periods_per_year, n_gaps
+
+
+def _compute_classification_metrics(
+    predictor: object,
+    bundle_dir: Path,
+    X: NDArray[np.float32],
+    y: NDArray[np.int32],
+) -> ClassificationMetrics | None:
+    """Compute OOS label-prediction metrics when the bundle predictor exposes predict_proba."""
+    predict_proba = getattr(predictor, "predict_proba", None)
+    if predict_proba is None:
+        return None
+    meta_path = bundle_dir / "ensemble_meta.json"
+    classes = None
+    if meta_path.is_file():
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        classes = meta.get("classes")
+    proba = np.asarray(predict_proba(X), dtype=np.float32)
+    return calc_classification_metrics(y, proba, classes=classes)
 
 
 def _latency_ms(predictor: object, row: NDArray[np.float32], repeats: int) -> float:
