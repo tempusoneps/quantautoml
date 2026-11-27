@@ -38,7 +38,7 @@ def _fmt(val: Any, spec: str = ".4f", suffix: str = "") -> str:
     if val is None:
         return "—"
     if isinstance(val, bool):
-        return "Yes" if val else "No"
+        return "Có" if val else "Không"
     if isinstance(val, (int, float)):
         if isinstance(val, float) and not math.isfinite(val):
             return "—"
@@ -56,7 +56,7 @@ def _pct(val: Any, digits: int = 2, already_pct: bool = False) -> str:
 def _badge(passed: bool | None) -> str:
     if passed is None:
         return "—"
-    return "✅ PASS" if passed else "❌ FAIL"
+    return "✅ ĐẠT" if passed else "❌ KHÔNG ĐẠT"
 
 
 def _short_date(ts: str | None) -> str:
@@ -188,6 +188,7 @@ def _extract_kpis(d: dict[str, Any]) -> dict[str, Any]:
     gross = bt.get("gross_sharpe")
     net = bt.get("net_sharpe")
     friction_drag = (gross - net) if (gross is not None and net is not None) else None
+    cls = bt.get("classification_metrics") or None
 
     label_col = (cfg.get("labels") or {}).get("selected")
     if not label_col and ing.get("label_nan_counts"):
@@ -238,6 +239,13 @@ def _extract_kpis(d: dict[str, Any]) -> dict[str, Any]:
         "rw_avg_bars": rw.get("avg_holding_bars"),
         "rw_size": rw_cfg.get("size"),
         "rw_trade_on_close": rw_cfg.get("trade_on_close"),
+        "cls_accuracy": cls.get("accuracy") if cls else None,
+        "cls_balanced_accuracy": cls.get("balanced_accuracy") if cls else None,
+        "cls_macro_f1": cls.get("macro_f1") if cls else None,
+        "cls_weighted_f1": cls.get("weighted_f1") if cls else None,
+        "cls_log_loss": cls.get("log_loss") if cls else None,
+        "cls_roc_auc": cls.get("roc_auc") if cls else None,
+        "cls_ece": cls.get("ece") if cls else None,
     }
 
 
@@ -245,36 +253,42 @@ def render_single_report(d: dict[str, Any], out_file: Path) -> str:
     k = _extract_kpis(d)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     verdict = _badge(k["accepted"])
-    failed = ", ".join(k["failed_gates"]) if k["failed_gates"] else "None"
+    failed = ", ".join(k["failed_gates"]) if k["failed_gates"] else "Không có"
 
     lines: list[str] = [
-        f"# Run Insights: `{d['name']}`",
+        f"# Báo Cáo Phân Tích Lần Chạy: `{d['name']}`",
         "",
-        f"> **Verdict:** {verdict} | **Task:** `{k['task_type'] or '—'}` | "
-        f"**Label:** `{k['label_col'] or '—'}` | **Models:** `{k['selected_models'] or '—'}` | "
-        f"**Generated:** {now}",
-        f"> **Run Dir:** `{d['path']}` | **Failed Gates:** `{failed}`",
+        f"> **Kết quả:** {verdict} | **Bài toán:** `{k['task_type'] or '—'}` | "
+        f"**Nhãn:** `{k['label_col'] or '—'}` | **Mô hình:** `{k['selected_models'] or '—'}` | "
+        f"**Thời điểm tạo:** {now}",
+        f"> **Thư mục chạy:** `{d['path']}` | **Cổng không đạt:** `{failed}`",
         "",
         "---",
         "",
-        "## 1. Executive Scorecard",
+        "## 1. Bảng Điểm Tổng Quan (Executive Scorecard)",
         "",
-        "| Metric | Value | Notes |",
+        "| Chỉ số | Giá trị | Ghi chú |",
         "| :--- | ---: | :--- |",
-        f"| **OOS Rank IC** | {_fmt(k['rank_ic'])} | Tier 1 blind OOS |",
-        f"| **OOS ICIR** | {_fmt(k['icir'])} | Rolling IC stability |",
-        f"| **Gross → Net Sharpe** | {_fmt(k['gross_sharpe'], '.2f')} → **{_fmt(k['net_sharpe'], '.2f')}** | Friction drag: {_fmt(k['friction_drag'], '.2f')} |",
-        f"| **Daily Net Sharpe** | {_fmt(k['daily_net_sharpe'], '.2f')} | Annualized ×√252 |",
-        f"| **Deflated Sharpe (DSR)** | {_fmt(k['dsr'])} | Multiple-testing adjusted |",
-        f"| **Tier 1 Max Drawdown** | {_pct(k['mdd'])} | Vectorized OOS |",
-        f"| **Downside IC** | {_fmt(k['downside_ic'])} | Stress bars quantile |",
-        f"| **Mean Turnover** | {_pct(k['mean_turnover'])} | Per bar |",
-        f"| **ONNX Latency / Diff** | {_fmt(k['latency_ms'], '.3f', ' ms')} / {_fmt(k['onnx_max_diff'], '.2e')} | Budget < 5 ms, < 1e-4 |",
-        f"| **Tier 2 Return vs B&H** | {_pct(k['rw_return_pct'], 2, True)} vs {_pct(k['rw_buy_hold_pct'], 2, True)} | tempusonebt realistic fill |",
-        f"| **Tier 2 Sharpe / Sortino / Calmar** | {_fmt(k['rw_sharpe'], '.2f')} / {_fmt(k['rw_sortino'], '.2f')} / {_fmt(k['rw_calmar'], '.2f')} | Tier 2 risk-adjusted |",
-        f"| **Tier 2 Trades / Win Rate / PF** | {_fmt(k['rw_trades'], 'd')} / {_pct(k['rw_win_rate'], 1)} / {_fmt(k['rw_profit_factor'], '.2f')} | MDD: {_pct(k['rw_mdd_pct'], 2, True)} |",
-        "",
+        f"| **OOS Rank IC** | {_fmt(k['rank_ic'])} | Tập OOS mù (Tier 1) |",
+        f"| **OOS ICIR** | {_fmt(k['icir'])} | Độ ổn định Rolling IC |",
+        f"| **Gross → Net Sharpe** | {_fmt(k['gross_sharpe'], '.2f')} → **{_fmt(k['net_sharpe'], '.2f')}** | Hao hụt do phí/trượt giá: {_fmt(k['friction_drag'], '.2f')} |",
+        f"| **Daily Net Sharpe** | {_fmt(k['daily_net_sharpe'], '.2f')} | Quy năm ×√252 |",
+        f"| **Deflated Sharpe (DSR)** | {_fmt(k['dsr'])} | Hiệu chỉnh đa kiểm định |",
+        f"| **Tier 1 Max Drawdown** | {_pct(k['mdd'])} | Backtest vector hóa OOS |",
+        f"| **Downside IC** | {_fmt(k['downside_ic'])} | Phân vị các nến biến động mạnh |",
+        f"| **Vòng quay trung bình (Mean Turnover)** | {_pct(k['mean_turnover'])} | Trên mỗi nến |",
+        f"| **Độ trễ ONNX / Sai số tối đa** | {_fmt(k['latency_ms'], '.3f', ' ms')} / {_fmt(k['onnx_max_diff'], '.2e')} | Ngưỡng < 5 ms, < 1e-4 |",
+        f"| **Lợi nhuận Tier 2 vs Buy & Hold** | {_pct(k['rw_return_pct'], 2, True)} vs {_pct(k['rw_buy_hold_pct'], 2, True)} | Khớp lệnh thực tế (`tempusonebt`) |",
+        f"| **Tier 2 Sharpe / Sortino / Calmar** | {_fmt(k['rw_sharpe'], '.2f')} / {_fmt(k['rw_sortino'], '.2f')} / {_fmt(k['rw_calmar'], '.2f')} | Hiệu suất điều chỉnh rủi ro Tier 2 |",
+        f"| **Tier 2 Số lệnh / Win Rate / PF** | {_fmt(k['rw_trades'], 'd')} / {_pct(k['rw_win_rate'], 1)} / {_fmt(k['rw_profit_factor'], '.2f')} | MDD: {_pct(k['rw_mdd_pct'], 2, True)} |",
     ]
+    if k["cls_accuracy"] is not None:
+        lines.append(
+            f"| **Dự đoán nhãn OOS (Acc / Macro-F1 / AUC)** | "
+            f"{_pct(k['cls_accuracy'], 2)} / {_fmt(k['cls_macro_f1'], '.4f')} / {_fmt(k['cls_roc_auc'], '.4f')} | "
+            f"Balanced Acc: {_pct(k['cls_balanced_accuracy'], 2)}, LogLoss: {_fmt(k['cls_log_loss'], '.4f')} |"
+        )
+    lines.append("")
 
     # 2. Configuration Snapshot
     cfg = d["config"] or {}
@@ -284,22 +298,22 @@ def render_single_report(d: dict[str, Any], out_file: Path) -> str:
     mod_cfg = cfg.get("models") or {}
     split_cfg = cfg.get("split") or {}
     lines += [
-        "## 2. Configuration Snapshot",
+        "## 2. Cấu Hình Chính (Configuration Snapshot)",
         "",
-        "| Group | Key Parameters |",
+        "| Nhóm cấu hình | Tham số chính |",
         "| :--- | :--- |",
-        f"| **Data & Split** | `horizon_h={split_cfg.get('horizon_h', (d['split'] or {}).get('horizon_h', '—'))}`, "
+        f"| **Dữ liệu & Phân chia** | `horizon_h={split_cfg.get('horizon_h', (d['split'] or {}).get('horizon_h', '—'))}`, "
         f"`date_from={(cfg.get('data') or {}).get('date_from', (d['ingestion'] or {}).get('date_from', '—'))}`, "
         f"`date_to={(cfg.get('data') or {}).get('date_to', (d['ingestion'] or {}).get('date_to', '—'))}` |",
-        f"| **Features** | `icir_min={feat_cfg.get('icir_min', '—')}`, `max_features={feat_cfg.get('max_features', '—')}`, "
+        f"| **Lọc tính năng** | `icir_min={feat_cfg.get('icir_min', '—')}`, `max_features={feat_cfg.get('max_features', '—')}`, "
         f"`dcor_threshold={feat_cfg.get('dcor_threshold', '—')}`, `max_temporal_drift={feat_cfg.get('max_temporal_drift', '—')}` |",
-        f"| **Models** | `enabled={mod_cfg.get('enabled_models', '—')}`, `complexity_penalty={mod_cfg.get('complexity_penalty', '—')}`, "
+        f"| **Mô hình** | `enabled={mod_cfg.get('enabled_models', '—')}`, `complexity_penalty={mod_cfg.get('complexity_penalty', '—')}`, "
         f"`refit_on_train_cal={mod_cfg.get('refit_on_train_cal', '—')}` |",
         f"| **Backtest (Tier 1)** | `execution_price={bt_cfg.get('execution_price', '—')}`, "
         f"`fee+slip={bt_cfg.get('fee_bps', '—')}+{bt_cfg.get('slippage_bps', '—')} bps`, "
         f"`top/exit={bt_cfg.get('top_pct', '—')}/{bt_cfg.get('exit_pct', '—')}`, "
         f"`ema={bt_cfg.get('signal_ema_span', '—')}`, `min_hold={bt_cfg.get('min_hold_bars', '—')}` |",
-        f"| **RealWorld (Tier 2)** | `enabled={rw_cfg.get('enabled', d['realworld'] is not None)}`, "
+        f"| **Thực chiến (Tier 2)** | `enabled={rw_cfg.get('enabled', d['realworld'] is not None)}`, "
         f"`cash={rw_cfg.get('cash', '—')}`, `commission={rw_cfg.get('commission', '—')}`, "
         f"`margin={rw_cfg.get('margin', '—')}`, `size={rw_cfg.get('size', '—')}`, "
         f"`trade_on_close={rw_cfg.get('trade_on_close', '—')}` |",
@@ -310,17 +324,17 @@ def render_single_report(d: dict[str, Any], out_file: Path) -> str:
     ing = d["ingestion"] or {}
     spl = d["split"] or {}
     lines += [
-        "## 3. Data & Temporal Split (Phase 01)",
+        "## 3. Dữ Liệu & Phân Chia Thời Gian (Phase 01)",
         "",
-        f"- **Rows:** `{ing.get('n_joined_rows', '—')}` joined | **Raw Features:** `{ing.get('n_features', '—')}` | "
+        f"- **Số dòng:** `{ing.get('n_joined_rows', '—')}` dòng đã ghép | **Tính năng gốc:** `{ing.get('n_features', '—')}` | "
         f"**NaN / Inf:** `{ing.get('n_nan', '—')}` / `{ing.get('n_inf', '—')}` | "
-        f"**Range:** `{_short_date(ing.get('t_min'))}` → `{_short_date(ing.get('t_max'))}`",
-        f"- **Split Mode:** `{spl.get('mode', '—')}` | **Purge/Embargo `horizon_h`:** `{spl.get('horizon_h', '—')}`",
+        f"**Khoảng thời gian:** `{_short_date(ing.get('t_min'))}` → `{_short_date(ing.get('t_max'))}`",
+        f"- **Chế độ chia:** `{spl.get('mode', '—')}` | **Purge/Embargo `horizon_h`:** `{spl.get('horizon_h', '—')}`",
         "",
     ]
     if spl.get("segments"):
         lines += [
-            "| Segment | Rows | Start | End | Embargo Dropped | Class Counts |",
+            "| Phân đoạn | Số dòng | Bắt đầu | Kết thúc | Số dòng loại (Embargo) | Phân bố lớp (Class Counts) |",
             "| :--- | ---: | :--- | :--- | ---: | :--- |",
         ]
         for seg in spl["segments"]:
@@ -333,10 +347,10 @@ def render_single_report(d: dict[str, Any], out_file: Path) -> str:
         lines.append("")
 
     # 4. Feature Funnel
-    lines += ["## 4. Feature Funnel (Phase 02)", ""]
+    lines += ["## 4. Phễu Lọc Tính Năng (Phase 02)", ""]
     if d["funnel"]:
         lines += [
-            "| Stage | In | Out | Dropped | Drop % |",
+            "| Tầng lọc | Đầu vào | Đầu ra | Đã loại | Tỷ lệ loại (%) |",
             "| :--- | ---: | ---: | ---: | ---: |",
         ]
         for st in d["funnel"]:
@@ -348,16 +362,16 @@ def render_single_report(d: dict[str, Any], out_file: Path) -> str:
         lines.append("")
     sel_feats = (d["selected_features"] or {}).get("selected_features")
     if sel_feats:
-        lines.append(f"**Selected Features ({len(sel_feats)}):** " + ", ".join(f"`{f}`" for f in sel_feats))
+        lines.append(f"**Các tính năng được chọn ({len(sel_feats)}):** " + ", ".join(f"`{f}`" for f in sel_feats))
         lines.append("")
 
     # 5. Model Tournament, Decision & Tuning
-    lines += ["## 5. Model Tournament, Decision & Tuning (Phase 03)", ""]
+    lines += ["## 5. Đấu Loại Mô Hình, Quyết Định & Tối Ưu Siêu Tham Số (Phase 03)", ""]
     if d["tournament"]:
         lines += [
-            "### Tournament Best Trial per Family",
+            "### Kết Quả Tốt Nhất Theo Từng Họ Mô Hình (Tournament)",
             "",
-            "| Model | Trials | Best IC Sharpe | Mean IC | Fold IC Min | Fold IC Max | Fold IC Std |",
+            "| Mô hình | Số thử nghiệm | Best IC Sharpe | Mean IC | Fold IC Min | Fold IC Max | Fold IC Std |",
             "| :--- | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
         for row in d["tournament"]:
@@ -373,22 +387,22 @@ def render_single_report(d: dict[str, Any], out_file: Path) -> str:
         corrs = dec.get("pairwise_correlations") or {}
         corr_str = ", ".join(f"`{ck}={cv:.3f}`" for ck, cv in corrs.items()) if corrs else "—"
         lines += [
-            "### Decision Engine",
+            "### Bộ Quyết Định (Decision Engine)",
             "",
-            f"- **Decision:** `{dec.get('decision')}` → `{dec.get('selected_models')}`",
-            f"- **Diversity Score:** `{_fmt(dec.get('diversity_score'))}` | **Marginal Gain:** `{_fmt(dec.get('marginal_gain'))}` | "
-            f"**WF Consistency:** `{_pct(dec.get('wf_consistency'), 1)}`",
-            f"- **Pairwise Correlations:** {corr_str}",
-            f"- **Rationale:** {dec.get('rationale', '—')}",
+            f"- **Quyết định:** `{dec.get('decision')}` → `{dec.get('selected_models')}`",
+            f"- **Điểm đa dạng (Diversity Score):** `{_fmt(dec.get('diversity_score'))}` | **Lợi ích biên (Marginal Gain):** `{_fmt(dec.get('marginal_gain'))}` | "
+            f"**Độ nhất quán WF:** `{_pct(dec.get('wf_consistency'), 1)}`",
+            f"- **Tương quan theo cặp:** {corr_str}",
+            f"- **Lý do:** {dec.get('rationale', '—')}",
             "",
         ]
 
     tun = d["tuning"] or {}
     if tun.get("tuned_candidates"):
         lines += [
-            "### Optuna Tuning",
+            "### Tối Ưu Siêu Tham Số (Optuna Tuning)",
             "",
-            "| Model | Best Score | Best IC Sharpe | Complexity | Trials (Pruned) | Key Params |",
+            "| Mô hình | Best Score | Best IC Sharpe | Độ phức tạp | Số thử nghiệm (Bị cắt tỉa) | Tham số chính |",
             "| :--- | ---: | ---: | ---: | ---: | :--- |",
         ]
         summaries = tun.get("study_summaries") or {}
@@ -411,17 +425,17 @@ def render_single_report(d: dict[str, Any], out_file: Path) -> str:
     cal = d["calibration"] or {}
     bnd = d["bundle"] or {}
     lines += [
-        "## 6. Ensemble, Calibration & Packaging (Phase 04–05)",
+        "## 6. Ensemble, Hiệu Chuẩn & Đóng Gói ONNX (Phase 04–05)",
         "",
-        "| Stage | Key Metrics |",
+        "| Giai đoạn | Chỉ số chính |",
         "| :--- | :--- |",
         f"| **Ensemble (Cal-A)** | `weights={ens.get('weights', '—')}`, `ic_sharpe={_fmt(ens.get('ensemble_ic_sharpe'))}`, "
         f"`overall_rank_ic={_fmt(ens.get('overall_rank_ic'))}`, `hurdle={_pct(ens.get('hurdle_ratio_achieved'), 2)}`, "
         f"`fallback={ens.get('fallback_reason')}` |",
-        f"| **Calibration (Cal-B)** | `method={cal.get('method', '—')}`, `T={_fmt(cal.get('temperature'))}`, "
+        f"| **Hiệu chuẩn xác suất (Cal-B)** | `method={cal.get('method', '—')}`, `T={_fmt(cal.get('temperature'))}`, "
         f"`ECE: {_fmt(cal.get('uncalibrated_ece'))} → {_fmt(cal.get('calibrated_ece'))}`, "
         f"`rank_ic_preserved={cal.get('rank_ic_preserved', '—')}` |",
-        f"| **ONNX Bundle (Val)** | `n_models={bnd.get('n_models', '—')}`, `max_abs_diff={_fmt(bnd.get('max_abs_diff'), '.2e')}` "
+        f"| **Đóng gói ONNX (Val)** | `n_models={bnd.get('n_models', '—')}`, `max_abs_diff={_fmt(bnd.get('max_abs_diff'), '.2e')}` "
         f"(< 1e-4: {_badge(bnd.get('max_abs_diff') < 1e-4 if bnd.get('max_abs_diff') is not None else None)}) |",
         "",
     ]
@@ -429,38 +443,71 @@ def render_single_report(d: dict[str, Any], out_file: Path) -> str:
     # 7. Backtest Evaluation (Phase 06)
     bt = d["backtest"] or {}
     rw = d["realworld"] or {}
-    lines += ["## 7. Backtest Evaluation (Phase 06)", ""]
+    lines += ["## 7. Đánh Giá Backtest (Phase 06)", ""]
     if bt:
         gates = bt.get("gates") or {}
         bcfg = bt.get("config") or {}
         lines += [
-            "### Tier 1 — Vectorized OOS Hard Gates",
+            "### Tier 1 — Các Cổng Kiểm Duyệt OOS Vector Hóa (Hard Gates)",
             "",
-            "| Gate | Actual | Threshold | Status |",
+            "| Cổng kiểm duyệt | Thực tế | Ngưỡng yêu cầu | Trạng thái |",
             "| :--- | ---: | ---: | :---: |",
             f"| Rank IC | {_fmt(bt.get('rank_ic'))} | > {_fmt(bcfg.get('min_rank_ic'))} | {_badge(gates.get('rank_ic'))} |",
             f"| ICIR | {_fmt(bt.get('icir'))} | > {_fmt(bcfg.get('min_icir'))} | {_badge(gates.get('icir'))} |",
             f"| Net Sharpe | {_fmt(bt.get('net_sharpe'), '.2f')} | > {_fmt(bcfg.get('min_net_sharpe'), '.2f')} | {_badge(gates.get('net_sharpe'))} |",
             f"| Max Drawdown | {_pct(bt.get('max_drawdown'))} | < {_pct(bcfg.get('max_mdd'))} | {_badge(gates.get('mdd'))} |",
             f"| Downside IC | {_fmt(bt.get('downside_ic'))} | > {_fmt(bcfg.get('min_downside_ic'), '.2f')} | {_badge(gates.get('downside_ic'))} |",
-            f"| Latency | {_fmt(bt.get('latency_ms'), '.3f', ' ms')} | < 5.000 ms | {_badge(gates.get('latency'))} |",
+            f"| Độ trễ (Latency) | {_fmt(bt.get('latency_ms'), '.3f', ' ms')} | < 5.000 ms | {_badge(gates.get('latency'))} |",
             "",
-            f"- **OOS Bars:** `{bt.get('n_bars', '—')}` | **Stress Bars:** `{bt.get('n_stress_bars', '—')}` | "
-            f"**Overnight Gaps:** `{bt.get('n_overnight_gaps', '—')}` | **Periods/Year:** `{_fmt(bt.get('periods_per_year'), '.1f')}`",
+            f"- **Số nến OOS:** `{bt.get('n_bars', '—')}` | **Số nến biến động mạnh (Stress Bars):** `{bt.get('n_stress_bars', '—')}` | "
+            f"**Khoảng nhảy qua đêm (Overnight Gaps):** `{bt.get('n_overnight_gaps', '—')}` | **Số kỳ/năm:** `{_fmt(bt.get('periods_per_year'), '.1f')}`",
             "",
         ]
 
+    cls = bt.get("classification_metrics") if bt else None
+    if isinstance(cls, dict):
+        lines += [
+            "### Đánh Giá Dự Đoán Nhãn OOS (Classification Metrics)",
+            "",
+            f"- **Accuracy:** `{_pct(cls.get('accuracy'), 2)}` | **Balanced Accuracy:** `{_pct(cls.get('balanced_accuracy'), 2)}` | "
+            f"**Macro-F1:** `{_fmt(cls.get('macro_f1'))}` | **Weighted-F1:** `{_fmt(cls.get('weighted_f1'))}`",
+            f"- **Log Loss:** `{_fmt(cls.get('log_loss'))}` | **ROC-AUC:** `{_fmt(cls.get('roc_auc'))}` | "
+            f"**OOS ECE:** `{_fmt(cls.get('ece'))}`",
+            "",
+        ]
+        per_class = cls.get("per_class") or []
+        if per_class:
+            lines += [
+                "| Lớp | Precision | Recall | F1 | Số mẫu (Support) |",
+                "| :--- | ---: | ---: | ---: | ---: |",
+            ]
+            for pc in per_class:
+                lines.append(
+                    f"| `{pc.get('label', '—')}` | {_fmt(pc.get('precision'))} | "
+                    f"{_fmt(pc.get('recall'))} | {_fmt(pc.get('f1'))} | {pc.get('support', '—')} |"
+                )
+            lines.append("")
+        cm_rows = cls.get("confusion_matrix") or []
+        cls_labels = cls.get("classes") or []
+        if cm_rows and cls_labels and len(cm_rows) == len(cls_labels):
+            cm_header = "| Thực tế \\ Dự đoán | " + " | ".join(f"`{c}`" for c in cls_labels) + " |"
+            cm_sep = "| :--- | " + " | ".join("---:" for _ in cls_labels) + " |"
+            lines += [cm_header, cm_sep]
+            for lbl, row_vals in zip(cls_labels, cm_rows):
+                lines.append(f"| `{lbl}` | " + " | ".join(str(v) for v in row_vals) + " |")
+            lines.append("")
+
     if rw:
         lines += [
-            "### Tier 2 — Realistic Execution (`tempusonebt`)",
+            "### Tier 2 — Khớp Lệnh Thực Tế (`tempusonebt`)",
             "",
-            "| Metric | Value | Metric | Value |",
+            "| Chỉ số | Giá trị | Chỉ số | Giá trị |",
             "| :--- | ---: | :--- | ---: |",
-            f"| Total Trades | {_fmt(rw.get('n_trades'), 'd')} | Equity Final / Peak | {_fmt(rw.get('equity_final'), ',.2f')} / {_fmt(rw.get('equity_peak'), ',.2f')} |",
-            f"| Win Rate | {_pct(rw.get('win_rate'), 2)} | Return % vs Buy & Hold | {_pct(rw.get('return_pct'), 2, True)} vs {_pct(rw.get('buy_hold_return_pct'), 2, True)} |",
+            f"| Tổng số lệnh | {_fmt(rw.get('n_trades'), 'd')} | Vốn cuối kỳ / Đỉnh vốn | {_fmt(rw.get('equity_final'), ',.2f')} / {_fmt(rw.get('equity_peak'), ',.2f')} |",
+            f"| Tỷ lệ thắng (Win Rate) | {_pct(rw.get('win_rate'), 2)} | Lợi nhuận % vs Buy & Hold | {_pct(rw.get('return_pct'), 2, True)} vs {_pct(rw.get('buy_hold_return_pct'), 2, True)} |",
             f"| Profit Factor | {_fmt(rw.get('profit_factor'), '.3f')} | Sharpe / Sortino / Calmar | {_fmt(rw.get('sharpe_ratio_bt'), '.2f')} / {_fmt(rw.get('sortino_ratio'), '.2f')} / {_fmt(rw.get('calmar_ratio'), '.2f')} |",
-            f"| Avg Holding Bars | {_fmt(rw.get('avg_holding_bars'), '.2f')} | Max Drawdown % | {_pct(rw.get('max_drawdown_pct'), 2, True)} |",
-            f"| Worst Single Trade | -{_pct(rw.get('max_trade_loss_pct'), 2, True)} | — | — |",
+            f"| Thời gian giữ lệnh TB (nến) | {_fmt(rw.get('avg_holding_bars'), '.2f')} | Max Drawdown % | {_pct(rw.get('max_drawdown_pct'), 2, True)} |",
+            f"| Lệnh lỗ nặng nhất | -{_pct(rw.get('max_trade_loss_pct'), 2, True)} | — | — |",
             "",
         ]
 
@@ -468,35 +515,35 @@ def render_single_report(d: dict[str, Any], out_file: Path) -> str:
     if tr and tr.get("n", 0) > 0:
         lg, sh = tr["long"], tr["short"]
         lines += [
-            "### Trade Log Breakdown (`trades.csv`)",
+            "### Phân Tích Chi Tiết Lịch Sử Giao Dịch (`trades.csv`)",
             "",
-            "| Side | Trades | Wins | Win Rate | Total PnL | Avg PnL |",
+            "| Chiều giao dịch | Số lệnh | Số lệnh thắng | Tỷ lệ thắng | Tổng PnL | PnL trung bình |",
             "| :--- | ---: | ---: | ---: | ---: | ---: |",
             f"| Long | {lg['n']} | {lg['wins']} | {_pct(lg['win_rate'], 1)} | {_fmt(lg['total_pnl'], ',.2f')} | {_fmt(lg['avg_pnl'], ',.2f')} |",
             f"| Short | {sh['n']} | {sh['wins']} | {_pct(sh['win_rate'], 1)} | {_fmt(sh['total_pnl'], ',.2f')} | {_fmt(sh['avg_pnl'], ',.2f')} |",
-            f"| **All** | **{tr['n']}** | **{lg['wins'] + sh['wins']}** | **{_pct((lg['wins'] + sh['wins']) / tr['n'], 1)}** | **{_fmt(tr['total_pnl'], ',.2f')}** | **{_fmt(tr['total_pnl'] / tr['n'], ',.2f')}** |",
+            f"| **Tổng cộng** | **{tr['n']}** | **{lg['wins'] + sh['wins']}** | **{_pct((lg['wins'] + sh['wins']) / tr['n'], 1)}** | **{_fmt(tr['total_pnl'], ',.2f')}** | **{_fmt(tr['total_pnl'] / tr['n'], ',.2f')}** |",
             "",
-            f"- **Total Commission:** `{_fmt(tr.get('total_commission'), ',.2f')}` | "
-            f"**Best / Worst Trade Return:** `{_pct(tr.get('best_ret_pct'), 2, True)}` / `{_pct(tr.get('worst_ret_pct'), 2, True)}` | "
-            f"**Median / Max Hold (bars):** `{_fmt(tr.get('median_bars'), '.1f')}` / `{tr.get('max_bars', '—')}`",
+            f"- **Tổng phí giao dịch (Commission):** `{_fmt(tr.get('total_commission'), ',.2f')}` | "
+            f"**Lệnh lãi tốt nhất / lỗ nặng nhất:** `{_pct(tr.get('best_ret_pct'), 2, True)}` / `{_pct(tr.get('worst_ret_pct'), 2, True)}` | "
+            f"**Thời gian giữ lệnh trung vị / tối đa (nến):** `{_fmt(tr.get('median_bars'), '.1f')}` / `{tr.get('max_bars', '—')}`",
             "",
         ]
 
     if d["returns_curve"] is not None:
         rel_img = os.path.relpath(d["returns_curve"], out_file.resolve().parent).replace("\\", "/")
         lines += [
-            "### Cumulative PnL Curve",
+            "### Đường Cong Lợi Nhuận Tích Lũy (Cumulative PnL)",
             "",
-            f"![Cumulative PnL]({rel_img})",
+            f"![Đường cong PnL tích lũy]({rel_img})",
             "",
         ]
 
     diag = d["diagnostics"]
     if diag and isinstance(diag.get("segments"), dict):
         lines += [
-            "### Cross-Regime Diagnostics (`03_regime_diagnostics.json`)",
+            "### Chẩn Đoán Xuyên Chế Độ Thị Trường (`03_regime_diagnostics.json`)",
             "",
-            "| Segment | Mode | Status | Rank IC | ICIR | Gross Sharpe | Net Sharpe | Daily Net Sharpe | MDD | Accepted |",
+            "| Phân đoạn | Chế độ khớp | Trạng thái | Rank IC | ICIR | Gross Sharpe | Net Sharpe | Daily Net Sharpe | MDD | Nghiệm thu |",
             "| :--- | :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: | :---: |",
         ]
         for seg_name, seg_val in diag["segments"].items():
@@ -514,12 +561,12 @@ def render_single_report(d: dict[str, Any], out_file: Path) -> str:
 
     # 8. Placeholder for Agent Qualitative Synthesis
     lines += [
-        "## 8. Quant Insights & Next Actions",
+        "## 8. Phân Tích Định Lượng & Hành Động Tiếp Theo",
         "",
-        "<!-- AGENT_INSIGHTS_SECTION: Replace this placeholder with concise quantitative diagnosis -->",
-        "- **Strengths:** _TBD_",
-        "- **Risks & Bottlenecks:** _TBD_",
-        "- **Next Experiments:** _TBD_",
+        "<!-- AGENT_INSIGHTS_SECTION: Thay thế phần giữ chỗ này bằng chẩn đoán định lượng súc tích bằng tiếng Việt -->",
+        "- **Điểm mạnh:** _TBD_",
+        "- **Rủi ro & Điểm nghẽn:** _TBD_",
+        "- **Thử nghiệm tiếp theo:** _TBD_",
         "",
     ]
     return "\n".join(lines)
@@ -529,48 +576,56 @@ def render_comparison_report(runs: list[dict[str, Any]]) -> str:
     kpis = [_extract_kpis(r) for r in runs]
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     names = [k["name"] for k in kpis]
-    header = "| Metric | " + " | ".join(f"`{n}`" for n in names) + " |"
+    header = "| Chỉ số | " + " | ".join(f"`{n}`" for n in names) + " |"
     sep = "| :--- | " + " | ".join("---:" for _ in names) + " |"
 
     rows_spec: list[tuple[str, Any]] = [
-        ("Verdict", lambda k: _badge(k["accepted"])),
-        ("Label", lambda k: f"`{k['label_col'] or '—'}`"),
-        ("Task Type", lambda k: f"`{k['task_type'] or '—'}`"),
-        ("Raw → Selected Features", lambda k: f"{k['n_raw_features'] or '—'} → {k['n_selected_features'] or '—'}"),
-        ("Selected Models", lambda k: f"`{k['selected_models'] or '—'}`"),
-        ("Decision", lambda k: f"`{k['decision'] or '—'}`"),
+        ("Kết quả", lambda k: _badge(k["accepted"])),
+        ("Nhãn", lambda k: f"`{k['label_col'] or '—'}`"),
+        ("Loại bài toán", lambda k: f"`{k['task_type'] or '—'}`"),
+        ("Tính năng gốc → Đã chọn", lambda k: f"{k['n_raw_features'] or '—'} → {k['n_selected_features'] or '—'}"),
+        ("Mô hình được chọn", lambda k: f"`{k['selected_models'] or '—'}`"),
+        ("Quyết định", lambda k: f"`{k['decision'] or '—'}`"),
         ("Cal-A Ensemble IC Sharpe", lambda k: _fmt(k["ensemble_ic_sharpe"])),
-        ("Calibration T / ECE", lambda k: f"{_fmt(k['temperature'], '.3f')} / {_fmt(k['calibrated_ece'])}"),
-        ("ONNX Max Diff", lambda k: _fmt(k["onnx_max_diff"], ".2e")),
+        ("Hiệu chuẩn T / ECE", lambda k: f"{_fmt(k['temperature'], '.3f')} / {_fmt(k['calibrated_ece'])}"),
+        ("Sai số tối đa ONNX", lambda k: _fmt(k["onnx_max_diff"], ".2e")),
         ("**OOS Rank IC**", lambda k: f"**{_fmt(k['rank_ic'])}**"),
         ("**OOS ICIR**", lambda k: f"**{_fmt(k['icir'])}**"),
         ("Gross Sharpe", lambda k: _fmt(k["gross_sharpe"], ".2f")),
         ("**Net Sharpe (Tier 1)**", lambda k: f"**{_fmt(k['net_sharpe'], '.2f')}**"),
-        ("Friction Drag (Gross-Net)", lambda k: _fmt(k["friction_drag"], ".2f")),
+        ("Hao hụt phí/trượt giá (Gross-Net)", lambda k: _fmt(k["friction_drag"], ".2f")),
         ("**Daily Net Sharpe**", lambda k: f"**{_fmt(k['daily_net_sharpe'], '.2f')}**"),
         ("Deflated Sharpe (DSR)", lambda k: _fmt(k["dsr"])),
         ("Tier 1 MDD", lambda k: _pct(k["mdd"])),
         ("Downside IC", lambda k: _fmt(k["downside_ic"])),
-        ("Mean Turnover", lambda k: _pct(k["mean_turnover"])),
-        ("Latency (ms)", lambda k: _fmt(k["latency_ms"], ".3f")),
-        ("Execution Price / Fee+Slip", lambda k: f"`{k['execution_price'] or '—'}` / {_fmt(k['fee_slip_bps'], '.1f', ' bps')}"),
-        ("**Tier 2 Return %**", lambda k: f"**{_pct(k['rw_return_pct'], 2, True)}**"),
+        ("Vòng quay TB (Mean Turnover)", lambda k: _pct(k["mean_turnover"])),
+        ("Độ trễ (ms)", lambda k: _fmt(k["latency_ms"], ".3f")),
+        ("Giá khớp / Phí+Trượt giá", lambda k: f"`{k['execution_price'] or '—'}` / {_fmt(k['fee_slip_bps'], '.1f', ' bps')}"),
+        ("**Lợi nhuận Tier 2 %**", lambda k: f"**{_pct(k['rw_return_pct'], 2, True)}**"),
         ("Tier 2 Buy & Hold %", lambda k: _pct(k["rw_buy_hold_pct"], 2, True)),
         ("**Tier 2 Sharpe (BT)**", lambda k: f"**{_fmt(k['rw_sharpe'], '.2f')}**"),
         ("Tier 2 Sortino / Calmar", lambda k: f"{_fmt(k['rw_sortino'], '.2f')} / {_fmt(k['rw_calmar'], '.2f')}"),
         ("Tier 2 MDD %", lambda k: _pct(k["rw_mdd_pct"], 2, True)),
-        ("Tier 2 Trades", lambda k: _fmt(k["rw_trades"], "d")),
+        ("Tier 2 Số lệnh", lambda k: _fmt(k["rw_trades"], "d")),
         ("Tier 2 Win Rate", lambda k: _pct(k["rw_win_rate"], 1)),
         ("Tier 2 Profit Factor", lambda k: _fmt(k["rw_profit_factor"], ".2f")),
-        ("Tier 2 Avg Hold (bars)", lambda k: _fmt(k["rw_avg_bars"], ".1f")),
+        ("Tier 2 Thời gian giữ TB (nến)", lambda k: _fmt(k["rw_avg_bars"], ".1f")),
     ]
+    if any(k["cls_accuracy"] is not None for k in kpis):
+        rows_spec += [
+            ("OOS Accuracy", lambda k: _pct(k["cls_accuracy"], 2)),
+            ("OOS Balanced Accuracy", lambda k: _pct(k["cls_balanced_accuracy"], 2)),
+            ("OOS Macro-F1", lambda k: _fmt(k["cls_macro_f1"])),
+            ("OOS Log Loss", lambda k: _fmt(k["cls_log_loss"])),
+            ("OOS ROC-AUC", lambda k: _fmt(k["cls_roc_auc"])),
+        ]
 
     lines = [
-        f"# Run Comparison: {' vs '.join(f'`{n}`' for n in names)}",
+        f"# So Sánh Các Lần Chạy: {' vs '.join(f'`{n}`' for n in names)}",
         "",
-        f"> **Generated:** {now} | **Runs Compared:** {len(runs)}",
+        f"> **Thời điểm tạo:** {now} | **Số lần chạy so sánh:** {len(runs)}",
         "",
-        "## 1. Side-by-Side KPI Scorecard",
+        "## 1. Bảng So Sánh Chỉ Số KPI",
         "",
         header,
         sep,
@@ -581,12 +636,12 @@ def render_comparison_report(runs: list[dict[str, Any]]) -> str:
 
     lines += [
         "",
-        "## 2. Comparative Insights & Recommendation",
+        "## 2. Phân Tích So Sánh & Khuyến Nghị",
         "",
-        "<!-- AGENT_INSIGHTS_SECTION: Replace this placeholder with comparative analysis -->",
-        "- **Winner & Why:** _TBD_",
-        "- **Key Drivers of Difference:** _TBD_",
-        "- **Recommended Next Run:** _TBD_",
+        "<!-- AGENT_INSIGHTS_SECTION: Thay thế phần giữ chỗ này bằng phân tích so sánh bằng tiếng Việt -->",
+        "- **Mô hình vượt trội & Lý do:** _TBD_",
+        "- **Yếu tố tạo khác biệt chính:** _TBD_",
+        "- **Khuyến nghị lần chạy tiếp theo:** _TBD_",
         "",
     ]
     return "\n".join(lines)
