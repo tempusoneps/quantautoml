@@ -242,5 +242,8 @@
   "240": "3. Data Partitioning: Static 5-Way Split vs. Adaptive Split (OOF-Assisted)",
   "241": "Six-Layer Unidirectional Architecture",
   "242": "REQUIREMENT.md",
-  "243": "Config: horizon_h Purge/Embargo"
+  "243": "Config: horizon_h Purge/Embargo",
+  "244": "ModelError",
+  "245": ".fit",
+  "246": "examples/README.md"
 }

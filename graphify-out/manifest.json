@@ -365,8 +365,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/metrics/__init__.py": {
-    "mtime": 1795477650.9105952,
-    "ast_hash": "8201aa3608f5bb5ea39557b25ee5c8c0",
+    "mtime": 1795735587.72845,
+    "ast_hash": "e4b2ea17532e1d5fe38128ea919ce1d9",
     "semantic_hash": ""
   },
   "src/quantautoml/metrics/calibration.py": {
@@ -690,8 +690,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/backtest/evaluator.py": {
-    "mtime": 1795490235.3289237,
-    "ast_hash": "4348eb825b6f36842fd4199c2dc41c00",
+    "mtime": 1795735588.3855765,
+    "ast_hash": "10165ecb135fce3b868a6ae50454965f",
     "semantic_hash": ""
   },
   "src/quantautoml/backtest/friction.py": {
@@ -705,8 +705,8 @@
     "semantic_hash": ""
   },
   "src/quantautoml/backtest/runner.py": {
-    "mtime": 1795520236.148478,
-    "ast_hash": "8a025afdde4cabed12bf5d061614af65",
+    "mtime": 1795735592.2768068,
+    "ast_hash": "1f7f526c643dc87119862f816ca9afc5",
     "semantic_hash": ""
   },
   "src/quantautoml/backtest/strategy.py": {
@@ -860,8 +860,8 @@
     "semantic_hash": ""
   },
   "tests/unit/test_runner.py": {
-    "mtime": 1795519983.3445678,
-    "ast_hash": "cb484acbd6a348ed55494dba1795747b",
+    "mtime": 1795735518.952639,
+    "ast_hash": "fa1261f94c4d72caa41c21ddd5551083",
     "semantic_hash": ""
   },
   "tests/unit/test_runner_tier2_integration.py": {
@@ -2637,6 +2637,31 @@
   "docs/plan/overview/TRADE-OFF.md": {
     "mtime": 1795477650.7764912,
     "ast_hash": "b0e0918dc0c4358d2c389f5ad532e761",
+    "semantic_hash": ""
+  },
+  ".agents/skills/get-insights/scripts/extract_insights.py": {
+    "mtime": 1795735617.0170834,
+    "ast_hash": "84b63ffd4c8799e6c2b5608864bb99a7",
+    "semantic_hash": ""
+  },
+  "src/quantautoml/metrics/classification.py": {
+    "mtime": 1795735586.6259837,
+    "ast_hash": "edf8121cc0ba94b5d78809ae08263296",
+    "semantic_hash": ""
+  },
+  "tests/unit/test_metrics_classification.py": {
+    "mtime": 1795735517.7371335,
+    "ast_hash": "bee8222cdb462e0474ebe0a2f5b4a461",
+    "semantic_hash": ""
+  },
+  ".agents/skills/get-insights/SKILL.md": {
+    "mtime": 1795735618.2344904,
+    "ast_hash": "5811a03d13eb73e331838c014fc7ee0e",
+    "semantic_hash": ""
+  },
+  "examples/README.md": {
+    "mtime": 1795733944.892142,
+    "ast_hash": "a72406bd44287dc614e536e487a00f16",
     "semantic_hash": ""
   }
 }
